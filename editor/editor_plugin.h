@@ -123,6 +123,8 @@ public:
 
 	Control *get_base_control();
 
+	float get_editor_scale();
+
 	void add_import_plugin(const Ref<EditorImportPlugin> &p_editor_import);
 	void remove_import_plugin(const Ref<EditorImportPlugin> &p_editor_import);
 

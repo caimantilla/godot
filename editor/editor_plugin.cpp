@@ -300,6 +300,14 @@ Control *EditorPlugin::get_base_control() {
 	return EditorNode::get_singleton()->get_gui_base();
 }
 
+float EditorPlugin::get_editor_scale() {
+
+	if (editor_is_hidpi())
+		return 2.0f;
+	
+	return 1.0f;
+}
+
 void EditorPlugin::_bind_methods() {
 
 	ObjectTypeDB::bind_method(_MD("add_control_to_container", "container", "control:Control"), &EditorPlugin::add_control_to_container);
@@ -318,6 +326,7 @@ void EditorPlugin::_bind_methods() {
 	ObjectTypeDB::bind_method(_MD("remove_export_plugin", "plugin:EditorExportPlugin"), &EditorPlugin::remove_export_plugin);
 
 	ObjectTypeDB::bind_method(_MD("get_base_control:Control"), &EditorPlugin::get_base_control);
+	ObjectTypeDB::bind_method(_MD("get_editor_scale"), &EditorPlugin::get_editor_scale);
 	ObjectTypeDB::bind_method(_MD("get_undo_redo:UndoRedo"), &EditorPlugin::_get_undo_redo);
 	ObjectTypeDB::bind_method(_MD("get_selection:EditorSelection"), &EditorPlugin::get_selection);
 	ObjectTypeDB::bind_method(_MD("get_editor_settings:EditorSettings"), &EditorPlugin::get_editor_settings);
