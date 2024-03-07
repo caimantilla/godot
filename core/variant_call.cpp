@@ -229,6 +229,7 @@ struct _VariantCall {
 	VCALL_LOCALMEM1R(String, nocasecmp_to);
 	VCALL_LOCALMEM0R(String, length);
 	VCALL_LOCALMEM2R(String, substr);
+	VCALL_LOCALMEM2R(String, get_slice);
 	VCALL_LOCALMEM2R(String, find);
 	VCALL_LOCALMEM1R(String, find_last);
 	VCALL_LOCALMEM2R(String, findn);
@@ -1310,6 +1311,7 @@ void register_variant_methods() {
 	ADDFUNC1(STRING, INT, String, nocasecmp_to, STRING, "to", varray());
 	ADDFUNC0(STRING, INT, String, length, varray());
 	ADDFUNC2(STRING, STRING, String, substr, INT, "from", INT, "len", varray());
+	ADDFUNC2(STRING, STRING, String, get_slice, STRING, "delimiter", INT, "slice", varray());
 
 	ADDFUNC2(STRING, INT, String, find, STRING, "what", INT, "from", varray(0));
 
