@@ -1033,6 +1033,8 @@ void PhysicsServer3D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_process_info", "process_info"), &PhysicsServer3D::get_process_info);
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "active"), "set_active", "is_active");
+
 	BIND_ENUM_CONSTANT(SHAPE_WORLD_BOUNDARY);
 	BIND_ENUM_CONSTANT(SHAPE_SEPARATION_RAY);
 	BIND_ENUM_CONSTANT(SHAPE_SPHERE);
