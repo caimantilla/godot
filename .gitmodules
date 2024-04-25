@@ -1,0 +1,3 @@
+[submodule "modules/flow_script"]
+	path = modules/flow_script
+	url = https://github.com/caimantilla/godot-flow-script.git
