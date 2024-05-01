@@ -88,38 +88,38 @@
 		[codeblocks]
 		[gdscript]
 		enum Difficulty {
-			CASUAL = 0,
-			NORMAL = 1,
-			HARD = 2,
-			SAFETY = 3,
+		    CASUAL = 0,
+		    NORMAL = 1,
+		    HARD = 2,
+		    SAFETY = 3,
 		}
 
 		var player_difficulty = Difficulty.NORMAL
 
 		func create_config():
-			var config = ConfigFile.new()
-			config.set_value("game", "difficulty", player_difficulty)
-			config.set_section_key_comment("game", "difficulty", "0: Casual\n1: Normal\n2: Hard\n3: Safety")
+		    var config = ConfigFile.new()
+		    config.set_value("game", "difficulty", player_difficulty)
+		    config.set_section_key_comment("game", "difficulty", "0: Casual\n1: Normal\n2: Hard\n3: Safety")
 
-			config.save("user://game_config.ini")
+		    config.save("user://game_config.ini")
 		[/gdscript]
 		[csharp]
 		public enum Difficulty {
-			Casual = 0,
-			Normal = 1,
-			Hard = 2,
-			Safety = 3,
+		    Casual = 0,
+		    Normal = 1,
+		    Hard = 2,
+		    Safety = 3,
 		};
 
 		public var PlayerDifficulty = Difficulty.Normal;
 
 		public void CreateConfig()
 		{
-			var config = new ConfigFile();
-			config.SetValue("Game", "Difficulty", PlayerDifficulty);
-			config.SetSectionKeyComment("Game", "Difficulty", "0: Casual\n1: Normal\n2: Hard\n3: Safety");
+		    var config = new ConfigFile();
+		    config.SetValue("Game", "Difficulty", PlayerDifficulty);
+		    config.SetSectionKeyComment("Game", "Difficulty", "0: Casual\n1: Normal\n2: Hard\n3: Safety");
 
-			config.Save("user://GameConfig.ini");
+		    config.Save("user://GameConfig.ini");
 		}
 		[/csharp]
 		[/codeblocks]
