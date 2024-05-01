@@ -99,11 +99,7 @@ String ConfigFile::_get_entry_as_string(const String &p_key, const Entry &p_entr
 		if (!lines.is_empty()) {
 			for (int i = 0; i < lines.size(); i++) {
 				String line = lines[i].strip_edges(false, true); // no reason to keep the right edge i think?
-<<<<<<< HEAD
-				estr += (";\t" + line + "\n"); // it should be ok to always indent the comment, right?
-=======
 				estr += ("; " + line + "\n"); // it should be ok to always indent the comment, right? maybe make the auto-indentation a project setting...
->>>>>>> add-comment-method-to-config-file
 			}
 		}
 	}
