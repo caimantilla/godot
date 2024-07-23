@@ -1,0 +1,9 @@
+#ifndef REGISTER_MESSAGE_COMMAND_UTILITY_TYPES_H
+#define REGISTER_MESSAGE_COMMAND_UTILITY_TYPES_H
+
+#include "modules/register_module_types.h"
+
+void initialize_message_command_utility_module(ModuleInitializationLevel p_level);
+void uninitialize_message_command_utility_module(ModuleInitializationLevel p_level);
+
+#endif // REGISTER_MESSAGE_COMMAND_UTILITY_TYPES_H
