@@ -645,7 +645,7 @@ Size2 GraphNode::get_minimum_size() const {
 	return minsize;
 }
 
-void GraphNode::_port_pos_update() {
+void GraphNode::_port_pos_update() const {
 	int edgeofs = theme_cache.port_h_offset;
 	int separation = theme_cache.separation;
 
@@ -692,7 +692,7 @@ void GraphNode::_port_pos_update() {
 	port_pos_dirty = false;
 }
 
-int GraphNode::get_input_port_count() {
+int GraphNode::get_input_port_count() const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -700,7 +700,7 @@ int GraphNode::get_input_port_count() {
 	return left_port_cache.size();
 }
 
-int GraphNode::get_output_port_count() {
+int GraphNode::get_output_port_count() const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -708,7 +708,7 @@ int GraphNode::get_output_port_count() {
 	return right_port_cache.size();
 }
 
-Vector2 GraphNode::get_input_port_position(int p_port_idx) {
+Vector2 GraphNode::get_input_port_position(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -718,7 +718,7 @@ Vector2 GraphNode::get_input_port_position(int p_port_idx) {
 	return pos;
 }
 
-int GraphNode::get_input_port_type(int p_port_idx) {
+int GraphNode::get_input_port_type(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -727,7 +727,7 @@ int GraphNode::get_input_port_type(int p_port_idx) {
 	return left_port_cache[p_port_idx].type;
 }
 
-Color GraphNode::get_input_port_color(int p_port_idx) {
+Color GraphNode::get_input_port_color(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -736,7 +736,7 @@ Color GraphNode::get_input_port_color(int p_port_idx) {
 	return left_port_cache[p_port_idx].color;
 }
 
-int GraphNode::get_input_port_slot(int p_port_idx) {
+int GraphNode::get_input_port_slot(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -745,7 +745,7 @@ int GraphNode::get_input_port_slot(int p_port_idx) {
 	return left_port_cache[p_port_idx].slot_index;
 }
 
-Vector2 GraphNode::get_output_port_position(int p_port_idx) {
+Vector2 GraphNode::get_output_port_position(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -755,7 +755,7 @@ Vector2 GraphNode::get_output_port_position(int p_port_idx) {
 	return pos;
 }
 
-int GraphNode::get_output_port_type(int p_port_idx) {
+int GraphNode::get_output_port_type(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -764,7 +764,7 @@ int GraphNode::get_output_port_type(int p_port_idx) {
 	return right_port_cache[p_port_idx].type;
 }
 
-Color GraphNode::get_output_port_color(int p_port_idx) {
+Color GraphNode::get_output_port_color(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
@@ -773,7 +773,7 @@ Color GraphNode::get_output_port_color(int p_port_idx) {
 	return right_port_cache[p_port_idx].color;
 }
 
-int GraphNode::get_output_port_slot(int p_port_idx) {
+int GraphNode::get_output_port_slot(int p_port_idx) const {
 	if (port_pos_dirty) {
 		_port_pos_update();
 	}
