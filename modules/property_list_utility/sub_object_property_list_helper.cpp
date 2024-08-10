@@ -227,6 +227,14 @@ void SubObjectPropertyListHelper::instance_get_property_list(List<PropertyInfo> 
 		{
 			if (!is_property_info_valid(e_p_info))
 				continue;
+			// Configure nested property arrays, eg. "Emotions,emotion_" -> "Emotions,character_0/emotion_"
+			if (e_p_info.usage & PROPERTY_USAGE_ARRAY)
+			{
+				String og_cn = e_p_info.class_name; // cast to string once instead of twice :3
+				String left = og_cn.get_slicec(',', 0);
+				String right = og_cn.get_slicec(',', 1);
+				e_p_info.class_name = left + ',' + prefix + itos(i) + '/' + right;
+			}
 			e_p_info.name = (prefix + itos(i) + '/' + e_p_info.name);
 			p_list->push_back(e_p_info);
 		}
