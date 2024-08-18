@@ -440,6 +440,13 @@ void GraphNode::set_slot_enabled_left(int p_slot_index, bool p_enable) {
 	emit_signal(SNAME("slot_updated"), p_slot_index);
 }
 
+int GraphNode::get_slot_port_index_left(int p_slot_index) const {
+	if (!slot_table.has(p_slot_index)) {
+		return -1;
+	}
+	return slot_table[p_slot_index].port_index_left;
+}
+
 void GraphNode::set_slot_type_left(int p_slot_index, int p_type) {
 	ERR_FAIL_COND_MSG(!slot_table.has(p_slot_index), vformat("Cannot set type_left for the slot with index '%d' because it hasn't been enabled.", p_slot_index));
 
@@ -522,6 +529,14 @@ void GraphNode::set_slot_enabled_right(int p_slot_index, bool p_enable) {
 	port_pos_dirty = true;
 
 	emit_signal(SNAME("slot_updated"), p_slot_index);
+}
+
+int GraphNode::get_slot_port_index_right(int p_slot_index) const
+{
+	if (!slot_table.has(p_slot_index)) {
+		return -1;
+	}
+	return slot_table[p_slot_index].port_index_right;
 }
 
 void GraphNode::set_slot_type_right(int p_slot_index, int p_type) {
@@ -667,20 +682,28 @@ void GraphNode::_port_pos_update() const {
 
 		if (slot_table.has(slot_index)) {
 			if (slot_table[slot_index].enable_left) {
+				slot_table[slot_index].port_index_left = left_port_cache.size();
+
 				PortCache port_cache;
 				port_cache.pos = Point2i(edgeofs, vertical_ofs + size.height / 2);
 				port_cache.type = slot_table[slot_index].type_left;
 				port_cache.color = slot_table[slot_index].color_left;
 				port_cache.slot_index = slot_index;
 				left_port_cache.push_back(port_cache);
+			} else {
+				slot_table[slot_index].port_index_left = -1;
 			}
 			if (slot_table[slot_index].enable_right) {
+				slot_table[slot_index].port_index_right = right_port_cache.size();
+
 				PortCache port_cache;
 				port_cache.pos = Point2i(get_size().width - edgeofs, vertical_ofs + size.height / 2);
 				port_cache.type = slot_table[slot_index].type_right;
 				port_cache.color = slot_table[slot_index].color_right;
 				port_cache.slot_index = slot_index;
 				right_port_cache.push_back(port_cache);
+			} else {
+				slot_table[slot_index].port_index_right = -1;
 			}
 		}
 
@@ -843,6 +866,8 @@ void GraphNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_slot_enabled_left", "slot_index"), &GraphNode::is_slot_enabled_left);
 	ClassDB::bind_method(D_METHOD("set_slot_enabled_left", "slot_index", "enable"), &GraphNode::set_slot_enabled_left);
 
+	ClassDB::bind_method(D_METHOD("get_slot_port_index_left", "slot_index"), &GraphNode::get_slot_port_index_left);
+
 	ClassDB::bind_method(D_METHOD("set_slot_type_left", "slot_index", "type"), &GraphNode::set_slot_type_left);
 	ClassDB::bind_method(D_METHOD("get_slot_type_left", "slot_index"), &GraphNode::get_slot_type_left);
 
@@ -854,6 +879,8 @@ void GraphNode::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("is_slot_enabled_right", "slot_index"), &GraphNode::is_slot_enabled_right);
 	ClassDB::bind_method(D_METHOD("set_slot_enabled_right", "slot_index", "enable"), &GraphNode::set_slot_enabled_right);
+
+	ClassDB::bind_method(D_METHOD("get_slot_port_index_right", "slot_index"), &GraphNode::get_slot_port_index_right);
 
 	ClassDB::bind_method(D_METHOD("set_slot_type_right", "slot_index", "type"), &GraphNode::set_slot_type_right);
 	ClassDB::bind_method(D_METHOD("get_slot_type_right", "slot_index"), &GraphNode::get_slot_type_right);

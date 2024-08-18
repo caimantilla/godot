@@ -42,11 +42,13 @@ class GraphNode : public GraphElement {
 
 	struct Slot {
 		bool enable_left = false;
+		mutable int port_index_left = -1;
 		int type_left = 0;
 		Color color_left = Color(1, 1, 1, 1);
 		Ref<Texture2D> custom_port_icon_left;
 
 		bool enable_right = false;
+		mutable int port_index_right = -1;
 		int type_right = 0;
 		Color color_right = Color(1, 1, 1, 1);
 		Ref<Texture2D> custom_port_icon_right;
@@ -125,6 +127,8 @@ public:
 	bool is_slot_enabled_left(int p_slot_index) const;
 	void set_slot_enabled_left(int p_slot_index, bool p_enable);
 
+	int get_slot_port_index_left(int p_slot_index) const;
+
 	void set_slot_type_left(int p_slot_index, int p_type);
 	int get_slot_type_left(int p_slot_index) const;
 
@@ -136,6 +140,8 @@ public:
 
 	bool is_slot_enabled_right(int p_slot_index) const;
 	void set_slot_enabled_right(int p_slot_index, bool p_enable);
+
+	int get_slot_port_index_right(int p_slot_index) const;
 
 	void set_slot_type_right(int p_slot_index, int p_type);
 	int get_slot_type_right(int p_slot_index) const;
