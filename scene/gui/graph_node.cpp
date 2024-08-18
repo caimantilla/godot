@@ -444,6 +444,9 @@ int GraphNode::get_slot_port_index_left(int p_slot_index) const {
 	if (!slot_table.has(p_slot_index)) {
 		return -1;
 	}
+	if (port_pos_dirty) {
+		_port_pos_update();
+	}
 	return slot_table[p_slot_index].port_index_left;
 }
 
@@ -535,6 +538,9 @@ int GraphNode::get_slot_port_index_right(int p_slot_index) const
 {
 	if (!slot_table.has(p_slot_index)) {
 		return -1;
+	}
+	if (port_pos_dirty) {
+		_port_pos_update();
 	}
 	return slot_table[p_slot_index].port_index_right;
 }
