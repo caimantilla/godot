@@ -199,6 +199,8 @@ class VisualShaderEditor : public VBoxContainer {
 	GDCLASS(VisualShaderEditor, VBoxContainer);
 	friend class VisualShaderGraphPlugin;
 
+	int undo_redo_history_id;
+
 	PopupPanel *property_editor_popup = nullptr;
 	EditorProperty *property_editor = nullptr;
 	int editing_node = -1;
@@ -612,7 +614,10 @@ public:
 	void edit(VisualShader *p_visual_shader);
 	Ref<VisualShader> get_visual_shader() const { return visual_shader; }
 
+	int get_history_id() const { return undo_redo_history_id; }
+
 	VisualShaderEditor();
+	~VisualShaderEditor();
 };
 
 class VisualShaderNodePluginDefault : public VisualShaderNodePlugin {

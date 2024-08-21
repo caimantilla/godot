@@ -421,7 +421,7 @@ bool EditorData::is_scene_changed(int p_idx) {
 	}
 	ERR_FAIL_INDEX_V(p_idx, edited_scene.size(), false);
 
-	uint64_t current_scene_version = undo_redo_manager->get_or_create_history(edited_scene[p_idx].history_id).undo_redo->get_version();
+	uint64_t current_scene_version = undo_redo_manager->get_or_create_history(edited_scene[p_idx].history_id, EditorUndoRedoManager::CONTEXT_SCENE).undo_redo->get_version();
 	bool is_changed = edited_scene[p_idx].last_checked_version != current_scene_version;
 	edited_scene.write[p_idx].last_checked_version = current_scene_version;
 	return is_changed;
@@ -608,7 +608,7 @@ int EditorData::add_edited_scene(int p_at_pos) {
 	es.file_modified_time = 0;
 	es.history_current = -1;
 	es.live_edit_root = NodePath(String("/root"));
-	es.history_id = last_created_scene++;
+	es.history_id = EditorUndoRedoManager::get_singleton()->get_open_history_slot();
 
 	if (p_at_pos == edited_scene.size()) {
 		edited_scene.push_back(es);

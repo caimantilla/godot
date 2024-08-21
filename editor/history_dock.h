@@ -32,6 +32,7 @@
 #define HISTORY_DOCK_H
 
 #include "scene/gui/box_container.h"
+#include "scene/gui/check_box.h"
 
 class CheckBox;
 class ItemList;
@@ -40,11 +41,23 @@ class EditorUndoRedoManager;
 class HistoryDock : public VBoxContainer {
 	GDCLASS(HistoryDock, VBoxContainer);
 
+	class HistoryContextToggle : public CheckBox {
+		GDCLASS(HistoryContextToggle, CheckBox);
+
+	public:
+		String id;
+		int filter_bit;
+
+		HistoryContextToggle() {
+			set_flat(true);
+			set_clip_text(true);
+		}
+	};
+
 	EditorUndoRedoManager *ur_manager;
 	ItemList *action_list = nullptr;
 
-	CheckBox *current_scene_checkbox = nullptr;
-	CheckBox *global_history_checkbox = nullptr;
+	List<HistoryContextToggle *> history_context_filter_toggles;
 
 	bool need_refresh = true;
 	int current_version = 0;
@@ -54,6 +67,12 @@ class HistoryDock : public VBoxContainer {
 	void on_version_changed();
 	void refresh_version();
 	void save_options();
+
+	HistoryContextToggle *create_history_context_toggle(const String &p_id, const int p_filter_bit, const String &p_text, const String &p_tooltip_text);
+
+	const bool is_history_context_visible(const int p_context) const;
+	const bool is_any_history_visible() const;
+	const int get_history_context_filter() const;
 
 protected:
 	void _notification(int p_notification);

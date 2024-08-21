@@ -47,6 +47,14 @@ public:
 		INVALID_HISTORY = -99,
 	};
 
+	enum HistoryContext {
+		CONTEXT_NULL = 0,
+		CONTEXT_GLOBAL = 1,
+		CONTEXT_SCENE = 2,
+		CONTEXT_CUSTOM = 4,
+		CONTEXT_REMOTE = 8,
+	};
+
 	struct Action {
 		int history_id = INVALID_HISTORY;
 		double timestamp = 0;
@@ -57,6 +65,8 @@ public:
 
 	struct History {
 		int id = INVALID_HISTORY;
+		HistoryContext context = CONTEXT_GLOBAL;
+		bool active = false;
 		UndoRedo *undo_redo = nullptr;
 		uint64_t saved_version = 1;
 		List<Action> undo_stack;
@@ -69,16 +79,21 @@ private:
 
 	bool is_committing = false;
 
-	History *_get_newest_undo();
+	bool _does_history_pass_context_filter(const History &p_history, const int p_context_filter) const;
+	History *_get_newest_undo(int p_context_filter = -1);
+	void _free_history_memory(int p_idx);
 
 protected:
 	static void _bind_methods();
 
 public:
-	History &get_or_create_history(int p_idx);
+	int get_open_history_slot() const;
+	History &get_or_create_history(int p_idx, HistoryContext p_context);
 	UndoRedo *get_history_undo_redo(int p_idx) const;
 	int get_history_id_for_object(Object *p_object) const;
 	History &get_history_for_object(Object *p_object);
+	void get_history_list(List<const History *> *p_list) const;
+	void get_active_history_list(List<const History *> *p_list) const;
 
 	void create_action_for_history(const String &p_name, int p_history_id, UndoRedo::MergeMode p_mode = UndoRedo::MERGE_DISABLE, bool p_backward_undo_ops = false);
 	void create_action(const String &p_name = "", UndoRedo::MergeMode p_mode = UndoRedo::MERGE_DISABLE, Object *p_custom_context = nullptr, bool p_backward_undo_ops = false);
@@ -119,23 +134,26 @@ public:
 	void commit_action(bool p_execute = true);
 	bool is_committing_action() const;
 
-	bool undo();
+	bool undo(int p_context_filter = -1);
 	bool undo_history(int p_id);
-	bool redo();
+	bool redo(int p_context_filter = -1);
 	bool redo_history(int p_id);
 	void clear_history(bool p_increase_version = true, int p_idx = INVALID_HISTORY);
+
+	void set_history_active(int p_idx, bool p_enabled);
+	bool is_history_active(int p_idx) const;
 
 	void set_history_as_saved(int p_idx);
 	void set_history_as_unsaved(int p_idx);
 	bool is_history_unsaved(int p_idx);
-	bool has_undo();
-	bool has_redo();
+	bool has_undo(int p_context_filter = -1);
+	bool has_redo(int p_context_filter = -1);
 	bool has_history(int p_idx) const;
 
 	String get_current_action_name();
 	int get_current_action_history_id();
 
-	void discard_history(int p_idx, bool p_erase_from_map = true);
+	bool discard_history(int p_idx);
 
 	static EditorUndoRedoManager *get_singleton();
 	EditorUndoRedoManager();
@@ -143,5 +161,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(EditorUndoRedoManager::SpecialHistory);
+VARIANT_ENUM_CAST(EditorUndoRedoManager::HistoryContext);
 
 #endif // EDITOR_UNDO_REDO_MANAGER_H

@@ -41,15 +41,39 @@
 
 EditorUndoRedoManager *EditorUndoRedoManager::singleton = nullptr;
 
-EditorUndoRedoManager::History &EditorUndoRedoManager::get_or_create_history(int p_idx) {
+int EditorUndoRedoManager::get_open_history_slot() const {
+	for (int i = 1; i < std::numeric_limits<int>().max(); i++) {
+		if (!history_map.has(i)) {
+			return i;
+		}
+	}
+	return INVALID_HISTORY;
+}
+
+EditorUndoRedoManager::History &EditorUndoRedoManager::get_or_create_history(int p_idx, HistoryContext p_context) {
 	if (!history_map.has(p_idx)) {
+		// Ignore the input context for special cases
+		switch (p_idx) {
+			case GLOBAL_HISTORY:
+				p_context = CONTEXT_GLOBAL;
+				break;
+			case REMOTE_HISTORY:
+				p_context = CONTEXT_REMOTE;
+				break;
+			case INVALID_HISTORY:
+				p_context = CONTEXT_NULL;
+				break;
+		}
 		History history;
 		history.undo_redo = memnew(UndoRedo);
 		history.id = p_idx;
+		history.context = p_context;
+		history.active = p_context != CONTEXT_NULL;
 		history_map[p_idx] = history;
 
 		EditorNode::get_singleton()->get_log()->register_undo_redo(history.undo_redo);
 		EditorDebuggerNode::get_singleton()->register_undo_redo(history.undo_redo);
+		print_line(vformat("Created history %d with context %d", p_idx, p_context));
 	}
 	return history_map[p_idx];
 }
@@ -105,15 +129,29 @@ int EditorUndoRedoManager::get_history_id_for_object(Object *p_object) const {
 
 EditorUndoRedoManager::History &EditorUndoRedoManager::get_history_for_object(Object *p_object) {
 	int history_id = get_history_id_for_object(p_object);
-	ERR_FAIL_COND_V_MSG(pending_action.history_id != INVALID_HISTORY && history_id != pending_action.history_id, get_or_create_history(pending_action.history_id), vformat("UndoRedo history mismatch: expected %d, got %d.", pending_action.history_id, history_id));
+	ERR_FAIL_COND_V_MSG(pending_action.history_id != INVALID_HISTORY && history_id != pending_action.history_id, get_or_create_history(pending_action.history_id, CONTEXT_NULL), vformat("UndoRedo history mismatch: expected %d, got %d.", pending_action.history_id, history_id));
 
-	History &history = get_or_create_history(history_id);
+	History &history = get_or_create_history(history_id, CONTEXT_NULL);
 	if (pending_action.history_id == INVALID_HISTORY) {
 		pending_action.history_id = history_id;
 		history.undo_redo->create_action(pending_action.action_name, pending_action.merge_mode, pending_action.backward_undo_ops);
 	}
 
 	return history;
+}
+
+void EditorUndoRedoManager::get_history_list(List<const History *> *p_list) const {
+	for (const KeyValue<int, History> &E : history_map) {
+		p_list->push_back(&(E.value));
+	}
+}
+
+void EditorUndoRedoManager::get_active_history_list(List<const History *> *p_list) const {
+	for (const KeyValue<int, History> &E : history_map) {
+		if (E.value.active) {
+			p_list->push_back(&(E.value));
+		}
+	}
 }
 
 void EditorUndoRedoManager::create_action_for_history(const String &p_name, int p_history_id, UndoRedo::MergeMode p_mode, bool p_backward_undo_ops) {
@@ -129,7 +167,7 @@ void EditorUndoRedoManager::create_action_for_history(const String &p_name, int 
 
 	if (p_history_id != INVALID_HISTORY) {
 		pending_action.history_id = p_history_id;
-		History &history = get_or_create_history(p_history_id);
+		History &history = get_or_create_history(p_history_id, CONTEXT_NULL);
 		history.undo_redo->create_action(pending_action.action_name, pending_action.merge_mode, pending_action.backward_undo_ops);
 	}
 }
@@ -238,7 +276,7 @@ void EditorUndoRedoManager::commit_action(bool p_execute) {
 
 	is_committing = true;
 
-	History &history = get_or_create_history(pending_action.history_id);
+	History &history = get_or_create_history(pending_action.history_id, CONTEXT_NULL);
 	bool merging = history.undo_redo->is_merging();
 	history.undo_redo->commit_action(p_execute);
 	history.redo_stack.clear();
@@ -262,12 +300,12 @@ bool EditorUndoRedoManager::is_committing_action() const {
 	return is_committing;
 }
 
-bool EditorUndoRedoManager::undo() {
+bool EditorUndoRedoManager::undo(int p_context_filter) {
 	if (!has_undo()) {
 		return false;
 	}
 
-	History *selected_history = _get_newest_undo();
+	History *selected_history = _get_newest_undo(p_context_filter);
 	if (selected_history) {
 		return undo_history(selected_history->id);
 	}
@@ -276,7 +314,7 @@ bool EditorUndoRedoManager::undo() {
 
 bool EditorUndoRedoManager::undo_history(int p_id) {
 	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
-	History &history = get_or_create_history(p_id);
+	History &history = get_or_create_history(p_id, CONTEXT_NULL);
 
 	Action action = history.undo_stack.back()->get();
 	history.undo_stack.pop_back();
@@ -289,7 +327,7 @@ bool EditorUndoRedoManager::undo_history(int p_id) {
 	return success;
 }
 
-bool EditorUndoRedoManager::redo() {
+bool EditorUndoRedoManager::redo(int p_context_filter) {
 	if (!has_redo()) {
 		return false;
 	}
@@ -297,27 +335,11 @@ bool EditorUndoRedoManager::redo() {
 	int selected_history = INVALID_HISTORY;
 	double global_timestamp = INFINITY;
 
-	// Pick the history with lowest last action timestamp (either global or current scene).
-	{
-		History &history = get_or_create_history(GLOBAL_HISTORY);
-		if (!history.redo_stack.is_empty()) {
-			selected_history = history.id;
-			global_timestamp = history.redo_stack.back()->get().timestamp;
-		}
-	}
-
-	{
-		History &history = get_or_create_history(REMOTE_HISTORY);
-		if (!history.redo_stack.is_empty() && history.redo_stack.back()->get().timestamp < global_timestamp) {
-			selected_history = history.id;
-			global_timestamp = history.redo_stack.back()->get().timestamp;
-		}
-	}
-
-	{
-		History &history = get_or_create_history(EditorNode::get_editor_data().get_current_edited_scene_history_id());
-		if (!history.redo_stack.is_empty() && history.redo_stack.back()->get().timestamp < global_timestamp) {
-			selected_history = history.id;
+	// Pick the active history with lowest last action timestamp.
+	for (KeyValue<int, History> &E : history_map) {
+		if (_does_history_pass_context_filter(E.value, p_context_filter) && E.value.active && !E.value.redo_stack.is_empty() && E.value.redo_stack.back()->get().timestamp < global_timestamp) {
+			selected_history = E.key;
+			global_timestamp = E.value.redo_stack.back()->get().timestamp;
 		}
 	}
 
@@ -329,7 +351,7 @@ bool EditorUndoRedoManager::redo() {
 
 bool EditorUndoRedoManager::redo_history(int p_id) {
 	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
-	History &history = get_or_create_history(p_id);
+	History &history = get_or_create_history(p_id, CONTEXT_NULL);
 
 	Action action = history.redo_stack.back()->get();
 	history.redo_stack.pop_back();
@@ -342,33 +364,39 @@ bool EditorUndoRedoManager::redo_history(int p_id) {
 	return success;
 }
 
+void EditorUndoRedoManager::set_history_active(int p_idx, bool p_enabled) {
+	History &history = get_or_create_history(p_idx, CONTEXT_NULL);
+	history.active = false;
+	emit_signal(SNAME("history_changed"));
+}
+
 void EditorUndoRedoManager::set_history_as_saved(int p_id) {
-	History &history = get_or_create_history(p_id);
+	History &history = get_or_create_history(p_id, CONTEXT_NULL);
 	history.saved_version = history.undo_redo->get_version();
 }
 
 void EditorUndoRedoManager::set_history_as_unsaved(int p_id) {
-	History &history = get_or_create_history(p_id);
+	History &history = get_or_create_history(p_id, CONTEXT_NULL);
 	history.saved_version = -1;
 }
 
 bool EditorUndoRedoManager::is_history_unsaved(int p_id) {
-	History &history = get_or_create_history(p_id);
+	History &history = get_or_create_history(p_id, CONTEXT_NULL);
 	return history.undo_redo->get_version() != history.saved_version;
 }
 
-bool EditorUndoRedoManager::has_undo() {
+bool EditorUndoRedoManager::has_undo(int p_context_filter) {
 	for (const KeyValue<int, History> &E : history_map) {
-		if ((E.key == GLOBAL_HISTORY || E.key == REMOTE_HISTORY || E.key == EditorNode::get_editor_data().get_current_edited_scene_history_id()) && !E.value.undo_stack.is_empty()) {
+		if (_does_history_pass_context_filter(E.value, p_context_filter) && E.value.active && !E.value.undo_stack.is_empty()) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool EditorUndoRedoManager::has_redo() {
+bool EditorUndoRedoManager::has_redo(int p_context_filter) {
 	for (const KeyValue<int, History> &E : history_map) {
-		if ((E.key == GLOBAL_HISTORY || E.key == REMOTE_HISTORY || E.key == EditorNode::get_editor_data().get_current_edited_scene_history_id()) && !E.value.redo_stack.is_empty()) {
+		if (_does_history_pass_context_filter(E.value, p_context_filter) && E.value.active && !E.value.redo_stack.is_empty()) {
 			return true;
 		}
 	}
@@ -381,7 +409,7 @@ bool EditorUndoRedoManager::has_history(int p_idx) const {
 
 void EditorUndoRedoManager::clear_history(bool p_increase_version, int p_idx) {
 	if (p_idx != INVALID_HISTORY) {
-		History &history = get_or_create_history(p_idx);
+		History &history = get_or_create_history(p_idx, CONTEXT_NULL);
 		history.undo_redo->clear_history(p_increase_version);
 		history.undo_stack.clear();
 		history.redo_stack.clear();
@@ -420,49 +448,38 @@ int EditorUndoRedoManager::get_current_action_history_id() {
 	return INVALID_HISTORY;
 }
 
-void EditorUndoRedoManager::discard_history(int p_idx, bool p_erase_from_map) {
-	ERR_FAIL_COND(!history_map.has(p_idx));
-	History &history = history_map[p_idx];
+bool EditorUndoRedoManager::discard_history(int p_idx) {
+	ERR_FAIL_COND_V_MSG(p_idx < 1, false, vformat(TTR("%d is too low; histories with an ID below 1 cannot be discarded."), p_idx));
+	ERR_FAIL_COND_V_MSG(!history_map.has(p_idx), false, vformat(TTR("Failed to discard nonexistent history: %d"), p_idx));
 
-	if (history.undo_redo) {
-		memdelete(history.undo_redo);
-		history.undo_redo = nullptr;
-	}
-
-	if (p_erase_from_map) {
-		history_map.erase(p_idx);
-	}
+	_free_history_memory(p_idx);
+	history_map.erase(p_idx);
+	return true;
 }
 
-EditorUndoRedoManager::History *EditorUndoRedoManager::_get_newest_undo() {
+bool EditorUndoRedoManager::_does_history_pass_context_filter(const History &p_history, const int p_context_filter) const {
+	return p_context_filter == -1 || p_history.context & p_context_filter;
+}
+
+EditorUndoRedoManager::History *EditorUndoRedoManager::_get_newest_undo(int p_context_filter) {
 	History *selected_history = nullptr;
 	double global_timestamp = 0;
 
-	// Pick the history with greatest last action timestamp (either global or current scene).
-	{
-		History &history = get_or_create_history(GLOBAL_HISTORY);
-		if (!history.undo_stack.is_empty()) {
-			selected_history = &history;
-			global_timestamp = history.undo_stack.back()->get().timestamp;
-		}
-	}
-
-	{
-		History &history = get_or_create_history(REMOTE_HISTORY);
-		if (!history.undo_stack.is_empty() && history.undo_stack.back()->get().timestamp > global_timestamp) {
-			selected_history = &history;
-			global_timestamp = history.undo_stack.back()->get().timestamp;
-		}
-	}
-
-	{
-		History &history = get_or_create_history(EditorNode::get_editor_data().get_current_edited_scene_history_id());
-		if (!history.undo_stack.is_empty() && history.undo_stack.back()->get().timestamp > global_timestamp) {
-			selected_history = &history;
+	// Pick the active history with greatest last action timestamp.
+	for (KeyValue<int, History> &E : history_map) {
+		if (_does_history_pass_context_filter(E.value, p_context_filter) && E.value.active && E.value.undo_stack.back()->get().timestamp > global_timestamp) {
+			selected_history = &(E.value);
+			global_timestamp = E.value.undo_stack.back()->get().timestamp;
 		}
 	}
 
 	return selected_history;
+}
+
+void EditorUndoRedoManager::_free_history_memory(int p_idx) {
+	DEV_ASSERT(history_map.has(p_idx));
+	History &history = history_map[p_idx];
+	memdelete(history.undo_redo);
 }
 
 void EditorUndoRedoManager::_bind_methods() {
@@ -502,6 +519,11 @@ void EditorUndoRedoManager::_bind_methods() {
 	BIND_ENUM_CONSTANT(GLOBAL_HISTORY);
 	BIND_ENUM_CONSTANT(REMOTE_HISTORY);
 	BIND_ENUM_CONSTANT(INVALID_HISTORY);
+
+	BIND_ENUM_CONSTANT(CONTEXT_NULL);
+	BIND_ENUM_CONSTANT(CONTEXT_GLOBAL);
+	BIND_ENUM_CONSTANT(CONTEXT_SCENE);
+	BIND_ENUM_CONSTANT(CONTEXT_CUSTOM);
 }
 
 EditorUndoRedoManager *EditorUndoRedoManager::get_singleton() {
@@ -516,6 +538,6 @@ EditorUndoRedoManager::EditorUndoRedoManager() {
 
 EditorUndoRedoManager::~EditorUndoRedoManager() {
 	for (const KeyValue<int, History> &E : history_map) {
-		discard_history(E.key, false);
+		_free_history_memory(E.key);
 	}
 }

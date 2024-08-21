@@ -34,7 +34,6 @@
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
-#include "scene/gui/check_box.h"
 #include "scene/gui/item_list.h"
 
 struct SortActionsByTimestamp {
@@ -53,48 +52,36 @@ void HistoryDock::on_history_changed() {
 
 void HistoryDock::refresh_history() {
 	action_list->clear();
-	bool include_scene = current_scene_checkbox->is_pressed();
-	bool include_global = global_history_checkbox->is_pressed();
 
-	if (!include_scene && !include_global) {
+	if (!is_any_history_visible()) {
 		action_list->add_item(TTR("The Beginning"));
 		return;
 	}
 
-	const EditorUndoRedoManager::History &current_scene_history = ur_manager->get_or_create_history(EditorNode::get_editor_data().get_current_edited_scene_history_id());
-	const EditorUndoRedoManager::History &global_history = ur_manager->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY);
+	List<const EditorUndoRedoManager::History *> active_histories;
+	ur_manager->get_active_history_list(&active_histories);
 
 	Vector<EditorUndoRedoManager::Action> full_history;
-	{
-		int full_size = 0;
-		if (include_scene) {
-			full_size += current_scene_history.redo_stack.size() + current_scene_history.undo_stack.size();
+
+	int full_size = 0;
+	for (const EditorUndoRedoManager::History *history : active_histories) {
+		if (is_history_context_visible(history->context)) {
+			full_size += history->redo_stack.size() + history->undo_stack.size();
 		}
-		if (include_global) {
-			full_size += global_history.redo_stack.size() + global_history.undo_stack.size();
-		}
-		full_history.resize(full_size);
 	}
+	full_history.resize(full_size);
 
 	int i = 0;
-	if (include_scene) {
-		for (const EditorUndoRedoManager::Action &E : current_scene_history.redo_stack) {
-			full_history.write[i] = E;
-			i++;
-		}
-		for (const EditorUndoRedoManager::Action &E : current_scene_history.undo_stack) {
-			full_history.write[i] = E;
-			i++;
-		}
-	}
-	if (include_global) {
-		for (const EditorUndoRedoManager::Action &E : global_history.redo_stack) {
-			full_history.write[i] = E;
-			i++;
-		}
-		for (const EditorUndoRedoManager::Action &E : global_history.undo_stack) {
-			full_history.write[i] = E;
-			i++;
+	for (const EditorUndoRedoManager::History *history : active_histories) {
+		if (is_history_context_visible(history->context)) {
+			for (const EditorUndoRedoManager::Action &action : history->redo_stack) {
+				full_history.write[i] = action;
+				i++;
+			}
+			for (const EditorUndoRedoManager::Action &action : history->undo_stack) {
+				full_history.write[i] = action;
+				i++;
+			}
 		}
 	}
 
@@ -120,52 +107,38 @@ void HistoryDock::on_version_changed() {
 
 void HistoryDock::refresh_version() {
 	int idx = 0;
-	bool include_scene = current_scene_checkbox->is_pressed();
-	bool include_global = global_history_checkbox->is_pressed();
 
-	if (!include_scene && !include_global) {
+	if (!is_any_history_visible()) {
 		current_version = idx;
 		action_list->set_current(idx);
 		return;
 	}
 
-	const EditorUndoRedoManager::History &current_scene_history = ur_manager->get_or_create_history(EditorNode::get_editor_data().get_current_edited_scene_history_id());
-	const EditorUndoRedoManager::History &global_history = ur_manager->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY);
+	List<const EditorUndoRedoManager::History *> active_histories;
+	ur_manager->get_active_history_list(&active_histories);
+
 	double newest_undo_timestamp = 0;
 
-	if (include_scene && !current_scene_history.undo_stack.is_empty()) {
-		newest_undo_timestamp = current_scene_history.undo_stack.front()->get().timestamp;
-	}
-
-	if (include_global && !global_history.undo_stack.is_empty()) {
-		double global_undo_timestamp = global_history.undo_stack.front()->get().timestamp;
-		if (global_undo_timestamp > newest_undo_timestamp) {
-			newest_undo_timestamp = global_undo_timestamp;
+	for (const EditorUndoRedoManager::History *history : active_histories) {
+		if (history->undo_stack.is_empty() || !is_history_context_visible(history->context)) {
+			continue;
 		}
+		newest_undo_timestamp = MAX(newest_undo_timestamp, history->undo_stack.front()->get().timestamp);
 	}
 
-	if (include_scene) {
+	for (const EditorUndoRedoManager::History *history : active_histories) {
+		if (!is_history_context_visible(history->context)) {
+			continue;
+		}
 		int skip = 0;
-		for (const EditorUndoRedoManager::Action &E : current_scene_history.redo_stack) {
-			if (E.timestamp < newest_undo_timestamp) {
+		for (const EditorUndoRedoManager::Action &action : history->redo_stack) {
+			if (action.timestamp < newest_undo_timestamp) {
 				skip++;
 			} else {
 				break;
 			}
 		}
-		idx += current_scene_history.redo_stack.size() - skip;
-	}
-
-	if (include_global) {
-		int skip = 0;
-		for (const EditorUndoRedoManager::Action &E : global_history.redo_stack) {
-			if (E.timestamp < newest_undo_timestamp) {
-				skip++;
-			} else {
-				break;
-			}
-		}
-		idx += global_history.redo_stack.size() - skip;
+		idx += history->redo_stack.size() - skip;
 	}
 
 	current_version = idx;
@@ -173,37 +146,29 @@ void HistoryDock::refresh_version() {
 }
 
 void HistoryDock::seek_history(int p_index) {
-	bool include_scene = current_scene_checkbox->is_pressed();
-	bool include_global = global_history_checkbox->is_pressed();
-
-	if (!include_scene && !include_global) {
+	if (!is_any_history_visible()) {
 		return;
 	}
-	int current_scene_id = EditorNode::get_editor_data().get_current_edited_scene_history_id();
+
+	int context_filter = get_history_context_filter();
 
 	while (current_version < p_index) {
-		if (include_scene) {
-			if (include_global) {
-				ur_manager->undo();
-			} else {
-				ur_manager->undo_history(current_scene_id);
-			}
-		} else {
-			ur_manager->undo_history(EditorUndoRedoManager::GLOBAL_HISTORY);
+		if (!ur_manager->undo(context_filter)) {
+			ERR_PRINT(TTR("Failed to execute all undo operations. Clearing history."));
+			ur_manager->clear_history();
+			break;
 		}
 	}
 
 	while (current_version > p_index) {
-		if (include_scene) {
-			if (include_global) {
-				ur_manager->redo();
-			} else {
-				ur_manager->redo_history(current_scene_id);
-			}
-		} else {
-			ur_manager->redo_history(EditorUndoRedoManager::GLOBAL_HISTORY);
+		if (!ur_manager->redo(context_filter)) {
+			ERR_PRINT(TTR("Failed to execute all redo operations. Clearing history."));
+			ur_manager->clear_history();
+			break;
 		}
 	}
+
+	action_list->select(current_version);
 }
 
 void HistoryDock::_notification(int p_notification) {
@@ -221,8 +186,54 @@ void HistoryDock::_notification(int p_notification) {
 }
 
 void HistoryDock::save_options() {
-	EditorSettings::get_singleton()->set_project_metadata("history", "include_scene", current_scene_checkbox->is_pressed());
-	EditorSettings::get_singleton()->set_project_metadata("history", "include_global", global_history_checkbox->is_pressed());
+	for (const HistoryContextToggle *toggle : history_context_filter_toggles) {
+		EditorSettings::get_singleton()->set_project_metadata("history", vformat("include_%s", toggle->id), toggle->is_pressed());
+	}
+}
+
+HistoryDock::HistoryContextToggle *HistoryDock::create_history_context_toggle(const String &p_id, const int p_filter_bit, const String &p_text, const String &p_tooltip_text) {
+	bool init_pressed = EditorSettings::get_singleton()->get_project_metadata("history", vformat("include_%s", p_id), true);
+
+	HistoryContextToggle *toggle = memnew(HistoryContextToggle);
+	toggle->id = p_id;
+	toggle->filter_bit = p_filter_bit;
+	toggle->set_pressed(init_pressed);
+	toggle->set_text(p_text);
+	toggle->set_tooltip_text(p_tooltip_text);
+	toggle->set_h_size_flags(SIZE_EXPAND_FILL);
+	toggle->connect("toggled", callable_mp(this, &HistoryDock::refresh_history).unbind(1));
+	toggle->connect("toggled", callable_mp(this, &HistoryDock::save_options).unbind(1));
+
+	history_context_filter_toggles.push_back(toggle);
+	return toggle;
+}
+
+const bool HistoryDock::is_history_context_visible(const int p_context) const {
+	for (const HistoryContextToggle *toggle : history_context_filter_toggles) {
+		if (toggle->filter_bit == p_context && toggle->is_pressed()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const bool HistoryDock::is_any_history_visible() const {
+	for (const HistoryContextToggle *toggle : history_context_filter_toggles) {
+		if (toggle->is_pressed()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const int HistoryDock::get_history_context_filter() const {
+	int bits = 0;
+	for (const HistoryContextToggle *toggle : history_context_filter_toggles) {
+		if (toggle->is_pressed()) {
+			bits |= toggle->filter_bit;
+		}
+	}
+	return bits;
 }
 
 HistoryDock::HistoryDock() {
@@ -232,31 +243,12 @@ HistoryDock::HistoryDock() {
 	ur_manager->connect("history_changed", callable_mp(this, &HistoryDock::on_history_changed));
 	ur_manager->connect("version_changed", callable_mp(this, &HistoryDock::on_version_changed));
 
-	HBoxContainer *mode_hb = memnew(HBoxContainer);
-	add_child(mode_hb);
+	HBoxContainer *context_filter_hbox = memnew(HBoxContainer);
+	add_child(context_filter_hbox);
 
-	bool include_scene = EditorSettings::get_singleton()->get_project_metadata("history", "include_scene", true);
-	bool include_global = EditorSettings::get_singleton()->get_project_metadata("history", "include_global", true);
-
-	current_scene_checkbox = memnew(CheckBox);
-	mode_hb->add_child(current_scene_checkbox);
-	current_scene_checkbox->set_flat(true);
-	current_scene_checkbox->set_pressed(include_scene);
-	current_scene_checkbox->set_text(TTR("Scene"));
-	current_scene_checkbox->set_h_size_flags(SIZE_EXPAND_FILL);
-	current_scene_checkbox->set_clip_text(true);
-	current_scene_checkbox->connect("toggled", callable_mp(this, &HistoryDock::refresh_history).unbind(1));
-	current_scene_checkbox->connect("toggled", callable_mp(this, &HistoryDock::save_options).unbind(1));
-
-	global_history_checkbox = memnew(CheckBox);
-	mode_hb->add_child(global_history_checkbox);
-	global_history_checkbox->set_flat(true);
-	global_history_checkbox->set_pressed(include_global);
-	global_history_checkbox->set_text(TTR("Global"));
-	global_history_checkbox->set_h_size_flags(SIZE_EXPAND_FILL);
-	global_history_checkbox->set_clip_text(true);
-	global_history_checkbox->connect("toggled", callable_mp(this, &HistoryDock::refresh_history).unbind(1));
-	global_history_checkbox->connect("toggled", callable_mp(this, &HistoryDock::save_options).unbind(1));
+	context_filter_hbox->add_child(create_history_context_toggle("global", EditorUndoRedoManager::CONTEXT_GLOBAL, TTR("Global"), TTR("Toggle visibility of the global history.")));
+	context_filter_hbox->add_child(create_history_context_toggle("scene", EditorUndoRedoManager::CONTEXT_SCENE, TTR("Scene"), TTR("Toggle visibility of the scene edit history.")));
+	context_filter_hbox->add_child(create_history_context_toggle("custom", EditorUndoRedoManager::CONTEXT_CUSTOM, TTR("Custom"), TTR("Toggles visibility of the history of custom editors.")));
 
 	action_list = memnew(ItemList);
 	action_list->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);

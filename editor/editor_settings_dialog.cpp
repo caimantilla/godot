@@ -139,9 +139,9 @@ void EditorSettingsDialog::_notification(int p_what) {
 
 		case NOTIFICATION_READY: {
 			EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
-			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY).undo_redo->set_method_notify_callback(EditorDebuggerNode::_method_changeds, nullptr);
-			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY).undo_redo->set_property_notify_callback(EditorDebuggerNode::_property_changeds, nullptr);
-			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY).undo_redo->set_commit_notify_callback(_undo_redo_callback, this);
+			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY, EditorUndoRedoManager::CONTEXT_GLOBAL).undo_redo->set_method_notify_callback(EditorDebuggerNode::_method_changeds, nullptr);
+			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY, EditorUndoRedoManager::CONTEXT_GLOBAL).undo_redo->set_property_notify_callback(EditorDebuggerNode::_property_changeds, nullptr);
+			undo_redo->get_or_create_history(EditorUndoRedoManager::GLOBAL_HISTORY, EditorUndoRedoManager::CONTEXT_GLOBAL).undo_redo->set_commit_notify_callback(_undo_redo_callback, this);
 		} break;
 
 		case NOTIFICATION_ENTER_TREE: {

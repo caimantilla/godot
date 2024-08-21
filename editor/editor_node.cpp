@@ -3802,6 +3802,7 @@ void EditorNode::_set_main_scene_state(Dictionary p_state, Node *p_for_scene) {
 
 	EditorDebuggerNode::get_singleton()->update_live_edit_root();
 	ScriptEditor::get_singleton()->set_scene_root_script(editor_data.get_scene_root_script(editor_data.get_edited_scene()));
+	EditorUndoRedoManager::get_singleton()->set_history_active(editor_data.get_current_edited_scene_history_id(), true);
 	editor_data.notify_edited_scene_changed();
 	emit_signal(SNAME("scene_changed"));
 
@@ -3822,6 +3823,8 @@ void EditorNode::_set_current_scene(int p_idx) {
 }
 
 void EditorNode::_set_current_scene_nocheck(int p_idx) {
+	EditorUndoRedoManager::get_singleton()->set_history_active(editor_data.get_current_edited_scene_history_id(), false);
+
 	// Save the folding in case the scene gets reloaded.
 	if (editor_data.get_scene_path(p_idx) != "" && editor_data.get_edited_scene_root(p_idx)) {
 		editor_folding.save_scene_folding(editor_data.get_edited_scene_root(p_idx), editor_data.get_scene_path(p_idx));
