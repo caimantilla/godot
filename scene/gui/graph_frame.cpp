@@ -192,7 +192,7 @@ void GraphFrame::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "title"), "set_title", "get_title");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autoshrink_enabled"), "set_autoshrink_enabled", "is_autoshrink_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "autoshrink_margin", PROPERTY_HINT_RANGE, "0,128,1"), "set_autoshrink_margin", "get_autoshrink_margin");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "drag_margin", PROPERTY_HINT_RANGE, "0,128,1"), "set_drag_margin", "get_drag_margin");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "drag_margin", PROPERTY_HINT_RANGE, "-1,128,1"), "set_drag_margin", "get_drag_margin");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "tint_color_enabled"), "set_tint_color_enabled", "is_tint_color_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "tint_color"), "set_tint_color", "get_tint_color");
@@ -305,7 +305,10 @@ bool GraphFrame::has_point(const Point2 &p_point) const {
 
 	// Allow grabbing on all sides of the frame.
 	Rect2 frame_rect = Rect2(0, 0, get_size().width, get_size().height);
-	Rect2 no_drag_rect = frame_rect.grow(-drag_margin);
+	Rect2 no_drag_rect;
+	if (drag_margin > -1) {
+		no_drag_rect = frame_rect.grow(-MIN(drag_margin, MIN(frame_rect.size.x, frame_rect.size.y)));
+	}
 
 	if (frame_rect.has_point(p_point) && !no_drag_rect.has_point(p_point)) {
 		return true;
