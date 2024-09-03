@@ -77,6 +77,8 @@ private:
 		float style_margin_top = 0;
 		float style_margin_bottom = 0;
 
+		bool align_to_largest_stylebox = false;
+
 		Color font_color;
 		Color font_focus_color;
 		Color font_pressed_color;
