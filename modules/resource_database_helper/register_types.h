@@ -1,0 +1,12 @@
+#ifndef REGISTER_RESOURCE_DATABASE_HELPER_TYPES_H
+#define REGISTER_RESOURCE_DATABASE_HELPER_TYPES_H
+
+
+#include "modules/register_module_types.h"
+
+
+void initialize_resource_database_helper_module(ModuleInitializationLevel p_level);
+void uninitialize_resource_database_helper_module(ModuleInitializationLevel p_level);
+
+
+#endif // REGISTER_RESOURCE_DATABASE_HELPER_TYPES_H
