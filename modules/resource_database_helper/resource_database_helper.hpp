@@ -15,9 +15,9 @@ class ResourceDatabaseHelper : public Object
 	static ResourceDatabaseHelper *singleton;
 
 private:
-	void recursive_step_process_folder(const Ref<DirAccess> &p_dir, const String &p_current_folder, List<String> *p_subfolder_list, List<Ref<Resource>> *r_resources) const;
+	void recursive_step_process_folder(const Ref<DirAccess> &p_dir, const String &p_current_folder, List<String> *p_subfolder_list, const String &p_native_type_constraint, List<Ref<Resource>> *r_resources) const;
 
-	TypedArray<Resource> bind_get_resources_in_folders_recursive(const PackedStringArray &p_folders) const;
+	TypedArray<Resource> bind_get_resources_in_folders_recursive(const PackedStringArray &p_folders, const String &p_native_type_constraint) const;
 
 protected:
 	static void _bind_methods();
@@ -25,7 +25,7 @@ protected:
 public:
 	static ResourceDatabaseHelper *get_singleton();
 
-	void get_resources_in_folders_recursive(const PackedStringArray *p_folders, List<Ref<Resource>> *r_resources) const;
+	void get_resources_in_folders_recursive(const PackedStringArray *p_folders, const String &p_native_type_constraint, List<Ref<Resource>> *r_resources) const;
 
 	ResourceDatabaseHelper();
 	~ResourceDatabaseHelper();

@@ -9,10 +9,9 @@ void initialize_resource_database_helper_module(ModuleInitializationLevel p_leve
 	{
 		memnew(ResourceDatabaseHelper);
 	}
-	else if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
 	{
 		GDREGISTER_ABSTRACT_CLASS(ResourceDatabaseHelper);
-
 		Engine::get_singleton()->add_singleton(Engine::Singleton("ResourceDatabaseHelper", ResourceDatabaseHelper::get_singleton(), "ResourceDatabaseHelper"));
 	}
 }

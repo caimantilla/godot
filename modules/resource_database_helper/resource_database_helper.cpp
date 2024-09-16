@@ -13,11 +13,11 @@ ResourceDatabaseHelper *ResourceDatabaseHelper::get_singleton()
 
 void ResourceDatabaseHelper::_bind_methods()
 {
-	ClassDB::bind_method(D_METHOD("get_resources_in_folders_recursive", "folders"), &ResourceDatabaseHelper::bind_get_resources_in_folders_recursive);
+	ClassDB::bind_method(D_METHOD("get_resources_in_folders_recursive", "folders", "type_hint"), &ResourceDatabaseHelper::bind_get_resources_in_folders_recursive, DEFVAL(String()));
 }
 
 
-void ResourceDatabaseHelper::get_resources_in_folders_recursive(const PackedStringArray *p_folders, List<Ref<Resource>> *r_resources) const
+void ResourceDatabaseHelper::get_resources_in_folders_recursive(const PackedStringArray *p_folders, const String &p_native_type_constraint, List<Ref<Resource>> *r_resources) const
 {
 	List<String> scannable_folders;
 
@@ -47,11 +47,8 @@ void ResourceDatabaseHelper::get_resources_in_folders_recursive(const PackedStri
 			continue;
 		}
 
-		dir->set_include_hidden(false);
-		dir->set_include_navigational(false);
-
 		List<String> subfolder_queue;
-		recursive_step_process_folder(dir, curr_root_path, &subfolder_queue, r_resources);
+		recursive_step_process_folder(dir, curr_root_path, &subfolder_queue, p_native_type_constraint, r_resources);
 
 		for (List<String>::Element *E = subfolder_queue.front(); E; E = E->next())
 		{
@@ -60,13 +57,13 @@ void ResourceDatabaseHelper::get_resources_in_folders_recursive(const PackedStri
 			{
 				continue;
 			}
-			recursive_step_process_folder(dir, subfolder, &subfolder_queue, r_resources);
+			recursive_step_process_folder(dir, subfolder, &subfolder_queue, p_native_type_constraint, r_resources);
 		}
 	}
 }
 
 
-void ResourceDatabaseHelper::recursive_step_process_folder(const Ref<DirAccess> &p_dir, const String &p_current_folder, List<String> *p_subfolder_list, List<Ref<Resource>> *r_resources) const
+void ResourceDatabaseHelper::recursive_step_process_folder(const Ref<DirAccess> &p_dir, const String &p_current_folder, List<String> *p_subfolder_list, const String &p_native_type_constraint, List<Ref<Resource>> *r_resources) const
 {
 	if (p_dir->list_dir_begin() != OK)
 	{
@@ -75,31 +72,37 @@ void ResourceDatabaseHelper::recursive_step_process_folder(const Ref<DirAccess> 
 	String curr_name = p_dir->get_next();
 	while (!curr_name.is_empty())
 	{
-		const String curr_path = p_current_folder.path_join(curr_name);
-		if (p_dir->current_is_dir())
+		// include_navigational and include_hidden don't seem to affect get_next(), so skip any names that begin with a period.
+		if (curr_name[0] != '.')
 		{
-			p_subfolder_list->push_back(curr_path);
-		}
-		else
-		{
-			if (ResourceLoader::exists(curr_path))
+			const String curr_path = p_current_folder.path_join(curr_name);
+			if (p_dir->current_is_dir())
 			{
-				Ref<Resource> res = ResourceLoader::load(curr_path);
-				if (res.is_valid())
+				print_line(curr_path);
+				p_subfolder_list->push_back(curr_path);
+			}
+			else
+			{
+				if (ResourceLoader::exists(curr_path, p_native_type_constraint))
 				{
-					r_resources->push_back(res);
+					Ref<Resource> res = ResourceLoader::load(curr_path, p_native_type_constraint);
+					if (res.is_valid())
+					{
+						r_resources->push_back(res);
+					}
 				}
 			}
 		}
+		curr_name = p_dir->get_next();
 	}
 	p_dir->list_dir_end();
 }
 
 
-TypedArray<Resource> ResourceDatabaseHelper::bind_get_resources_in_folders_recursive(const PackedStringArray &p_folders) const
+TypedArray<Resource> ResourceDatabaseHelper::bind_get_resources_in_folders_recursive(const PackedStringArray &p_folders, const String &p_native_type_constraint) const
 {
 	List<Ref<Resource>> resource_list;
-	get_resources_in_folders_recursive(&p_folders, &resource_list);
+	get_resources_in_folders_recursive(&p_folders, p_native_type_constraint, &resource_list);
 
 	TypedArray<Resource> resource_array;
 	resource_array.resize(resource_list.size());
