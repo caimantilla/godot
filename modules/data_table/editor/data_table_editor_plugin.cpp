@@ -1,7 +1,6 @@
 #include "data_table_editor_plugin.hpp"
 #include "../data_table_manager.hpp"
 #include "scene/scene_string_names.h"
-#include "scene/gui/box_container.h"
 #include "editor/editor_string_names.h"
 
 
@@ -15,6 +14,18 @@ void DataTableEditorPlugin::RecordSelectorProperty::_notification(int p_what)
 		case NOTIFICATION_THEME_CHANGED: {
 			Ref<Texture2D> ico_clr = get_theme_icon(SNAME("Clear"), EditorStringName(EditorIcons));
 			btn_clr->set_icon(ico_clr);
+
+			Ref<Font> font = btn_sel->get_theme_font(SNAME("font"));
+			if (font.is_valid())
+			{
+				int font_size = btn_sel->get_theme_font_size(SNAME("font_size"));
+				font_size = font->get_height(font_size);
+				btn_sel->add_theme_constant_override(SNAME("icon_max_width"), font_size);
+			}
+			else
+			{
+				btn_sel->remove_theme_constant_override(SNAME("icon_max_width"));
+			}
 		} break;
 	}
 }
@@ -209,16 +220,17 @@ void DataTableEditorPlugin::RecordSelectorProperty::prompt_record_selection()
 		return;
 	}
 
-	Point2i target_pos = btn_sel->get_screen_position();
-	target_pos.y += btn_sel->get_size().y;
-
 	popup->set_current_screen(btn_sel->get_window()->get_current_screen());
-	popup->set_position(target_pos);
 	popup->reset_size();
 
-	Point2i target_size = popup->get_size();
-	target_size.x = MAX(target_size.x, btn_sel->get_size().x);
-	popup->set_size(target_size);
+	Point2 target_size = popup->get_size();
+	target_size.x = MAX(target_size.x, hbox->get_size().x);
+	popup->set_size(target_size.ceil());
+
+	Point2 target_pos = hbox->get_screen_position();
+	target_pos += hbox->get_size();
+	target_pos.x -= popup->get_size().x;
+	popup->set_position(target_pos.ceil());
 
 	popup->popup();
 }
@@ -264,18 +276,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::update_button_state()
 			display_name = curr_selected_id;
 		}
 		btn_sel->set_text(display_name);
-	}
-
-	Ref<Font> font = btn_sel->get_theme_font(SNAME("font"));
-	if (font.is_valid())
-	{
-		int font_size = btn_sel->get_theme_font_size(SNAME("font_size"));
-		font_size = font->get_height(font_size);
-		btn_sel->add_theme_constant_override(SNAME("icon_max_width"), font_size);
-	}
-	else
-	{
-		btn_sel->remove_theme_constant_override(SNAME("icon_max_width"));
+		btn_sel->set_tooltip_text(curr_selected_id);
 	}
 
 	btn_sel->set_icon(table->editor_get_record_icon(curr_selected_id));
@@ -353,22 +354,22 @@ DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(DataTable 
 
 	category_constraint = p_category_constraint;
 
-	HBoxContainer *hbox = memnew(HBoxContainer);
+	hbox = memnew(HBoxContainer);
 	hbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	add_child(hbox);
-	add_focusable(hbox);
 
 	btn_sel = memnew(Button);
 	btn_sel->set_auto_translate_mode(Node::AUTO_TRANSLATE_MODE_DISABLED);
 	btn_sel->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	btn_sel->set_expand_icon(true);
 	btn_sel->connect(SceneStringName(pressed), callable_mp(this, &RecordSelectorProperty::prompt_record_selection));
 	hbox->add_child(btn_sel);
+	add_focusable(btn_sel);
 
 	btn_clr = memnew(Button);
 	btn_clr->set_tooltip_text(TTR("Nullify the current selection."));
 	btn_clr->connect(SceneStringName(pressed), callable_mp(this, &RecordSelectorProperty::clear_record_selection));
 	hbox->add_child(btn_clr);
+	add_focusable(btn_clr);
 
 	popup = memnew(PopupPanel);
 	popup->set_wrap_controls(true);

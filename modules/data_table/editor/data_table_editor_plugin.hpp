@@ -4,6 +4,7 @@
 
 #include "../data_table.hpp"
 #include "scene/gui/label.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/popup.h"
 #include "scene/gui/tab_container.h"
@@ -26,6 +27,7 @@ class DataTableEditorPlugin final : public EditorPlugin
 
 		bool refresh_queue_dirty = false;
 
+		HBoxContainer *hbox;
 		Button *btn_sel;
 		Button *btn_clr;
 		PopupPanel *popup;

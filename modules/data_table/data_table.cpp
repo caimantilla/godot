@@ -5,8 +5,8 @@
 void DataTable::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("_iter_init"), &DataTable::_iter_init);
-	ClassDB::bind_method(D_METHOD("_iter_get"), &DataTable::_iter_get);
 	ClassDB::bind_method(D_METHOD("_iter_next"), &DataTable::_iter_next);
+	ClassDB::bind_method(D_METHOD("_iter_get"), &DataTable::_iter_get);
 
 	ClassDB::bind_method(D_METHOD("get_index"), &DataTable::get_index);
 	ClassDB::bind_method(D_METHOD("get_context"), &DataTable::get_context);
@@ -14,6 +14,12 @@ void DataTable::_bind_methods()
 	ClassDB::bind_method(D_METHOD("clear"), &DataTable::bind_clear);
 	ClassDB::bind_method(D_METHOD("reload"), &DataTable::bind_reload);
 	ClassDB::bind_method(D_METHOD("get_id_list"), &DataTable::bind_get_id_list);
+
+	ClassDB::bind_method(D_METHOD("get_default_category"), &DataTable::bind_get_default_category);
+	ClassDB::bind_method(D_METHOD("get_record_name", "id"), &DataTable::bind_get_record_name);
+	ClassDB::bind_method(D_METHOD("get_record_category", "id"), &DataTable::bind_get_record_category);
+	ClassDB::bind_method(D_METHOD("get_record_description", "id"), &DataTable::bind_get_record_description);
+	ClassDB::bind_method(D_METHOD("get_record_icon", "id"), &DataTable::bind_get_record_icon);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "index"), "", "get_index");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "context"), "", "get_context");
@@ -83,6 +89,36 @@ PackedStringArray DataTable::bind_get_id_list() const
 {
 	PackedStringArray ret = get_id_list(); // please tell me that this copies the array
 	return ret;
+}
+
+
+String DataTable::bind_get_default_category() const
+{
+	return editor_get_default_category();
+}
+
+
+String DataTable::bind_get_record_name(const String &p_id) const
+{
+	return editor_get_record_name(p_id);
+}
+
+
+String DataTable::bind_get_record_category(const String &p_id) const
+{
+	return editor_get_record_category(p_id);
+}
+
+
+String DataTable::bind_get_record_description(const String &p_id) const
+{
+	return editor_get_record_description(p_id);
+}
+
+
+Ref<Texture2D> DataTable::bind_get_record_icon(const String &p_id) const
+{
+	return editor_get_record_icon(p_id);
 }
 
 

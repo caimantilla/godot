@@ -27,6 +27,11 @@ private:
 	void bind_clear();
 	void bind_reload();
 	PackedStringArray bind_get_id_list() const;
+	String bind_get_default_category() const;
+	String bind_get_record_name(const String &p_id) const;
+	String bind_get_record_category(const String &p_id) const;
+	String bind_get_record_description(const String &p_id) const;
+	Ref<Texture2D> bind_get_record_icon(const String &p_id) const;
 
 protected:
 	static void _bind_methods();
