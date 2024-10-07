@@ -23,6 +23,7 @@ protected:
 	GDVIRTUAL0RC(String, _get_invalid_record_id_string);
 	GDVIRTUAL0RC(PackedInt64Array, _get_record_id_number_list);
 	GDVIRTUAL0RC(PackedStringArray, _get_record_id_string_list);
+	GDVIRTUAL1RC(String, _convert_id_number_to_id_string, int64_t);
 	GDVIRTUAL1RC(int64_t, _convert_id_string_to_id_number, String);
 
 #ifdef TOOLS_ENABLED
@@ -40,6 +41,7 @@ public:
 	virtual String get_invalid_record_id_string() const override;
 	virtual PackedInt64Array get_record_id_number_list() const override;
 	virtual PackedStringArray get_record_id_string_list() const override;
+	virtual String convert_id_number_to_id_string(const int64_t p_record_id_number) const override;
 	virtual int64_t convert_id_string_to_id_number(const String &p_record_id_string) const override;
 
 #ifdef TOOLS_ENABLED

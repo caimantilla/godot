@@ -13,6 +13,7 @@ void DataTable::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_invalid_record_id_string"), &DataTable::bind_get_invalid_record_id_string);
 	ClassDB::bind_method(D_METHOD("get_record_id_number_list"), &DataTable::bind_get_record_id_number_list);
 	ClassDB::bind_method(D_METHOD("get_record_id_string_list"), &DataTable::bind_get_record_id_string_list);
+	ClassDB::bind_method(D_METHOD("convert_id_number_to_id_string", "record_id_number"), &DataTable::bind_convert_id_number_to_id_string);
 	ClassDB::bind_method(D_METHOD("convert_id_string_to_id_number", "record_id_string"), &DataTable::bind_convert_id_string_to_id_number);
 
 #ifdef TOOLS_ENABLED
@@ -72,6 +73,12 @@ String DataTable::get_invalid_record_id_string() const
 }
 
 
+String DataTable::convert_id_number_to_id_string(const int64_t p_record_id_number) const
+{
+	return get_invalid_record_id_string();
+}
+
+
 int64_t DataTable::convert_id_string_to_id_number(const String &p_record_id_string) const
 {
 	return get_invalid_record_id_number();
@@ -111,6 +118,12 @@ PackedInt64Array DataTable::bind_get_record_id_number_list() const
 PackedStringArray DataTable::bind_get_record_id_string_list() const
 {
 	return get_record_id_string_list();
+}
+
+
+String DataTable::bind_convert_id_number_to_id_string(const int64_t p_record_id_number) const
+{
+	return convert_id_number_to_id_string(p_record_id_number);
 }
 
 

@@ -21,6 +21,7 @@ private:
 	String bind_get_invalid_record_id_string() const;
 	PackedInt64Array bind_get_record_id_number_list() const;
 	PackedStringArray bind_get_record_id_string_list() const;
+	String bind_convert_id_number_to_id_string(const int64_t p_record_id_number) const;
 	int64_t bind_convert_id_string_to_id_number(const String &p_record_id_string) const;
 
 #ifdef TOOLS_ENABLED
@@ -48,6 +49,7 @@ public:
 	virtual String get_invalid_record_id_string() const;
 	virtual PackedInt64Array get_record_id_number_list() const = 0;
 	virtual PackedStringArray get_record_id_string_list() const = 0;
+	virtual String convert_id_number_to_id_string(const int64_t p_record_id_number) const;
 	virtual int64_t convert_id_string_to_id_number(const String &p_record_id_string) const;
 
 #ifdef TOOLS_ENABLED

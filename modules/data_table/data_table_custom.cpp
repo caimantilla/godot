@@ -9,6 +9,7 @@ void DataTableCustom::_bind_methods()
 	GDVIRTUAL_BIND(_get_invalid_record_id_string);
 	GDVIRTUAL_BIND(_get_record_id_number_list);
 	GDVIRTUAL_BIND(_get_record_id_string_list);
+	GDVIRTUAL_BIND(_convert_id_number_to_id_string, "record_id_number");
 	GDVIRTUAL_BIND(_convert_id_string_to_id_number, "record_id_string");
 
 #ifdef TOOLS_ENABLED
@@ -95,6 +96,18 @@ PackedInt64Array DataTableCustom::get_record_id_number_list() const
 PackedStringArray DataTableCustom::get_record_id_string_list() const
 {
 	return cache_id_string_list;
+}
+
+
+String DataTableCustom::convert_id_number_to_id_string(const int64_t p_record_id_number) const
+{
+	String ret;
+	if (!GDVIRTUAL_CALL(_convert_id_number_to_id_string, p_record_id_number, ret))
+	{
+		ERR_PRINT(RTR("_convert_id_number_to_id_string must be implemented."));
+		ret = get_invalid_record_id_string();
+	}
+	return ret;
 }
 
 
