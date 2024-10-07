@@ -43,6 +43,44 @@ void DataTableEditorPlugin::RecordSelectorProperty::update_property()
 }
 
 
+Variant DataTableEditorPlugin::RecordSelectorProperty::cast_value_to_property_type(const Variant &p_value) const
+{
+	switch (property_type)
+	{
+		case Variant::INT:
+		case Variant::FLOAT:
+			return (int64_t)p_value;
+		case Variant::STRING:
+		case Variant::STRING_NAME: 
+			return (String)p_value;
+		default: {
+			CRASH_NOW();
+			return Variant();
+		}
+	}
+}
+
+
+Variant DataTableEditorPlugin::RecordSelectorProperty::get_edited_property_value_casted() const
+{
+	return cast_value_to_property_type(get_edited_property_value());
+}
+
+
+Variant DataTableEditorPlugin::RecordSelectorProperty::get_invalid_id_value() const
+{
+	switch (id_mode)
+	{
+		case ID_MODE_NUMBER: return table->get_invalid_record_id_number();
+		case ID_MODE_STRING: return table->get_invalid_record_id_string();
+		default: {
+			CRASH_NOW();
+			return Variant();
+		}
+	}
+}
+
+
 void DataTableEditorPlugin::RecordSelectorProperty::refresh_everything()
 {
 	refresh_queue_dirty = false;
@@ -66,17 +104,13 @@ void DataTableEditorPlugin::RecordSelectorProperty::focus_selected_record()
 	{
 		return;
 	}
-	String selected_id = get_edited_property_value();
-	if (selected_id.is_empty())
-	{
-		return;
-	}
+	const Variant selected_record_id = get_edited_property_value_casted();
 	for (ItemList *item_list : item_lists)
 	{
 		for (int i = 0; i < item_list->get_item_count(); i++)
 		{
-			String curr_rec_id = item_list->get_item_metadata(i);
-			if (curr_rec_id == selected_id)
+			const Variant curr_rec_id = item_list->get_item_metadata(i);
+			if (curr_rec_id == selected_record_id)
 			{
 				tabs->set_current_tab(tabs->get_tab_idx_from_control(item_list));
 				item_list->select(i);
@@ -99,11 +133,44 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 	ItemList *uncategorized_item_list = nullptr;
 	HashMap<String, ItemList *> map_categorized_item_list;
 
-	const PackedStringArray &record_id_list = table->get_id_list();
+	const PackedInt64Array record_id_no_list = table->get_record_id_number_list();
+	const PackedStringArray record_id_str_list = table->get_record_id_string_list();
 
-	for (const String &record_id : record_id_list)
+	int64_t record_count;
+	switch (id_mode)
 	{
-		String record_category = table->editor_get_record_category(record_id);
+		case ID_MODE_NUMBER: {
+			record_count = record_id_no_list.size();
+		} break;
+		case ID_MODE_STRING: {
+			record_count = record_id_str_list.size();
+		} break;
+		default: CRASH_NOW();
+	}
+
+	const int64_t invalid_id_no = table->get_invalid_record_id_number();
+	const String invalid_id_str = table->get_invalid_record_id_string();
+
+	for (int64_t i = 0; i < record_count; i++)
+	{
+		int64_t curr_record_id_no;
+		String curr_record_id_str;
+
+		switch (id_mode)
+		{
+			case ID_MODE_NUMBER: {
+				curr_record_id_no = record_id_no_list[i];
+				curr_record_id_str = itos(curr_record_id_no);
+			} break;
+			case ID_MODE_STRING: {
+				curr_record_id_str = record_id_str_list[i];
+				curr_record_id_no = table->convert_id_string_to_id_number(curr_record_id_str);
+			} break;
+			default: CRASH_NOW();
+		}
+		ERR_CONTINUE(curr_record_id_no == invalid_id_no || curr_record_id_str == invalid_id_str);
+
+		String record_category = table->get_record_editor_category(curr_record_id_no);
 		if (!category_constraint.is_empty() && (record_category.is_empty() || !category_constraint.has(record_category)))
 		{
 			continue;
@@ -128,17 +195,21 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 			item_list = map_categorized_item_list[record_category];
 		}
 
-		String record_name = table->editor_get_record_name(record_id);
+		String record_name = table->get_record_editor_name(curr_record_id_no);
 		if (record_name.is_empty())
 		{
-			record_name = record_id;
+			record_name = curr_record_id_str;
 		}
 
-		Ref<Texture2D> record_icon = table->editor_get_record_icon(record_id);
-		String record_tooltip = table->editor_get_record_description(record_id);
+		Ref<Texture2D> record_icon = table->get_record_editor_icon(curr_record_id_no);
+		String record_tooltip = table->get_record_editor_description(curr_record_id_no);
 		if (record_tooltip.is_empty())
 		{
-			record_tooltip = record_id;
+			record_tooltip = curr_record_id_str;
+		}
+		else
+		{
+			record_tooltip = vformat("%s\n%s", curr_record_id_str, record_tooltip);
 		}
 
 		Ref<Font> font = item_list->get_theme_font(SNAME("font"));
@@ -150,9 +221,19 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 			item_list->set_fixed_icon_size(ico_size);
 		}
 
-		int record_index = item_list->add_item(record_name, record_icon);
-		item_list->set_item_metadata(record_index, record_id);
-		item_list->set_item_tooltip(record_index, record_tooltip);
+		int item_index = item_list->add_item(record_name, record_icon);
+		item_list->set_item_tooltip(item_index, record_tooltip);
+
+		switch (id_mode)
+		{
+			case ID_MODE_NUMBER: {
+				item_list->set_item_metadata(item_index, curr_record_id_no);
+			} break;
+			case ID_MODE_STRING: {
+				item_list->set_item_metadata(item_index, curr_record_id_str);
+			} break;
+			default: CRASH_NOW();
+		}
 	}
 
 	PackedStringArray sortable_category_names;
@@ -198,7 +279,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 		}
 	}
 
-	String default_category = table->editor_get_default_category();
+	String default_category = table->get_default_editor_category();
 	if (default_category.is_empty() || !map_categorized_item_list.has(default_category))
 	{
 		if (uncategorized_item_list != nullptr)
@@ -238,48 +319,87 @@ void DataTableEditorPlugin::RecordSelectorProperty::prompt_record_selection()
 
 void DataTableEditorPlugin::RecordSelectorProperty::clear_record_selection()
 {
-	emit_changed(get_edited_property(), String());
+	emit_changed(get_edited_property(), get_invalid_id_value());
 }
 
 
 void DataTableEditorPlugin::RecordSelectorProperty::update_button_state()
 {
-	String curr_selected_id;
+	bool disp_id_ok = false;
 	bool sel_ok = true;
+
+	int64_t curr_selected_id_no;
+	String curr_selected_id_str;
+
 	if (is_read_only())
 	{
 		sel_ok = false;
 	}
 	if (get_edited_object() == nullptr)
 	{
+		disp_id_ok = false;
 		sel_ok = false;
 	}
 	else
 	{
-		curr_selected_id = get_edited_property_value();
+		disp_id_ok = true;
+		switch (id_mode)
+		{
+			case ID_MODE_NUMBER: {
+				curr_selected_id_no = get_edited_property_value_casted();
+				curr_selected_id_str = itos(curr_selected_id_no);
+			} break;
+			case ID_MODE_STRING: {
+				curr_selected_id_str = get_edited_property_value_casted();
+				curr_selected_id_no = table->convert_id_string_to_id_number(curr_selected_id_str);
+			} break;
+			default: CRASH_NOW();
+		}
 	}
 
 	btn_sel->set_disabled(!sel_ok);
 	btn_clr->set_disabled(!sel_ok);
 
-	if (curr_selected_id.is_empty())
+	if (!disp_id_ok)
 	{
 		btn_sel->set_text("--");
-		btn_sel->set_tooltip_text(TTR("No record selected."));
+		btn_sel->set_tooltip_text(TTR("Not yet ready to display."));
+		btn_sel->set_icon(Ref<Texture2D>());
 		btn_clr->set_disabled(true);
 	}
 	else
 	{
-		String display_name = table->editor_get_record_name(curr_selected_id);
-		if (display_name.is_empty())
-		{
-			display_name = curr_selected_id;
-		}
-		btn_sel->set_text(display_name);
-		btn_sel->set_tooltip_text(curr_selected_id);
-	}
+		bool disp_id_invalid = false;
 
-	btn_sel->set_icon(table->editor_get_record_icon(curr_selected_id));
+		switch (id_mode)
+		{
+			case ID_MODE_NUMBER: {
+				disp_id_invalid = curr_selected_id_no == table->get_invalid_record_id_number();
+			} break;
+			case ID_MODE_STRING: {
+				disp_id_invalid = curr_selected_id_str == table->get_invalid_record_id_string();
+			} break;
+			default: CRASH_NOW();
+		}
+		if (disp_id_invalid)
+		{
+			btn_sel->set_text("--");
+			btn_sel->set_tooltip_text(TTR("No record selected."));
+			btn_sel->set_icon(Ref<Texture2D>());
+			btn_clr->set_disabled(true);
+		}
+		else
+		{
+			String display_name = table->get_record_editor_name(curr_selected_id_no);
+			if (display_name.is_empty())
+			{
+				display_name = curr_selected_id_str;
+			}
+			btn_sel->set_text(display_name);
+			btn_sel->set_tooltip_text(curr_selected_id_str);
+			btn_sel->set_icon(table->get_record_editor_icon(curr_selected_id_no));
+		}
+	}
 }
 
 
@@ -296,8 +416,8 @@ void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_visibility_chan
 void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_item_selected(int p_item, ItemList *p_item_list)
 {
 	popup->hide();
-	String selected_id = p_item_list->get_item_metadata(p_item);
-	emit_changed(get_edited_property(), selected_id);
+	Variant selected_record_id = cast_value_to_property_type(p_item_list->get_item_metadata(p_item));
+	emit_changed(get_edited_property(), selected_record_id);
 }
 
 
@@ -347,8 +467,24 @@ ItemList *DataTableEditorPlugin::RecordSelectorProperty::create_item_list()
 }
 
 
-DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(DataTable *p_table, HashSet<String> p_category_constraint)
+DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(Variant::Type p_property_type, DataTable *p_table, HashSet<String> p_category_constraint)
 {
+	property_type = p_property_type;
+	switch (p_property_type)
+	{
+		case Variant::STRING:
+		case Variant::STRING_NAME: {
+			id_mode = ID_MODE_STRING;
+		} break;
+		case Variant::INT:
+		case Variant::FLOAT: {
+			id_mode = ID_MODE_NUMBER;
+		} break;
+		default: {
+			CRASH_NOW_MSG("Unsupported property type: " + itos(p_property_type));
+		} return;
+	}
+
 	table = p_table;
 	table->connect(CoreStringName(changed), callable_mp(this, &RecordSelectorProperty::on_table_changed));
 
@@ -395,11 +531,11 @@ bool DataTableEditorPlugin::RecordSelectorPlugin::can_handle(Object *p_object)
 
 bool DataTableEditorPlugin::RecordSelectorPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide)
 {
-	if (p_hint == PROPERTY_HINT_NONE && (p_type == Variant::STRING || p_type == Variant::STRING_NAME) && p_hint_text.begins_with("DATA_RECORD:"))
+	if (p_hint == PROPERTY_HINT_NONE && (p_type == Variant::STRING || p_type == Variant::STRING_NAME || p_type == Variant::INT || p_type == Variant::FLOAT) && p_hint_text.begins_with("DATA_RECORD:"))
 	{
 		DataTable *table = nullptr;
 
-		String table_name = p_hint_text.get_slicec(':', 1).get_slicec('/', 0);
+		String table_name = p_hint_text.get_slicec(':', 1);
 		if (!table_name.is_empty())
 		{
 			table = DataTableManager::get_singleton()->get_table_by_class_name(table_name);
@@ -408,7 +544,7 @@ bool DataTableEditorPlugin::RecordSelectorPlugin::parse_property(Object *p_objec
 		{
 			HashSet<String> set_category_constraint;
 
-			String category_constraint_str = p_hint_text.get_slicec('/', 1);
+			String category_constraint_str = p_hint_text.get_slicec(':', 2);
 			if (!category_constraint_str.is_empty())
 			{
 				PackedStringArray parts = category_constraint_str.split(",", false);
@@ -418,7 +554,7 @@ bool DataTableEditorPlugin::RecordSelectorPlugin::parse_property(Object *p_objec
 				}
 			}
 
-			RecordSelectorProperty *prop = memnew(RecordSelectorProperty(table, set_category_constraint));
+			RecordSelectorProperty *prop = memnew(RecordSelectorProperty(p_type, table, set_category_constraint));
 			add_property_editor(p_path, prop);
 			return true;
 		}

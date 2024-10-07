@@ -22,6 +22,15 @@ class DataTableEditorPlugin final : public EditorPlugin
 		GDCLASS(RecordSelectorProperty, EditorProperty);
 
 	private:
+		enum IDMode
+		{
+			ID_MODE_NUMBER = 0,
+			ID_MODE_STRING = 1,
+		};
+
+	private:
+		IDMode id_mode;
+		Variant::Type property_type;
 		DataTable *table;
 		HashSet<String> category_constraint;
 
@@ -34,6 +43,10 @@ class DataTableEditorPlugin final : public EditorPlugin
 		Label *empty_table_error;
 		TabContainer *tabs;
 		Vector<ItemList *> item_lists;
+
+		Variant cast_value_to_property_type(const Variant &p_value) const;
+		Variant get_edited_property_value_casted() const;
+		Variant get_invalid_id_value() const;
 
 		ItemList *create_item_list();
 
@@ -57,7 +70,7 @@ class DataTableEditorPlugin final : public EditorPlugin
 	public:
 		virtual void update_property() override;
 
-		RecordSelectorProperty(DataTable *p_table, HashSet<String> p_category_constraint);
+		RecordSelectorProperty(Variant::Type p_property_type, DataTable *p_table, HashSet<String> p_category_constraint);
 	};
 
 	class RecordSelectorPlugin final : public EditorInspectorPlugin 

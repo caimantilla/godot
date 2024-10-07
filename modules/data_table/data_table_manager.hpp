@@ -34,6 +34,8 @@ public:
 	{
 		GLOBAL_CONTEXT = 0,
 		INVALID_CONTEXT = -1,
+
+		INVALID_TABLE_INDEX = -1,
 	};
 
 private:
@@ -52,8 +54,8 @@ public:
 	static DataTableManager *get_singleton();
 
 	int64_t get_open_context_slot() const;
-	uint64_t get_table_count(const int64_t p_context = GLOBAL_CONTEXT) const;
-	DataTable *get_table_at(const uint64_t p_idx, const int64_t p_context = GLOBAL_CONTEXT) const;
+	int64_t get_table_count(const int64_t p_context = GLOBAL_CONTEXT) const;
+	DataTable *get_table_at(const int64_t p_idx, const int64_t p_context = GLOBAL_CONTEXT) const;
 	DataTable *get_table_by_class_name(const StringName &p_type_name, const int64_t p_context = GLOBAL_CONTEXT) const;
 	DataTable *get_table_by_script(const Ref<Script> &p_script, const int64_t p_context = GLOBAL_CONTEXT) const;
 	void clear_every_table(const int64_t p_context = GLOBAL_CONTEXT);

@@ -10,6 +10,8 @@ void DataTableManager::_bind_methods()
 	BIND_CONSTANT(GLOBAL_CONTEXT);
 	BIND_CONSTANT(INVALID_CONTEXT);
 
+	BIND_CONSTANT(INVALID_TABLE_INDEX);
+
 	ClassDB::bind_method(D_METHOD("get_open_context_slot"), &DataTableManager::get_open_context_slot);
 	ClassDB::bind_method(D_METHOD("get_table_count", "context"), &DataTableManager::get_table_count, DEFVAL(GLOBAL_CONTEXT));
 	ClassDB::bind_method(D_METHOD("get_table_at", "idx", "context"), &DataTableManager::get_table_at, DEFVAL(GLOBAL_CONTEXT));
@@ -69,19 +71,20 @@ DataTable *DataTableManager::bind_get_table(const Variant &p_key, const int64_t 
 			StringName table_name = p_key;
 			return get_table_by_class_name(table_name, p_context);
 		} break;
+		default: break;
 	}
 	ERR_FAIL_V(nullptr);
 }
 
 
-uint64_t DataTableManager::get_table_count(const int64_t p_context) const
+int64_t DataTableManager::get_table_count(const int64_t p_context) const
 {
 	Context &context = get_or_create_context(p_context);
 	return context.list_table.size();
 }
 
 
-DataTable *DataTableManager::get_table_at(const uint64_t p_idx, const int64_t p_context) const
+DataTable *DataTableManager::get_table_at(const int64_t p_idx, const int64_t p_context) const
 {
 	Context &context = get_or_create_context(p_context);
 	ERR_FAIL_INDEX_V(p_idx, context.list_table.size(), nullptr);
@@ -174,8 +177,8 @@ void DataTableManager::reload_every_table(const int64_t p_context)
 
 void DataTableManager::init_table(Context &p_context, DataTable *p_table) const
 {
-	p_table->table_index = p_context.list_table.size();
-	p_table->context_id = p_context.context_id;
+	p_table->set_index(p_context.list_table.size());
+	p_table->set_context(p_context.context_id);
 
 	p_context.list_table.push_back(p_table);
 	p_table->reload();

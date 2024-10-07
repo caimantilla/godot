@@ -5,13 +5,19 @@ void DataTableCustom::_bind_methods()
 {
 	GDVIRTUAL_BIND(_clear_table);
 	GDVIRTUAL_BIND(_load_table);
-	GDVIRTUAL_BIND(_get_record_id_list);
+	GDVIRTUAL_BIND(_get_invalid_record_id_number);
+	GDVIRTUAL_BIND(_get_invalid_record_id_string);
+	GDVIRTUAL_BIND(_get_record_id_number_list);
+	GDVIRTUAL_BIND(_get_record_id_string_list);
+	GDVIRTUAL_BIND(_convert_id_string_to_id_number, "record_id_string");
 
-	GDVIRTUAL_BIND(_editor_get_default_category);
-	GDVIRTUAL_BIND(_editor_get_record_name, "id");
-	GDVIRTUAL_BIND(_editor_get_record_category, "id");
-	GDVIRTUAL_BIND(_editor_get_record_description, "id");
-	GDVIRTUAL_BIND(_editor_get_record_icon, "id");
+#ifdef TOOLS_ENABLED
+	GDVIRTUAL_BIND(_get_default_editor_category);
+	GDVIRTUAL_BIND(_get_record_editor_name, "record_id_number");
+	GDVIRTUAL_BIND(_get_record_editor_category, "record_id_number");
+	GDVIRTUAL_BIND(_get_record_editor_description, "record_id_number");
+	GDVIRTUAL_BIND(_get_record_editor_icon, "record_id_number");
+#endif // TOOLS_ENABLED
 }
 
 
@@ -19,11 +25,12 @@ void DataTableCustom::clear()
 {
 	if (!GDVIRTUAL_CALL(_clear_table))
 	{
-		ERR_PRINT(vformat(RTR("_clear_table must be implemented for table: %s"), this->to_string()));
+		ERR_PRINT(RTR("_clear_table must be implemented."));
 		return;
 	}
-	cache_id_list.clear();
-	emit_signal(CoreStringName(changed));
+	cache_id_number_list.clear();
+	cache_id_string_list.clear();
+	emit_changed();
 }
 
 
@@ -31,83 +38,115 @@ void DataTableCustom::reload()
 {
 	if (!GDVIRTUAL_CALL(_clear_table))
 	{
-		ERR_PRINT(vformat(RTR("_clear_table must be implemented for table: %s"), this->to_string()));
+		ERR_PRINT(RTR("_clear_table must be implemented."));
 		return;
 	}
 	bool load_ok = true;
 	if (!GDVIRTUAL_CALL(_load_table))
 	{
-		ERR_PRINT(RTR("_load_table must be implemented for table: %s") + this->to_string());
+		ERR_PRINT(RTR("_load_table must be implemented."));
 		load_ok = false;
 	}
-	if (!GDVIRTUAL_CALL(_get_record_id_list, cache_id_list))
+	if (!GDVIRTUAL_CALL(_get_record_id_number_list, cache_id_number_list))
 	{
-		ERR_PRINT(RTR("_get_record_id_list must be implemented for table: %s") + this->to_string());
-		load_ok = false;
+		cache_id_number_list.clear();
+	}
+	if (!GDVIRTUAL_CALL(_get_record_id_string_list, cache_id_string_list))
+	{
+		cache_id_string_list.clear();
 	}
 	if (!load_ok)
 	{
-		cache_id_list.clear();
+		cache_id_number_list.clear();
+		cache_id_string_list.clear();
 	}
-	emit_signal(CoreStringName(changed));
+	emit_changed();
 }
 
 
-const PackedStringArray &DataTableCustom::get_id_list() const
+int64_t DataTableCustom::get_invalid_record_id_number() const
 {
-	return cache_id_list;
+	int64_t ret;
+	if (!GDVIRTUAL_CALL(_get_invalid_record_id_number, ret))
+	{
+		ret = DataTable::get_invalid_record_id_number();
+	}
+	return ret;
 }
 
 
-const uint64_t DataTableCustom::get_record_count() const
+String DataTableCustom::get_invalid_record_id_string() const
 {
-	return cache_id_list.size();
+	String ret;
+	if (!GDVIRTUAL_CALL(_get_invalid_record_id_string, ret))
+	{
+		ret = DataTable::get_invalid_record_id_string();
+	}
+	return ret;
 }
 
 
-const String &DataTableCustom::get_record_id_at(const uint64_t p_idx) const
+PackedInt64Array DataTableCustom::get_record_id_number_list() const
 {
-	static const String dummy = "";
-	ERR_FAIL_INDEX_V(p_idx, cache_id_list.size(), dummy);
-	return cache_id_list[p_idx];
+	return cache_id_number_list;
 }
 
 
-String DataTableCustom::editor_get_default_category() const
+PackedStringArray DataTableCustom::get_record_id_string_list() const
 {
-	String virtual_result;
-	GDVIRTUAL_CALL(_editor_get_default_category, virtual_result);
-	return virtual_result;
+	return cache_id_string_list;
 }
 
 
-String DataTableCustom::editor_get_record_name(const String &p_id) const
+int64_t DataTableCustom::convert_id_string_to_id_number(const String &p_record_id_string) const
 {
-	String virtual_result;
-	GDVIRTUAL_CALL(_editor_get_record_name, p_id, virtual_result);
-	return virtual_result;
+	int64_t ret;
+	if (!GDVIRTUAL_CALL(_convert_id_string_to_id_number, p_record_id_string, ret))
+	{
+		ERR_PRINT(RTR("_convert_id_string_to_id_number must be implemented."));
+		ret = get_invalid_record_id_number();
+	}
+	return ret;
 }
 
 
-String DataTableCustom::editor_get_record_category(const String &p_id) const
+#ifdef TOOLS_ENABLED
+String DataTableCustom::get_default_editor_category() const
 {
-	String virtual_result;
-	GDVIRTUAL_CALL(_editor_get_record_category, p_id, virtual_result);
-	return virtual_result;
+	String ret;
+	GDVIRTUAL_CALL(_get_default_editor_category, ret);
+	return ret;
 }
 
 
-String DataTableCustom::editor_get_record_description(const String &p_id) const
+String DataTableCustom::get_record_editor_name(const int64_t p_record_id_number) const
 {
-	String virtual_result;
-	GDVIRTUAL_CALL(_editor_get_record_description, p_id, virtual_result);
-	return virtual_result;
+	String ret;
+	GDVIRTUAL_CALL(_get_record_editor_name, p_record_id_number, ret);
+	return ret;
 }
 
 
-Ref<Texture2D> DataTableCustom::editor_get_record_icon(const String &p_id) const
+String DataTableCustom::get_record_editor_category(const int64_t p_record_id_number) const
 {
-	Ref<Texture2D> virtual_result;
-	GDVIRTUAL_CALL(_editor_get_record_icon, p_id, virtual_result);
-	return virtual_result;
+	String ret;
+	GDVIRTUAL_CALL(_get_record_editor_category, p_record_id_number, ret);
+	return ret;
 }
+
+
+String DataTableCustom::get_record_editor_description(const int64_t p_record_id_number) const
+{
+	String ret;
+	GDVIRTUAL_CALL(_get_record_editor_description, p_record_id_number, ret);
+	return ret;
+}
+
+
+Ref<Texture2D> DataTableCustom::get_record_editor_icon(const int64_t p_record_id_number) const
+{
+	Ref<Texture2D> ret;
+	GDVIRTUAL_CALL(_get_record_editor_icon, p_record_id_number, ret);
+	return ret;
+}
+#endif // TOOLS_ENABLED
