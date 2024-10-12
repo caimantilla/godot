@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+Import("env")
+Import("env_modules")
+
+env_cms_gui_extensions = env_modules.Clone()
+
+env_cms_gui_extensions.add_source_files(env.modules_sources, "*.cpp")
+env_cms_gui_extensions.add_source_files(env.modules_sources, "./scene/gui/*.cpp")
