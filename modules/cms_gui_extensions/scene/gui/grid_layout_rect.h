@@ -32,13 +32,20 @@ private:
 	};
 
 private:
+	struct Edge final
+	{
+		EdgeType type = EDGE_NONE;
+		bool custom_color_enabled = false;
+		Color custom_color;
+	};
+
 	struct Cell final
 	{
 		Variant metadata;
+		Edge edges[4]; // corresponds to Side enum
 		Color color = Color(1, 1, 1, 0);
-		EdgeType edges[4] = { EDGE_NONE, EDGE_NONE, EDGE_NONE, EDGE_NONE }; // corresponds to Side enum
-		Ref<Texture2D> icon;
 		Color icon_modulate = Color(1, 1, 1, 1);
+		Ref<Texture2D> icon;
 	};
 
 	struct ThemeCache
@@ -105,6 +112,11 @@ public:
 	Color get_cell_color(const Point2i &p_cell) const;
 	void set_cell_edge(const Point2i &p_cell, const Side p_side, const EdgeType p_type);
 	EdgeType get_cell_edge(const Point2i &p_cell, const Side p_side) const;
+	void set_cell_edge_custom_color(const Point2i &p_cell, const Side p_side, const Color &p_color);
+	Color get_cell_edge_custom_color(const Point2i &p_cell, const Side p_side) const;
+	Color get_cell_edge_color(const Point2i &p_cell, const Side p_side) const;
+	void clear_cell_edge_custom_color(const Point2i &p_cell, const Side p_side);
+	bool is_cell_edge_custom_color_enabled(const Point2i &p_cell, const Side p_side) const;
 	void set_cell_icon(const Point2i &p_cell, const Ref<Texture2D> &p_texture);
 	Ref<Texture2D> get_cell_icon(const Point2i &p_cell) const;
 	void set_cell_icon_modulate(const Point2i &p_cell, const Color &p_modulate);

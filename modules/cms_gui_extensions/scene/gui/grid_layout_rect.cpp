@@ -125,11 +125,11 @@ void GridLayoutRect::set_cell_edge(const Point2i &p_cell, const Side p_side, con
 {
 	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	Cell &cell = get_or_create_cell(p_cell);
-	if (p_type == cell.edges[p_side])
+	if (p_type == cell.edges[p_side].type)
 	{
 		return;
 	}
-	cell.edges[p_side] = p_type;
+	cell.edges[p_side].type = p_type;
 	queue_redraw();
 }
 
@@ -138,7 +138,62 @@ GridLayoutRect::EdgeType GridLayoutRect::get_cell_edge(const Point2i &p_cell, co
 {
 	ERR_FAIL_INDEX_V_MSG(p_side, 4, EdgeType::EDGE_NONE, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), EdgeType::EDGE_NONE, vformat(RTR("Cell %v does not exist."), p_cell));
-	return cell_map[p_cell].edges[p_side];
+	return cell_map[p_cell].edges[p_side].type;
+}
+
+
+void GridLayoutRect::set_cell_edge_custom_color(const Point2i &p_cell, const Side p_side, const Color &p_color)
+{
+	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
+	Edge &edge = get_or_create_cell(p_cell).edges[p_side];
+	edge.custom_color_enabled = true;
+	edge.custom_color = p_color;
+	queue_redraw();
+}
+
+
+Color GridLayoutRect::get_cell_edge_custom_color(const Point2i &p_cell, const Side p_side) const
+{
+	ERR_FAIL_INDEX_V_MSG(p_side, 4, Color(), vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
+	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), Color(), vformat(RTR("Cell %v does not exist."), p_cell));
+	return cell_map[p_cell].edges[p_side].custom_color;
+}
+
+
+Color GridLayoutRect::get_cell_edge_color(const Point2i &p_cell, const Side p_side) const
+{
+	ERR_FAIL_INDEX_V_MSG(p_side, 4, Color(), vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
+	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), Color(), vformat(RTR("Cell %v does not exist."), p_cell));
+	const Edge &edge = cell_map[p_cell].edges[p_side];
+	if (edge.custom_color_enabled)
+	{
+		return edge.custom_color;
+	}
+	else
+	{
+		return theme_cache.edge_color;
+	}
+}
+
+
+void GridLayoutRect::clear_cell_edge_custom_color(const Point2i &p_cell, const Side p_side)
+{
+	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
+	Edge &edge = get_or_create_cell(p_cell).edges[p_side];
+	if (!edge.custom_color_enabled)
+	{
+		return;
+	}
+	edge.custom_color_enabled = false;
+	queue_redraw();
+}
+
+
+bool GridLayoutRect::is_cell_edge_custom_color_enabled(const Point2i &p_cell, const Side p_side) const
+{
+	ERR_FAIL_INDEX_V_MSG(p_side, 4, false, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
+	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), false, vformat(RTR("Cell %v does not exist."), p_cell));
+	return cell_map[p_cell].edges[p_side].custom_color_enabled;
 }
 
 
@@ -191,10 +246,11 @@ Point2i GridLayoutRect::get_cell_at_position(const Point2 &p_position) const
 Side GridLayoutRect::get_edge_at_position(const Point2 &p_position) const
 {
 	const Rect2 grid_rect = get_grid_rect();
-	const Point2 check_position = p_position - grid_rect.position - Vector2(cell_size_half, cell_size_half);
+	const Point2 check_position = p_position - grid_rect.position; // - Vector2(cell_size_half, cell_size_half);
 
 	Point2 adjusted_pos = check_position / cell_size;
-	adjusted_pos = adjusted_pos - (adjusted_pos.floor() + Point2(0.5, 0.5));
+	adjusted_pos -= (adjusted_pos.floor() + Point2(0.5, 0.5));
+	// adjusted_pos = adjusted_pos - (adjusted_pos.floor() + Point2(0.5, 0.5));
 
 	real_t abs_x = ABS(adjusted_pos.x);
 	real_t abs_y = ABS(adjusted_pos.y);
@@ -322,16 +378,14 @@ void GridLayoutRect::update_dimensions() const
 		if (cell_map.is_empty())
 		{
 			grid_region = Rect2i();
+			return;
 		}
-
-		Point2i point_min;
-		Point2i point_max;
 
 		HashMap<Point2i, Cell>::ConstIterator E = cell_map.begin();
 		Point2i current_point = E->key;
 
-		point_min = current_point;
-		point_max = current_point;
+		Point2i point_min = current_point;
+		Point2i point_max = current_point;
 
 		for (; E; ++E)
 		{
@@ -365,16 +419,17 @@ void GridLayoutRect::exec_draw()
 	Vector<Point2> vertex_list_cell;
 	Vector<Color> color_list_cell;
 	Vector<Point2> point_list_edge;
+	Vector<Color> color_list_edge;
 
-	point_list_grid.resize(grid_region.get_area());
 	vertex_list_cell.resize(grid_region.get_area() * 6);
 	color_list_cell.resize(vertex_list_cell.size());
 	point_list_edge.resize(grid_region.get_area() * 16);
+	color_list_edge.resize(grid_region.get_area() * 8);
 
-	int idx_point_grid = -1;
 	int idx_vertex_cell = -1;
 	int idx_color_cell = -1;
 	int idx_point_edge = -1;
+	int idx_color_edge = -1;
 
 	Size2 total_size = get_size();
 	Rect2 grid_rect = get_grid_rect();
@@ -382,15 +437,36 @@ void GridLayoutRect::exec_draw()
 	// Write points for the grid.
 	if (grid_enabled)
 	{
-		for (int x = 1; x < grid_region.size.width; x++)
+		real_t x = grid_rect.position.x;
+		while (x < total_size.x)
 		{
-			point_list_grid.write[++idx_point_grid] = Point2(grid_rect.position.x + (x * cell_size), 0);
-			point_list_grid.write[++idx_point_grid] = Point2(grid_rect.position.x + (x * cell_size), total_size.y);
+			point_list_grid.push_back(Point2(x, 0));
+			point_list_grid.push_back(Point2(x, total_size.height));
+			x += cell_size;
 		}
-		for (int y = 1; y < grid_region.size.height; y++)
+
+		x = grid_rect.position.x - cell_size;
+		while (x > 0)
 		{
-			point_list_grid.write[++idx_point_grid] = Point2(0, grid_rect.position.y + (y * cell_size));
-			point_list_grid.write[++idx_point_grid] = Point2(total_size.x, grid_rect.position.y + (y * cell_size));
+			point_list_grid.push_back(Point2(x, 0));
+			point_list_grid.push_back(Point2(x, total_size.height));
+			x -= cell_size;
+		}
+
+		real_t y = grid_rect.position.y;
+		while (y < total_size.y)
+		{
+			point_list_grid.push_back(Point2(0, y));
+			point_list_grid.push_back(Point2(total_size.width, y));
+			y += cell_size;
+		}
+
+		y = grid_rect.position.y - cell_size;
+		while (y > 0)
+		{
+			point_list_grid.push_back(Point2(0, y));
+			point_list_grid.push_back(Point2(total_size.width, y));
+			y -= cell_size;
 		}
 	}
 
@@ -429,54 +505,79 @@ void GridLayoutRect::exec_draw()
 
 		if (edge_enabled)
 		{
-			const EdgeType edge_type_left = cell.edges[SIDE_LEFT];
-			const EdgeType edge_type_right = cell.edges[SIDE_RIGHT];
-			const EdgeType edge_type_top = cell.edges[SIDE_TOP];
-			const EdgeType edge_type_bottom = cell.edges[SIDE_BOTTOM];
+			const Edge edge_left = cell.edges[SIDE_LEFT];
+			const Edge edge_right = cell.edges[SIDE_RIGHT];
+			const Edge edge_top = cell.edges[SIDE_TOP];
+			const Edge edge_bottom = cell.edges[SIDE_BOTTOM];
 
-			if (edge_type_left == EDGE_CLOSE)
+			const Color edge_left_color = edge_left.custom_color_enabled ? edge_left.custom_color : theme_cache.edge_color;
+			const Color edge_right_color = edge_right.custom_color_enabled ? edge_right.custom_color : theme_cache.edge_color;
+			const Color edge_top_color = edge_top.custom_color_enabled ? edge_top.custom_color : theme_cache.edge_color;
+			const Color edge_bottom_color = edge_bottom.custom_color_enabled ? edge_bottom.custom_color : theme_cache.edge_color;
+
+			if (edge_left.type == EDGE_CLOSE)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_left_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, cell_size_half); // BL
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, -cell_size_half); // TL
 			}
-			else if (edge_type_left == EDGE_OPEN)
+			else if (edge_left.type == EDGE_OPEN)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_left_color;
+				color_list_edge.write[++idx_color_edge] = edge_left_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, cell_size_half); // BL-B
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, edge_opening_size_half); // BL-T
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, -edge_opening_size_half); // TL-B
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half + edge_margin_half, -cell_size_half); // TL-T
 			}
-			if (edge_type_top == EDGE_CLOSE)
+			if (edge_top.type == EDGE_CLOSE)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_top_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half, -cell_size_half + edge_margin_half); // TL
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half, -cell_size_half + edge_margin_half); // TR
 			}
-			else if (edge_type_top == EDGE_OPEN)
+			else if (edge_top.type == EDGE_OPEN)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_top_color;
+				color_list_edge.write[++idx_color_edge] = edge_top_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half, -cell_size_half + edge_margin_half); // TL-L
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-edge_opening_size_half, -cell_size_half + edge_margin_half); // TL-R
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(edge_opening_size_half, -cell_size_half + edge_margin_half); // TR-L
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half, -cell_size_half + edge_margin_half); // TR-R
 			}
-			if (edge_type_right == EDGE_CLOSE)
+			if (edge_right.type == EDGE_CLOSE)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_right_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, -cell_size_half); // TR
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, cell_size_half); // BR
 			}
-			else if (edge_type_right == EDGE_OPEN)
+			else if (edge_right.type == EDGE_OPEN)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_right_color;
+				color_list_edge.write[++idx_color_edge] = edge_right_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, -cell_size_half); // TR-T
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, -edge_opening_size_half); // TR-B
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, edge_opening_size_half); // BR-T
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half - edge_margin_half, cell_size_half); // BR-B
 			}
-			if (edge_type_bottom == EDGE_CLOSE)
+			if (edge_bottom.type == EDGE_CLOSE)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_bottom_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half, cell_size_half - edge_margin_half); // BR
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-cell_size_half, cell_size_half - edge_margin_half); // BL
 			}
-			else if (edge_type_bottom == EDGE_OPEN)
+			else if (edge_bottom.type == EDGE_OPEN)
 			{
+				color_list_edge.write[++idx_color_edge] = edge_bottom_color;
+				color_list_edge.write[++idx_color_edge] = edge_bottom_color;
+
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(cell_size_half, cell_size_half - edge_margin_half); // BR-R
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(edge_opening_size_half, cell_size_half - edge_margin_half); // BR-L
 				point_list_edge.write[++idx_point_edge] = draw_center + Point2(-edge_opening_size_half, cell_size_half - edge_margin_half); // BL-R
@@ -492,16 +593,16 @@ void GridLayoutRect::exec_draw()
 		RenderingServer::get_singleton()->canvas_item_add_triangle_array(get_canvas_item(), PackedInt32Array(), vertex_list_cell, color_list_cell);
 	}
 
-	point_list_grid.resize(idx_point_grid + 1);
 	if (grid_enabled && !point_list_grid.is_empty())
 	{
 		draw_multiline(point_list_grid, grid_color, grid_thickness, false);
 	}
 
 	point_list_edge.resize(idx_point_edge + 1);
+	color_list_edge.resize(idx_color_edge + 1);
 	if (edge_enabled && !point_list_edge.is_empty())
 	{
-		draw_multiline(point_list_edge, edge_color, edge_thickness, false);
+		draw_multiline_colors(point_list_edge, color_list_edge, edge_thickness, false);
 	}
 
 	// Draw icons last.
@@ -605,6 +706,11 @@ void GridLayoutRect::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_cell_color", "cell"), &GridLayoutRect::get_cell_color);
 	ClassDB::bind_method(D_METHOD("set_cell_edge", "cell", "edge", "type"), &GridLayoutRect::set_cell_edge);
 	ClassDB::bind_method(D_METHOD("get_cell_edge", "cell", "edge"), &GridLayoutRect::get_cell_edge);
+	ClassDB::bind_method(D_METHOD("set_cell_edge_custom_color", "cell", "edge", "color"), &GridLayoutRect::set_cell_edge_custom_color);
+	ClassDB::bind_method(D_METHOD("get_cell_edge_custom_color", "cell", "edge"), &GridLayoutRect::get_cell_edge_custom_color);
+	ClassDB::bind_method(D_METHOD("get_cell_edge_color", "cell", "edge"), &GridLayoutRect::get_cell_edge_color);
+	ClassDB::bind_method(D_METHOD("clear_cell_edge_custom_color", "cell", "edge"), &GridLayoutRect::clear_cell_edge_custom_color);
+	ClassDB::bind_method(D_METHOD("is_cell_edge_custom_color_enabled", "cell", "edge"), &GridLayoutRect::is_cell_edge_custom_color_enabled);
 	ClassDB::bind_method(D_METHOD("set_cell_icon", "cell", "icon"), &GridLayoutRect::set_cell_icon);
 	ClassDB::bind_method(D_METHOD("get_cell_icon", "cell"), &GridLayoutRect::get_cell_icon);
 	ClassDB::bind_method(D_METHOD("set_cell_icon_modulate", "cell", "modulate"), &GridLayoutRect::set_cell_icon_modulate);
@@ -621,7 +727,7 @@ void GridLayoutRect::_bind_methods()
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "anchor_mode", PROPERTY_HINT_ENUM, "Top Left,Centered"), "set_anchor_mode", "get_anchor_mode");
 
-	// ADD_GROUP("Icon", "");
+	ADD_GROUP("Icon", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "expand_icons"), "set_expand_icons", "is_expand_icons_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "fixed_icon_size"), "set_fixed_icon_size", "get_fixed_icon_size");
 
