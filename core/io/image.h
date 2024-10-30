@@ -391,6 +391,7 @@ public:
 	void blit_rect(const Ref<Image> &p_src, const Rect2i &p_src_rect, const Point2i &p_dest);
 	void blit_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, const Rect2i &p_src_rect, const Point2i &p_dest);
 	void blend_rect(const Ref<Image> &p_src, const Rect2i &p_src_rect, const Point2i &p_dest);
+	void blend_rect_alpha(const Ref<Image> &p_src, const Rect2i &p_src_rect, const Point2i &p_dest);
 	void blend_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, const Rect2i &p_src_rect, const Point2i &p_dest);
 	void fill(const Color &p_color);
 	void fill_rect(const Rect2i &p_rect, const Color &p_color);

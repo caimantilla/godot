@@ -31,6 +31,15 @@
 				Alpha-blends [param src_rect] from [param src] image to this image at coordinates [param dst], clipped accordingly to both image bounds. This image and [param src] image [b]must[/b] have the same format. [param src_rect] with non-positive size is treated as empty.
 			</description>
 		</method>
+		<method name="blend_rect_alpha">
+			<return type="void" />
+			<param index="0" name="src" type="Image" />
+			<param index="1" name="src_rect" type="Rect2i" />
+			<param index="2" name="dst" type="Vector2i" />
+			<description>
+				Alpha-masks this image using the alpha channel of [param src_rect] from [param src] image at coordinates [param dst], clipped accordingly to both image bounds. This image and [param src] image [b]must[/b] have the same format. [param src_rect] with non-positive size is treated as empty.
+			</description>
+		</method>
 		<method name="blend_rect_mask">
 			<return type="void" />
 			<param index="0" name="src" type="Image" />

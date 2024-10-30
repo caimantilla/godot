@@ -2892,6 +2892,39 @@ void Image::blend_rect(const Ref<Image> &p_src, const Rect2i &p_src_rect, const 
 	}
 }
 
+void Image::blend_rect_alpha(const Ref<Image> &p_src, const Rect2i &p_src_rect, const Point2i &p_dest) {
+	ERR_FAIL_COND_MSG(p_src.is_null(), "Cannot blend_rect_alpha an image: invalid source Image object.");
+	int dsize = data.size();
+	int srcdsize = p_src->data.size();
+	ERR_FAIL_COND(dsize == 0);
+	ERR_FAIL_COND(srcdsize == 0);
+	ERR_FAIL_COND(format != p_src->format);
+
+	Rect2i src_rect;
+	Rect2i dest_rect;
+	_get_clipped_src_and_dest_rects(p_src, p_src_rect, p_dest, src_rect, dest_rect);
+	if (!src_rect.has_area() || !dest_rect.has_area()) {
+		return;
+	}
+
+	Ref<Image> img = p_src;
+
+	for (int i = 0; i < dest_rect.size.y; i++) {
+		for (int j = 0; j < dest_rect.size.x; j++) {
+			int src_x = src_rect.position.x + j;
+			int src_y = src_rect.position.y + i;
+
+			int dst_x = dest_rect.position.x + j;
+			int dst_y = dest_rect.position.y + i;
+
+			Color sc = img->get_pixel(src_x, src_y);
+			Color dc = get_pixel(dst_x, dst_y);
+			dc.a *= sc.a;
+			set_pixel(dst_x, dst_y, dc);
+		}
+	}
+}
+
 void Image::blend_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, const Rect2i &p_src_rect, const Point2i &p_dest) {
 	ERR_FAIL_COND_MSG(p_src.is_null(), "Cannot blend_rect_mask an image: invalid source Image object.");
 	ERR_FAIL_COND_MSG(p_mask.is_null(), "Cannot blend_rect_mask an image: invalid mask Image object.");
@@ -3469,6 +3502,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("blit_rect", "src", "src_rect", "dst"), &Image::blit_rect);
 	ClassDB::bind_method(D_METHOD("blit_rect_mask", "src", "mask", "src_rect", "dst"), &Image::blit_rect_mask);
 	ClassDB::bind_method(D_METHOD("blend_rect", "src", "src_rect", "dst"), &Image::blend_rect);
+	ClassDB::bind_method(D_METHOD("blend_rect_alpha", "src", "src_rect", "dst"), &Image::blend_rect_alpha);
 	ClassDB::bind_method(D_METHOD("blend_rect_mask", "src", "mask", "src_rect", "dst"), &Image::blend_rect_mask);
 	ClassDB::bind_method(D_METHOD("fill", "color"), &Image::fill);
 	ClassDB::bind_method(D_METHOD("fill_rect", "rect", "color"), &Image::fill_rect);
