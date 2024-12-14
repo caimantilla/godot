@@ -2,6 +2,7 @@
 // - Fix Face-X Orientation
 // - Add Normals, Tangents
 // - See if it's possible to empty the grid without printing an error
+// - Add subdivision support
 
 #include "corner_deformable_grid_mesh.h"
 

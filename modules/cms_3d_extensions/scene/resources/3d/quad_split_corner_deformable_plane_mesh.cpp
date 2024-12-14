@@ -1,5 +1,6 @@
 // TODO:
-// - Modify Normals and Tangents
+// - Add Normals and Tangents
+// - Stop ignoring subdivision
 // - Customize Lightmap generation
 
 #include "quad_split_corner_deformable_plane_mesh.h"
@@ -7,13 +8,20 @@
 
 void QuadSplitCornerDeformablePlaneMesh::_create_mesh_array(Array &p_arr) const
 {
-	PlaneMesh::_create_mesh_array(p_arr);
-
 	const Vector3 plane_center = get_center_offset();
 	const Size2 plane_size = get_size();
+	const Size2 plane_size_half = plane_size * 0.5;
 	const Vector4 corner_deformations = get_corner_deformations();
 
-	Point2 sample_point_offset;
+	PackedVector3Array list_vertex;
+	PackedVector2Array list_uv;
+	PackedInt32Array list_index;
+
+	list_vertex.resize(16);
+	list_uv.resize(16);
+	list_index.resize(24);
+
+	Point2 sample_point_offset = plane_size * 0.5;
 	Vector2 sample_point_scale = Point2(1, 1) / plane_size;
 	Vector3::Axis sample_axis_x;
 	Vector3::Axis sample_axis_y;
@@ -41,10 +49,6 @@ void QuadSplitCornerDeformablePlaneMesh::_create_mesh_array(Array &p_arr) const
 		} break;
 	}
 
-	sample_point_offset = plane_size * 0.5;
-
-	PackedVector3Array list_vertex = p_arr[RenderingServer::ARRAY_VERTEX];
-
 	Vector3 corner_sep_vertex_ofs_list[4] = {
 		Vector3(-corner_separations[CORNER_TOP_LEFT], 0, -corner_separations[CORNER_TOP_LEFT]),
 		Vector3(corner_separations[CORNER_TOP_RIGHT], 0, -corner_separations[CORNER_TOP_RIGHT]),
@@ -52,87 +56,90 @@ void QuadSplitCornerDeformablePlaneMesh::_create_mesh_array(Array &p_arr) const
 		Vector3(-corner_separations[CORNER_BOTTOM_LEFT], 0, corner_separations[CORNER_BOTTOM_LEFT])
 	};
 
+
+	int idx_vertex = 0;
+	int idx_uv = 0;
+	int idx_index = 0;
+	int idx_index_pointer = 0;
+
+	list_vertex.write[idx_vertex++] = Vector3(-plane_size_half.width, 0, 0) + corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
+	list_vertex.write[idx_vertex++] = Vector3(-plane_size_half.width, 0, -plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
+	list_vertex.write[idx_vertex++] = Vector3(0, 0, -plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
+	list_vertex.write[idx_vertex++] = corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
+
+	list_vertex.write[idx_vertex++] = corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
+	list_vertex.write[idx_vertex++] = Vector3(0, 0, -plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
+	list_vertex.write[idx_vertex++] = Vector3(plane_size_half.width, 0, -plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
+	list_vertex.write[idx_vertex++] = Vector3(plane_size_half.width, 0, 0) + corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
+
+	list_vertex.write[idx_vertex++] = Vector3(0, 0, plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
+	list_vertex.write[idx_vertex++] = corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
+	list_vertex.write[idx_vertex++] = Vector3(plane_size_half.width, 0, 0) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
+	list_vertex.write[idx_vertex++] = Vector3(plane_size_half.width, 0, plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
+
+	list_vertex.write[idx_vertex++] = Vector3(-plane_size_half.width, 0, plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
+	list_vertex.write[idx_vertex++] = Vector3(-plane_size_half.width, 0, 0) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
+	list_vertex.write[idx_vertex++] = corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
+	list_vertex.write[idx_vertex++] = Vector3(0, 0, plane_size_half.height) + corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
+
+	list_uv.write[idx_uv++] = Point2(0, 0.5);
+	list_uv.write[idx_uv++] = Point2(0, 0);
+	list_uv.write[idx_uv++] = Point2(0.5, 0);
+	list_uv.write[idx_uv++] = Point2(0.5, 0.5);
+
+	list_uv.write[idx_uv++] = Point2(0.5, 0.5);
+	list_uv.write[idx_uv++] = Point2(0.5, 0);
+	list_uv.write[idx_uv++] = Point2(1, 0);
+	list_uv.write[idx_uv++] = Point2(1, 0.5);
+
+	list_uv.write[idx_uv++] = Point2(0.5, 1);
+	list_uv.write[idx_uv++] = Point2(0.5, 0.5);
+	list_uv.write[idx_uv++] = Point2(1, 0.5);
+	list_uv.write[idx_uv++] = Point2(1, 1);
+
+	list_uv.write[idx_uv++] = Point2(0, 1);
+	list_uv.write[idx_uv++] = Point2(0, 0.5);
+	list_uv.write[idx_uv++] = Point2(0.5, 0.5);
+	list_uv.write[idx_uv++] = Point2(0.5, 1);
+
+	for (int i = 0; i < 4; i++)
+	{
+		list_index.write[idx_index++] = idx_index_pointer;
+		list_index.write[idx_index++] = idx_index_pointer + 1;
+		list_index.write[idx_index++] = idx_index_pointer + 2;
+		list_index.write[idx_index++] = idx_index_pointer;
+		list_index.write[idx_index++] = idx_index_pointer + 2;
+		list_index.write[idx_index++] = idx_index_pointer + 3;
+
+		idx_index_pointer += 4;
+	}
+
 	if (get_orientation() == FACE_Z)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < list_vertex.size(); i++)
 		{
-			SWAP(corner_sep_vertex_ofs_list[i].y, corner_sep_vertex_ofs_list[i].z);
-			corner_sep_vertex_ofs_list[i].y = -corner_sep_vertex_ofs_list[i].y;
+			Vector3 vertex = list_vertex[i];
+			SWAP(vertex.y, vertex.z);
+			vertex.y = -vertex.y;
+			list_vertex.write[i] = vertex;
 		}
 	}
 	else if (get_orientation() == FACE_X)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < list_vertex.size(); i++)
 		{
-			SWAP(corner_sep_vertex_ofs_list[i].y, corner_sep_vertex_ofs_list[i].z);
-			SWAP(corner_sep_vertex_ofs_list[i].x, corner_sep_vertex_ofs_list[i].z);
-			corner_sep_vertex_ofs_list[i] = -corner_sep_vertex_ofs_list[i];
+			Vector3 vertex = list_vertex[i];
+			SWAP(vertex.y, vertex.z);
+			SWAP(vertex.x, vertex.z);
+			vertex = -vertex;
+			list_vertex.write[i] = vertex;
 		}
 	}
 
 	for (int vertex_idx = 0; vertex_idx < list_vertex.size(); vertex_idx++)
 	{
-		Vector3 vertex = list_vertex[vertex_idx] - plane_center;
+		Vector3 vertex = list_vertex[vertex_idx];
 		Vector3 vertex_ofs;
-
-		switch (get_orientation())
-		{
-			case FACE_Z: {
-				if (vertex.x < 0 && vertex.y > 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
-				}
-				else if (vertex.x > 0 && vertex.y > 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
-				}
-				else if (vertex.x > 0 && vertex.y < 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
-				}
-				else
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
-				}
-			} break;
-			case FACE_X: {
-				if (vertex.z > 0 && vertex.y > 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
-				}
-				else if (vertex.z < 0 && vertex.y > 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
-				}
-				else if (vertex.z < 0 && vertex.y < 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
-				}
-				else
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
-				}
-			} break;
-			case FACE_Y:
-			default: {
-				if (vertex.x < 0 && vertex.z < 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_LEFT];
-				}
-				else if (vertex.x > 0 && vertex.z < 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_TOP_RIGHT];
-				}
-				else if (vertex.x > 0 && vertex.z > 0)
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_RIGHT];
-				}
-				else
-				{
-					vertex_ofs = corner_sep_vertex_ofs_list[CORNER_BOTTOM_LEFT];
-				}
-			} break;
-		}
 
 		vertex += vertex_ofs;
 
@@ -152,6 +159,8 @@ void QuadSplitCornerDeformablePlaneMesh::_create_mesh_array(Array &p_arr) const
 	}
 
 	p_arr[RenderingServer::ARRAY_VERTEX] = list_vertex;
+	p_arr[RenderingServer::ARRAY_TEX_UV] = list_uv;
+	p_arr[RenderingServer::ARRAY_INDEX] = list_index;
 }
 
 
@@ -250,6 +259,4 @@ void QuadSplitCornerDeformablePlaneMesh::_bind_methods()
 
 QuadSplitCornerDeformablePlaneMesh::QuadSplitCornerDeformablePlaneMesh()
 {
-	set_subdivide_width(4);
-	set_subdivide_depth(4);
 }
