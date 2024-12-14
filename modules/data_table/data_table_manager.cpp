@@ -5,11 +5,19 @@
 DataTableManager *DataTableManager::singleton = nullptr;
 
 
+void DataTableManager::Context::clear()
+{
+	for (DataTable *table : list_table)
+	{
+		memdelete(table);
+	}
+}
+
+
 void DataTableManager::_bind_methods()
 {
 	BIND_CONSTANT(GLOBAL_CONTEXT);
 	BIND_CONSTANT(INVALID_CONTEXT);
-
 	BIND_CONSTANT(INVALID_TABLE_INDEX);
 
 	ClassDB::bind_method(D_METHOD("get_open_context_slot"), &DataTableManager::get_open_context_slot);
@@ -18,6 +26,7 @@ void DataTableManager::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_table", "key", "context"), &DataTableManager::bind_get_table, DEFVAL(GLOBAL_CONTEXT));
 	ClassDB::bind_method(D_METHOD("get_table_by_script", "script", "context"), &DataTableManager::get_table_by_script, DEFVAL(GLOBAL_CONTEXT));
 	ClassDB::bind_method(D_METHOD("get_table_by_class_name", "class_name", "context"), &DataTableManager::get_table_by_class_name, DEFVAL(GLOBAL_CONTEXT));
+	ClassDB::bind_method(D_METHOD("clear_contexts"), &DataTableManager::clear_contexts);
 	ClassDB::bind_method(D_METHOD("clear_every_table", "context"), &DataTableManager::clear_every_table, DEFVAL(GLOBAL_CONTEXT));
 	ClassDB::bind_method(D_METHOD("reload_every_table", "context"), &DataTableManager::reload_every_table, DEFVAL(GLOBAL_CONTEXT));
 }
@@ -26,6 +35,18 @@ void DataTableManager::_bind_methods()
 DataTableManager *DataTableManager::get_singleton()
 {
 	return singleton;
+}
+
+
+void DataTableManager::create_singleton()
+{
+	memnew(DataTableManager);
+}
+
+
+void DataTableManager::delete_singleton()
+{
+	memdelete(singleton);
 }
 
 
@@ -155,6 +176,16 @@ DataTable *DataTableManager::get_table_by_script(const Ref<Script> &p_script, co
 }
 
 
+void DataTableManager::clear_contexts()
+{
+	for (HashMap<int64_t, Context>::Iterator E = map_context.begin(); E; ++E)
+	{
+		E->value.clear();
+	}
+	map_context.clear();
+}
+
+
 void DataTableManager::clear_every_table(const int64_t p_context)
 {
 	Context &context = get_or_create_context(p_context);
@@ -185,21 +216,27 @@ void DataTableManager::init_table(Context &p_context, DataTable *p_table) const
 }
 
 
+void DataTableManager::_notification(int p_what)
+{
+	switch (p_what)
+	{
+		case NOTIFICATION_PREDELETE: {
+			clear_contexts();
+		} break;
+	}
+}
+
+
 DataTableManager::DataTableManager()
 {
 	CRASH_COND_MSG(singleton != nullptr, RTR("DataTableManager is a singleton. Do not instantiate it multiple times."));
 	singleton = this;
+	Engine::get_singleton()->add_singleton(Engine::Singleton("DataTableManager", this, "DataTableManager"));
 }
 
 
 DataTableManager::~DataTableManager()
 {
-	for (KeyValue<int64_t, Context> &E : map_context)
-	{
-		for (DataTable *table : E.value.list_table)
-		{
-			memdelete(table);
-		}
-	}
+	Engine::get_singleton()->remove_singleton("DataTableManager");
 	singleton = nullptr;
 }

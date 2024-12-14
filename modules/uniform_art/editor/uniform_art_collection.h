@@ -14,8 +14,16 @@ class UniformArtCollection final : public Resource
 	GDCLASS(UniformArtCollection, Resource);
 
 public:
+	struct ScanTarget final
+	{
+		String name; // This is only used for organizational purposes.
+		String scan_directory; // The directory that will be scanned.
+		String save_subdirectory; // The subfolder that images from this folder will be saved to.
+	};
+
 	struct ProcessTarget final
 	{
+		String name; // This is only for organizational purposes.
 		Image::Interpolation interpolation = Image::INTERPOLATE_BILINEAR;
 		String directory_images_destination;
 		String directory_crop_textures_destination;
@@ -27,14 +35,13 @@ public:
 	};
 
 private:
+	static inline PropertyListHelper base_p_list_helper_scan_targets;
+	PropertyListHelper p_list_helper_scan_targets;
 	static inline PropertyListHelper base_p_list_helper_process_targets;
 	PropertyListHelper p_list_helper_process_targets;
 
-	Vector<Ref<UniformArtData>> art_entries;
+	LocalVector<ScanTarget, int> scan_targets;
 	LocalVector<ProcessTarget, int> process_targets;
-
-	void bindable_set_art_entries(const TypedArray<UniformArtData> &p_entries);
-	TypedArray<UniformArtData> bindable_get_art_entries() const;
 
 protected:
 	static void _bind_methods();
@@ -45,11 +52,19 @@ protected:
 	bool _property_get_revert(const StringName &p_name, Variant &r_property) const;
 
 public:
-	void set_art_entries(const Vector<Ref<UniformArtData>> &p_entries);
-	Vector<Ref<UniformArtData>> get_art_entries() const;
+	void set_scan_target_count(const int p_count);
+	int get_scan_target_count() const;
+	void set_scan_target_name(const int p_target, const String &p_name);
+	String get_scan_target_name(const int p_target) const;
+	void set_scan_target_scan_directory(const int p_target, const String &p_folder);
+	String get_scan_target_scan_directory(const int p_target) const;
+	void set_scan_target_save_subdirectory(const int p_target, const String &p_subdirectory_name);
+	String get_scan_target_save_subdirectory(const int p_target) const;
 
 	void set_process_target_count(const int p_count);
 	int get_process_target_count() const;
+	void set_process_target_name(const int p_target, const String &p_name);
+	String get_process_target_name(const int p_target) const;
 	void set_process_target_interpolation(const int p_target, const Image::Interpolation p_interpolation_mode);
 	Image::Interpolation get_process_target_interpolation(const int p_target) const;
 	void set_process_target_directory_images_destination(const int p_target, const String &p_path);
@@ -66,6 +81,10 @@ public:
 	String get_process_target_image_path_foreground(const int p_target) const;
 	void set_process_target_image_path_mask(const int p_target, const String &p_path);
 	String get_process_target_image_path_mask(const int p_target) const;
+
+	bool has_scan_target(const int p_target) const;
+	ScanTarget &get_scan_target(const int p_target);
+	const ScanTarget &get_scan_target(const int p_target) const;
 
 	bool has_process_target(const int p_target) const;
 	ProcessTarget &get_process_target(const int p_target);

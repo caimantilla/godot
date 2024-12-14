@@ -28,9 +28,11 @@ protected:
 
 #ifdef TOOLS_ENABLED
 	GDVIRTUAL0RC(String, _get_default_editor_category);
+	GDVIRTUAL1RC(bool, _is_record_editor_hidden, int64_t);
 	GDVIRTUAL1RC(String, _get_record_editor_name, int64_t);
 	GDVIRTUAL1RC(String, _get_record_editor_category, int64_t);
 	GDVIRTUAL1RC(String, _get_record_editor_description, int64_t);
+	GDVIRTUAL1RC(Color, _get_record_editor_color, int64_t);
 	GDVIRTUAL1RC(Ref<Texture2D>, _get_record_editor_icon, int64_t);
 #endif // TOOLS_ENABLED
 
@@ -46,9 +48,11 @@ public:
 
 #ifdef TOOLS_ENABLED
 	virtual String get_default_editor_category() const override;
+	virtual bool is_record_editor_hidden(const int64_t p_record_id_number) const override;
 	virtual String get_record_editor_name(const int64_t p_record_id_number) const override;
 	virtual String get_record_editor_category(const int64_t p_record_id_number) const override;
 	virtual String get_record_editor_description(const int64_t p_record_id_number) const override;
+	virtual Color get_record_editor_color(const int64_t p_record_id_number) const override;
 	virtual Ref<Texture2D> get_record_editor_icon(const int64_t p_record_id_number) const override;
 #endif // TOOLS_ENABLED
 };

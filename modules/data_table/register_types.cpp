@@ -11,18 +11,21 @@
 
 void initialize_data_table_module(ModuleInitializationLevel p_level)
 {
-	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SERVERS)
 	{
-		memnew(DataTableManager);
 		GDREGISTER_ABSTRACT_CLASS(DataTableManager);
-		Engine::get_singleton()->add_singleton(Engine::Singleton("DataTableManager", DataTableManager::get_singleton(), "DataTableManager"));
 		GDREGISTER_ABSTRACT_CLASS(DataTable);
 		GDREGISTER_CLASS(DataTableCustom);
+
+		DataTableManager::create_singleton();
 	}
 #ifdef TOOLS_ENABLED
 	if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR)
 	{
-		EditorPlugins::add_by_type<DataTableEditorPlugin>();
+		if (Engine::get_singleton()->is_editor_hint())
+		{
+			EditorPlugins::add_by_type<DataTableEditorPlugin>();
+		}
 	}
 #endif // TOOLS_ENABLED
 }
@@ -30,9 +33,14 @@ void initialize_data_table_module(ModuleInitializationLevel p_level)
 
 void uninitialize_data_table_module(ModuleInitializationLevel p_level)
 {
-	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SERVERS)
 	{
-		Engine::get_singleton()->remove_singleton("DataTableManager");
-		memdelete(DataTableManager::get_singleton());
+#ifdef TOOLS_ENABLED
+		if (Engine::get_singleton()->is_editor_hint())
+		{
+			return;
+		}
+#endif
+		DataTableManager::delete_singleton();
 	}
 }

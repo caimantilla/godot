@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+Import("env")
+Import("env_modules")
+
+env_cms_sprite_extensions = env_modules.Clone()
+
+env_cms_sprite_extensions.add_source_files(env.modules_sources, "*.cpp")
+env_cms_sprite_extensions.add_source_files(env.modules_sources, "./scene/3d/*.cpp")
+
+if env.editor_build:
+	env_cms_sprite_extensions.add_source_files(env.modules_sources, "./editor/*.cpp")
+	env_cms_sprite_extensions.add_source_files(env.modules_sources, "./editor/plugins/*.cpp")

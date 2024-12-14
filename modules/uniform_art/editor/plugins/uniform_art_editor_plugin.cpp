@@ -9,26 +9,44 @@
 
 static Ref<Image> load_image_at_path(const String &p_path)
 {
-	if (p_path.is_empty())
+	const String path = p_path.strip_edges();
+	if (path.is_empty())
 	{
 		return Ref<Image>();
 	}
-	ERR_FAIL_COND_V_MSG(!p_path.ends_with(".png"), Ref<Image>(), TTR("Only PNG images are supported."));
-	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::READ);
-	if (file.is_valid())
-	{
-		PackedByteArray data = file->get_buffer(file->get_length());
-		file->close();
+	Engine *engine = Engine::get_singleton();
+	bool was_error_enabled = engine->is_printing_error_messages();
+	engine->set_print_error_messages(false);
 
-		Ref<Image> image;
-		image.instantiate();
-		if (image->load_png_from_buffer(data) == OK)
-		{
-			image->convert(Image::FORMAT_RGBA8);
-			return image;
-		}
+	Ref<Image> image;
+	image.instantiate();
+	Error load_error = image->load(path);
+	if (load_error == OK)
+	{
+		image->convert(Image::FORMAT_RGBA8);
 	}
-	return Ref<Image>();
+	else
+	{
+		image = Ref<Image>();
+	}
+	engine->set_print_error_messages(was_error_enabled);
+	return image;
+	// ERR_FAIL_COND_V_MSG(!p_path.ends_with(".png"), Ref<Image>(), TTR("Only PNG images are supported."));
+	// Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::READ);
+	// if (file.is_valid())
+	// {
+	// 	PackedByteArray data = file->get_buffer(file->get_length());
+	// 	file->close();
+
+	// 	Ref<Image> image;
+	// 	image.instantiate();
+	// 	if (image->load_png_from_buffer(data) == OK)
+	// 	{
+	// 		image->convert(Image::FORMAT_RGBA8);
+	// 		return image;
+	// 	}
+	// }
+	// return Ref<Image>();
 }
 
 
@@ -48,6 +66,12 @@ void UniformArtDataPreview::set_art_data(const Ref<UniformArtData> &p_art)
 		art_data->connect_changed(callable_mp(this, &UniformArtDataPreview::on_art_data_changed));
 	}
 	reload_image();
+}
+
+
+Ref<UniformArtData> UniformArtDataPreview::get_art_data() const
+{
+	return art_data;
 }
 
 
@@ -208,7 +232,14 @@ void EditorInspectorPluginUniformArtData::parse_begin(Object *p_object)
 
 void UniformArtEditorPlugin::rebuild_collection(const Ref<UniformArtCollection> &p_collection)
 {
+	struct IterArt final
+	{
+		Ref<UniformArtData> art; // Reference to the art data file.
+		String subfolder_name; // The name of the subfolder that the resulting image will be saved to, deeper than the main save directory.
+	};
+
 	ERR_FAIL_COND(!p_collection.is_valid());
+	ERR_FAIL_COND_EDMSG(p_collection->get_process_target_count() < 1, TTR("Collection must have at least 1 process target to be rebuilt."));
 
 	// if (!cache_unchanged_art_entry_map.has(p_collection))
 	// {
@@ -218,26 +249,50 @@ void UniformArtEditorPlugin::rebuild_collection(const Ref<UniformArtCollection> 
 	// HashSet<Ref<UniformArtData>> &cache_unchanged_entries = cache_unchanged_art_entry_map[p_collection];
 	List<QueueGenerateCropTexture> crop_texture_generate_queue;
 
+	List<IterArt> art_list;
+
+	for (int i = 0; i < p_collection->get_scan_target_count(); i++)
+	{
+		const UniformArtCollection::ScanTarget scan_target = p_collection->get_scan_target(i);
+
+		Error err = OK;
+		Ref<DirAccess> dir = DirAccess::open(scan_target.scan_directory, &err);
+		ERR_CONTINUE_EDMSG(err != OK, vformat(TTR("Failed to open directory '%s' with error code %d."), scan_target.scan_directory, err));
+
+		err = dir->list_dir_begin();
+		if (err != OK)
+		{
+			dir->list_dir_end();
+			continue;
+		}
+		String current_file = dir->get_next();
+		while (!current_file.is_empty())
+		{
+			const String path = scan_target.scan_directory.path_join(current_file);
+			if (!dir->current_is_dir() && ResourceLoader::exists(path, "UniformArtData"))
+			{
+				Ref<UniformArtData> art = ResourceLoader::load(path, "UniformArtData");
+				if (art.is_valid())
+				{
+					IterArt iter_art;
+					iter_art.art = art;
+					iter_art.subfolder_name = scan_target.save_subdirectory;
+					art_list.push_back(iter_art);
+				}
+			}
+			current_file = dir->get_next();
+		}
+		dir->list_dir_end();
+	}
+
+	ERR_FAIL_COND_EDMSG(art_list.is_empty(), TTR("Collection must have at least 1 art entry to be rebuilt."));
+
 	for (int target_idx = 0; target_idx < p_collection->get_process_target_count(); target_idx++)
 	{
 		const UniformArtCollection::ProcessTarget target = p_collection->get_process_target(target_idx);
 
 		String directory_images_destination = target.directory_images_destination.strip_edges();
 		String directory_crop_textures_destination = target.directory_crop_textures_destination.strip_edges();
-
-		ERR_CONTINUE(directory_images_destination.is_empty());
-
-		if (directory_images_destination.is_relative_path())
-		{
-			directory_images_destination = p_collection->get_path().get_base_dir().path_join(directory_images_destination);
-		}
-
-		ERR_CONTINUE(!DirAccess::dir_exists_absolute(directory_images_destination));
-
-		if (!directory_crop_textures_destination.is_empty() && directory_crop_textures_destination.is_relative_path())
-		{
-			directory_crop_textures_destination = p_collection->get_path().get_base_dir().path_join(directory_crop_textures_destination);
-		}
 
 		bool crop_texture_generate_enabled = (
 			DirAccess::dir_exists_absolute(directory_crop_textures_destination)
@@ -246,6 +301,36 @@ void UniformArtEditorPlugin::rebuild_collection(const Ref<UniformArtCollection> 
 			&& target.padded_size.width > 0
 			&& target.padded_size.height > 0
 		);
+
+		ERR_CONTINUE(directory_images_destination.is_empty());
+
+		if (directory_images_destination.is_relative_path())
+		{
+			directory_images_destination = p_collection->get_path().get_base_dir().path_join(directory_images_destination);
+		}
+
+		bool save_directories_ok = DirAccess::dir_exists_absolute(directory_images_destination);
+		for (int i = 0; i < p_collection->get_scan_target_count(); i++)
+		{
+			const String save_subfolder = p_collection->get_scan_target_save_subdirectory(i);
+			if (!save_subfolder.is_empty())
+			{
+				const String save_dir_img = directory_images_destination.path_join(save_subfolder);
+				const String save_dir_crop = directory_crop_textures_destination.path_join(save_subfolder);
+				if (!DirAccess::dir_exists_absolute(save_dir_img))
+				{
+					save_directories_ok = false;
+					break;
+				}
+				crop_texture_generate_enabled = crop_texture_generate_enabled && DirAccess::dir_exists_absolute(save_dir_crop);
+			}
+		}
+		ERR_CONTINUE(!save_directories_ok);
+
+		if (!directory_crop_textures_destination.is_empty() && directory_crop_textures_destination.is_relative_path())
+		{
+			directory_crop_textures_destination = p_collection->get_path().get_base_dir().path_join(directory_crop_textures_destination);
+		}
 
 		HashMap<Size2i, Ref<Image>> size_bg_map;
 		HashMap<Size2i, Ref<Image>> size_fg_map;
@@ -268,19 +353,22 @@ void UniformArtEditorPlugin::rebuild_collection(const Ref<UniformArtCollection> 
 			size_mask_map.insert(base_mask_img->get_size(), base_mask_img);
 		}
 
-		const Vector<Ref<UniformArtData>> art_list = p_collection->get_art_entries();
-		for (int art_idx = 0; art_idx < art_list.size(); art_idx++)
+		for (const IterArt &iter_art : art_list)
 		{
-			const Ref<UniformArtData> art_data = art_list[art_idx];
-			if (!art_data.is_valid()) // || cache_unchanged_entries.has(art_data))
-			{
-				continue;
-			}
+			const Ref<UniformArtData> art_data = iter_art.art;
 			ERR_CONTINUE_MSG(art_data->is_built_in(), TTR("Subresources cannot be used as art entries.\nPlease save to external files."));
 
 			const String filename = art_data->get_path().get_file().get_basename();
-			const String save_path_image = directory_images_destination.path_join(vformat("%s.png", filename));
-			const String save_path_crop_texture = directory_crop_textures_destination.path_join(vformat("%s.tres", filename));
+			const String save_path_image = (
+				iter_art.subfolder_name.is_empty()
+				? directory_images_destination.path_join(vformat("%s.png", filename))
+				: directory_images_destination.path_join(iter_art.subfolder_name).path_join(vformat("%s.png", filename))
+			);
+			const String save_path_crop_texture = (
+				iter_art.subfolder_name.is_empty()
+				? directory_crop_textures_destination.path_join(vformat("%s.tres", filename))
+				: directory_crop_textures_destination.path_join(iter_art.subfolder_name).path_join(vformat("%s.tres", filename))
+			);
 
 			Ref<Image> source_art_img = load_image_at_path(art_data->get_source_image_path());
 			ERR_CONTINUE_MSG(!source_art_img.is_valid(), vformat(TTR("No image found at at path: \"%s\""), art_data->get_source_image_path()));

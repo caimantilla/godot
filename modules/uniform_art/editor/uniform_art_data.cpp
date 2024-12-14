@@ -81,7 +81,7 @@ void UniformArtData::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_flip_v", "enabled"), &UniformArtData::set_flip_v);
 	ClassDB::bind_method(D_METHOD("is_flipped_v"), &UniformArtData::is_flipped_v);
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "source_image_path", PROPERTY_HINT_FILE, "*.png"), "set_source_image_path", "get_source_image_path");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "source_image_path", PROPERTY_HINT_FILE), "set_source_image_path", "get_source_image_path");
 	ADD_PROPERTY(PropertyInfo(Variant::RECT2I, "crop_region"), "set_crop_region", "get_crop_region");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_h"), "set_flip_h", "is_flipped_h");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_v"), "set_flip_v", "is_flipped_v");

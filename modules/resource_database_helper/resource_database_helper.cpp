@@ -78,7 +78,7 @@ void ResourceDatabaseHelper::recursive_step_process_folder(const Ref<DirAccess> 
 			const String curr_path = p_current_folder.path_join(curr_name);
 			if (p_dir->current_is_dir())
 			{
-				print_line(curr_path);
+				print_verbose(vformat(RTR("Scanning folder: \'%s\""), curr_path));
 				p_subfolder_list->push_back(curr_path);
 			}
 			else

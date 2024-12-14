@@ -27,6 +27,8 @@ class DataTableManager final : public Object
 		mutable HashMap<std::type_index, DataTable *, NativeTypeHasher> map_type_table;
 		mutable HashMap<StringName, DataTable *> map_native_class_name_table;
 		mutable HashMap<Ref<Script>, DataTableCustom *> map_script_table;
+
+		void clear();
 	};
 
 public:
@@ -34,7 +36,6 @@ public:
 	{
 		GLOBAL_CONTEXT = 0,
 		INVALID_CONTEXT = -1,
-
 		INVALID_TABLE_INDEX = -1,
 	};
 
@@ -49,15 +50,19 @@ private:
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
 	static DataTableManager *get_singleton();
+	static void create_singleton();
+	static void delete_singleton();
 
 	int64_t get_open_context_slot() const;
 	int64_t get_table_count(const int64_t p_context = GLOBAL_CONTEXT) const;
 	DataTable *get_table_at(const int64_t p_idx, const int64_t p_context = GLOBAL_CONTEXT) const;
 	DataTable *get_table_by_class_name(const StringName &p_type_name, const int64_t p_context = GLOBAL_CONTEXT) const;
 	DataTable *get_table_by_script(const Ref<Script> &p_script, const int64_t p_context = GLOBAL_CONTEXT) const;
+	void clear_contexts();
 	void clear_every_table(const int64_t p_context = GLOBAL_CONTEXT);
 	void reload_every_table(const int64_t p_context = GLOBAL_CONTEXT);
 

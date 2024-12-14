@@ -26,9 +26,11 @@ private:
 
 #ifdef TOOLS_ENABLED
 	String bind_get_default_editor_category() const;
+	bool bind_is_record_editor_hidden(const int64_t p_record_id_number) const;
 	String bind_get_record_editor_name(const int64_t p_record_id_number) const;
 	String bind_get_record_editor_category(const int64_t p_record_id_number) const;
 	String bind_get_record_editor_description(const int64_t p_record_id_number) const;
+	Color bind_get_record_editor_color(const int64_t p_record_id_number) const;
 	Ref<Texture2D> bind_get_record_editor_icon(const int64_t p_record_id_number) const;
 #endif // TOOLS_ENABLED
 
@@ -53,10 +55,12 @@ public:
 	virtual int64_t convert_id_string_to_id_number(const String &p_record_id_string) const;
 
 #ifdef TOOLS_ENABLED
+	virtual bool is_record_editor_hidden(const int64_t p_record_id_number) const;
 	virtual String get_default_editor_category() const;
 	virtual String get_record_editor_name(const int64_t p_record_id_number) const;
 	virtual String get_record_editor_category(const int64_t p_record_id_number) const;
 	virtual String get_record_editor_description(const int64_t p_record_id_number) const;
+	virtual Color get_record_editor_color(const int64_t p_record_id_number) const;
 	virtual Ref<Texture2D> get_record_editor_icon(const int64_t p_record_id_number) const;
 #endif // TOOLS_ENABLED
 

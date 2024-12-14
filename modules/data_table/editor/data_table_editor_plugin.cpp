@@ -1,13 +1,35 @@
 #include "data_table_editor_plugin.hpp"
 #include "../data_table_manager.hpp"
 #include "scene/scene_string_names.h"
+#include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::_notification(int p_what)
+void EditorPropertyDataTableRecordSelector::_bind_methods()
+{
+	EditorSettings *ed_cfg = EditorSettings::get_singleton();
+
+	EDITOR_DEF("data_table/editor/records/color_tint_level/bg", 0.3);
+	EDITOR_DEF("data_table/editor/records/color_tint_level/text", 0.05);
+
+	ed_cfg->add_property_hint(PropertyInfo(Variant::FLOAT, "data_table/editor/records/color_tint_level/bg", PROPERTY_HINT_RANGE, "0,1"));
+	ed_cfg->add_property_hint(PropertyInfo(Variant::FLOAT, "data_table/editor/records/color_tint_level/text", PROPERTY_HINT_RANGE, "0,1"));
+}
+
+
+void EditorPropertyDataTableRecordSelector::_notification(int p_what)
 {
 	switch (p_what)
 	{
+		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("data_table/editor"))
+			{
+				on_editor_settings_changed();
+			}
+		} break;
+		case NOTIFICATION_POSTINITIALIZE: {
+			update_configuration();
+		} break;
 		case NOTIFICATION_READY: {
 			refresh_everything();
 		} break;
@@ -15,10 +37,10 @@ void DataTableEditorPlugin::RecordSelectorProperty::_notification(int p_what)
 			Ref<Texture2D> ico_clr = get_theme_icon(SNAME("Clear"), EditorStringName(EditorIcons));
 			btn_clr->set_icon(ico_clr);
 
-			Ref<Font> font = btn_sel->get_theme_font(SNAME("font"));
+			Ref<Font> font = btn_sel->get_theme_font(SceneStringName(font));
 			if (font.is_valid())
 			{
-				int font_size = btn_sel->get_theme_font_size(SNAME("font_size"));
+				int font_size = btn_sel->get_theme_font_size(SceneStringName(font_size));
 				font_size = font->get_height(font_size);
 				btn_sel->add_theme_constant_override(SNAME("icon_max_width"), font_size);
 			}
@@ -26,24 +48,25 @@ void DataTableEditorPlugin::RecordSelectorProperty::_notification(int p_what)
 			{
 				btn_sel->remove_theme_constant_override(SNAME("icon_max_width"));
 			}
+			queue_refresh_everything();
 		} break;
 	}
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::_set_read_only(bool p_read_only)
+void EditorPropertyDataTableRecordSelector::_set_read_only(bool p_read_only)
 {
 	update_button_state();
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::update_property()
+void EditorPropertyDataTableRecordSelector::update_property()
 {
 	update_button_state();
 }
 
 
-Variant DataTableEditorPlugin::RecordSelectorProperty::cast_value_to_property_type(const Variant &p_value) const
+Variant EditorPropertyDataTableRecordSelector::cast_value_to_property_type(const Variant &p_value) const
 {
 	switch (property_type)
 	{
@@ -61,13 +84,13 @@ Variant DataTableEditorPlugin::RecordSelectorProperty::cast_value_to_property_ty
 }
 
 
-Variant DataTableEditorPlugin::RecordSelectorProperty::get_edited_property_value_casted() const
+Variant EditorPropertyDataTableRecordSelector::get_edited_property_value_casted() const
 {
 	return cast_value_to_property_type(get_edited_property_value());
 }
 
 
-Variant DataTableEditorPlugin::RecordSelectorProperty::get_invalid_id_value() const
+Variant EditorPropertyDataTableRecordSelector::get_invalid_id_value() const
 {
 	switch (id_mode)
 	{
@@ -81,7 +104,7 @@ Variant DataTableEditorPlugin::RecordSelectorProperty::get_invalid_id_value() co
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::refresh_everything()
+void EditorPropertyDataTableRecordSelector::refresh_everything()
 {
 	refresh_queue_dirty = false;
 	refresh_records();
@@ -90,7 +113,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_everything()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::reset_popup_height()
+void EditorPropertyDataTableRecordSelector::reset_popup_height()
 {
 	Size2i new_size = popup->get_size();
 	new_size.height = 0;
@@ -98,7 +121,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::reset_popup_height()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::focus_selected_record()
+void EditorPropertyDataTableRecordSelector::focus_selected_record()
 {
 	if (get_edited_object() == nullptr)
 	{
@@ -121,7 +144,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::focus_selected_record()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
+void EditorPropertyDataTableRecordSelector::refresh_records()
 {
 	for (ItemList *item_list : item_lists)
 	{
@@ -170,6 +193,13 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 		}
 		ERR_CONTINUE(curr_record_id_no == invalid_id_no || curr_record_id_str == invalid_id_str);
 
+		// Skip records that are supposed to be hidden. duh.
+		if (table->is_record_editor_hidden(curr_record_id_no))
+		{
+			continue;
+		}
+
+		// Skip records that do not match the category constraints.
 		String record_category = table->get_record_editor_category(curr_record_id_no);
 		if (!category_constraint.is_empty() && (record_category.is_empty() || !category_constraint.has(record_category)))
 		{
@@ -212,17 +242,26 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 			record_tooltip = vformat("%s\n%s", curr_record_id_str, record_tooltip);
 		}
 
-		Ref<Font> font = item_list->get_theme_font(SNAME("font"));
+		const Ref<Font> font = item_list->get_theme_font(SceneStringName(font));
 
 		if (font.is_valid())
 		{
-			int font_size = font->get_height(item_list->get_theme_font_size(SNAME("font_size")));
+			int font_size = font->get_height(item_list->get_theme_font_size(SceneStringName(font_size)));
 			Size2i ico_size = Size2i(font_size, font_size);
 			item_list->set_fixed_icon_size(ico_size);
 		}
 
-		int item_index = item_list->add_item(record_name, record_icon);
+		const int item_index = item_list->add_item(record_name, record_icon);
 		item_list->set_item_tooltip(item_index, record_tooltip);
+
+		const Color record_color = table->get_record_editor_color(curr_record_id_no);
+
+		if (record_color.get_a8() > 0 && !Math::is_zero_approx(cfg_record_color_tint_bg))
+		{
+			Color bg_color = record_color;
+			bg_color.a *= cfg_record_color_tint_bg;
+			item_list->set_item_custom_bg_color(item_index, bg_color);
+		}
 
 		switch (id_mode)
 		{
@@ -294,7 +333,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::refresh_records()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::prompt_record_selection()
+void EditorPropertyDataTableRecordSelector::prompt_record_selection()
 {
 	if (get_edited_object() == nullptr)
 	{
@@ -317,19 +356,24 @@ void DataTableEditorPlugin::RecordSelectorProperty::prompt_record_selection()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::clear_record_selection()
+void EditorPropertyDataTableRecordSelector::clear_record_selection()
 {
 	emit_changed(get_edited_property(), get_invalid_id_value());
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::update_button_state()
+void EditorPropertyDataTableRecordSelector::update_button_state()
 {
 	bool disp_id_ok = false;
 	bool sel_ok = true;
 
 	int64_t curr_selected_id_no;
 	String curr_selected_id_str;
+
+	if (btn_sel->has_theme_color_override(SceneStringName(font_color)))
+	{
+		btn_sel->remove_theme_color_override(SceneStringName(font_color));
+	}
 
 	if (is_read_only())
 	{
@@ -398,12 +442,20 @@ void DataTableEditorPlugin::RecordSelectorProperty::update_button_state()
 			btn_sel->set_text(display_name);
 			btn_sel->set_tooltip_text(curr_selected_id_str);
 			btn_sel->set_icon(table->get_record_editor_icon(curr_selected_id_no));
+
+			Color record_color = table->get_record_editor_color(curr_selected_id_no);
+			if (record_color.get_a8() > 0 && !Math::is_zero_approx(cfg_record_color_tint_text))
+			{
+				const Color font_color = btn_sel->get_theme_color(SceneStringName(font_color));
+				record_color.a *= cfg_record_color_tint_text;
+				btn_sel->add_theme_color_override(SceneStringName(font_color), font_color.blend(record_color));
+			}
 		}
 	}
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_visibility_changed(ItemList *p_item_list)
+void EditorPropertyDataTableRecordSelector::on_item_list_visibility_changed(ItemList *p_item_list)
 {
 	if (p_item_list->is_visible_in_tree())
 	{
@@ -413,7 +465,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_visibility_chan
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_item_selected(int p_item, ItemList *p_item_list)
+void EditorPropertyDataTableRecordSelector::on_item_list_item_selected(int p_item, ItemList *p_item_list)
 {
 	popup->hide();
 	Variant selected_record_id = cast_value_to_property_type(p_item_list->get_item_metadata(p_item));
@@ -421,7 +473,7 @@ void DataTableEditorPlugin::RecordSelectorProperty::on_item_list_item_selected(i
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::on_tabs_visibility_changed()
+void EditorPropertyDataTableRecordSelector::on_tabs_visibility_changed()
 {
 	if (tabs->is_visible_in_tree())
 	{
@@ -437,17 +489,37 @@ void DataTableEditorPlugin::RecordSelectorProperty::on_tabs_visibility_changed()
 }
 
 
-void DataTableEditorPlugin::RecordSelectorProperty::on_table_changed()
+void EditorPropertyDataTableRecordSelector::queue_refresh_everything()
 {
 	if (!refresh_queue_dirty)
 	{
 		refresh_queue_dirty = true;
-		callable_mp(this, &RecordSelectorProperty::refresh_everything).call_deferred();
+		callable_mp(this, &EditorPropertyDataTableRecordSelector::refresh_everything).call_deferred();
 	}
 }
 
 
-ItemList *DataTableEditorPlugin::RecordSelectorProperty::create_item_list()
+void EditorPropertyDataTableRecordSelector::update_configuration()
+{
+	cfg_record_color_tint_bg = CLAMP((double)EDITOR_GET("data_table/editor/records/color_tint_level/bg"), 0.0, 1.0);
+	cfg_record_color_tint_text = CLAMP((double)EDITOR_GET("data_table/editor/records/color_tint_level/text"), 0.0, 1.0);
+}
+
+
+void EditorPropertyDataTableRecordSelector::on_editor_settings_changed()
+{
+	update_configuration();
+	queue_refresh_everything();
+}
+
+
+void EditorPropertyDataTableRecordSelector::on_table_changed()
+{
+	queue_refresh_everything();
+}
+
+
+ItemList *EditorPropertyDataTableRecordSelector::create_item_list()
 {
 	ItemList *ret = memnew(ItemList);
 
@@ -459,15 +531,15 @@ ItemList *DataTableEditorPlugin::RecordSelectorProperty::create_item_list()
 	ret->set_allow_search(true);
 	ret->set_icon_mode(ItemList::ICON_MODE_LEFT);
 
-	ret->connect(SNAME("item_selected"), callable_mp(this, &RecordSelectorProperty::on_item_list_item_selected).bind(ret), CONNECT_DEFERRED);
-	ret->connect(SceneStringName(visibility_changed), callable_mp(this, &RecordSelectorProperty::on_item_list_visibility_changed).bind(ret), CONNECT_DEFERRED);
+	ret->connect(SNAME("item_selected"), callable_mp(this, &EditorPropertyDataTableRecordSelector::on_item_list_item_selected).bind(ret), CONNECT_DEFERRED);
+	ret->connect(SceneStringName(visibility_changed), callable_mp(this, &EditorPropertyDataTableRecordSelector::on_item_list_visibility_changed).bind(ret), CONNECT_DEFERRED);
 
 	item_lists.push_back(ret);
 	return ret;
 }
 
 
-DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(Variant::Type p_property_type, DataTable *p_table, HashSet<String> p_category_constraint)
+EditorPropertyDataTableRecordSelector::EditorPropertyDataTableRecordSelector(Variant::Type p_property_type, DataTable *p_table, HashSet<String> p_category_constraint)
 {
 	property_type = p_property_type;
 	switch (p_property_type)
@@ -486,7 +558,7 @@ DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(Variant::T
 	}
 
 	table = p_table;
-	table->connect(CoreStringName(changed), callable_mp(this, &RecordSelectorProperty::on_table_changed));
+	table->connect(CoreStringName(changed), callable_mp(this, &EditorPropertyDataTableRecordSelector::on_table_changed));
 
 	category_constraint = p_category_constraint;
 
@@ -497,13 +569,13 @@ DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(Variant::T
 	btn_sel = memnew(Button);
 	btn_sel->set_auto_translate_mode(Node::AUTO_TRANSLATE_MODE_DISABLED);
 	btn_sel->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	btn_sel->connect(SceneStringName(pressed), callable_mp(this, &RecordSelectorProperty::prompt_record_selection));
+	btn_sel->connect(SceneStringName(pressed), callable_mp(this, &EditorPropertyDataTableRecordSelector::prompt_record_selection));
 	hbox->add_child(btn_sel);
 	add_focusable(btn_sel);
 
 	btn_clr = memnew(Button);
 	btn_clr->set_tooltip_text(TTR("Nullify the current selection."));
-	btn_clr->connect(SceneStringName(pressed), callable_mp(this, &RecordSelectorProperty::clear_record_selection));
+	btn_clr->connect(SceneStringName(pressed), callable_mp(this, &EditorPropertyDataTableRecordSelector::clear_record_selection));
 	hbox->add_child(btn_clr);
 	add_focusable(btn_clr);
 
@@ -518,18 +590,18 @@ DataTableEditorPlugin::RecordSelectorProperty::RecordSelectorProperty(Variant::T
 	tabs = memnew(TabContainer);
 	tabs->set_auto_translate_mode(Node::AUTO_TRANSLATE_MODE_DISABLED);
 	tabs->set_clip_tabs(false);
-	tabs->connect(SceneStringName(visibility_changed), callable_mp(this, &RecordSelectorProperty::on_tabs_visibility_changed), CONNECT_DEFERRED);
+	tabs->connect(SceneStringName(visibility_changed), callable_mp(this, &EditorPropertyDataTableRecordSelector::on_tabs_visibility_changed), CONNECT_DEFERRED);
 	popup->add_child(tabs);
 }
 
 
-bool DataTableEditorPlugin::RecordSelectorPlugin::can_handle(Object *p_object)
+bool EditorInspectorPluginDataTableRecordSelector::can_handle(Object *p_object)
 {
 	return true;
 }
 
 
-bool DataTableEditorPlugin::RecordSelectorPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide)
+bool EditorInspectorPluginDataTableRecordSelector::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide)
 {
 	if (p_hint == PROPERTY_HINT_NONE && (p_type == Variant::STRING || p_type == Variant::STRING_NAME || p_type == Variant::INT || p_type == Variant::FLOAT) && p_hint_text.begins_with("DATA_RECORD:"))
 	{
@@ -554,7 +626,7 @@ bool DataTableEditorPlugin::RecordSelectorPlugin::parse_property(Object *p_objec
 				}
 			}
 
-			RecordSelectorProperty *prop = memnew(RecordSelectorProperty(p_type, table, set_category_constraint));
+			EditorPropertyDataTableRecordSelector *prop = memnew(EditorPropertyDataTableRecordSelector(p_type, table, set_category_constraint));
 			add_property_editor(p_path, prop);
 			return true;
 		}
@@ -570,9 +642,24 @@ void DataTableEditorPlugin::reload_tables()
 }
 
 
+void DataTableEditorPlugin::_notification(int p_what)
+{
+	switch (p_what)
+	{
+		// case NOTIFICATION_ENTER_TREE: {
+		// 	DataTableManager::create_singleton();
+		// } break;
+		case NOTIFICATION_EXIT_TREE: {
+			DataTableManager::delete_singleton();
+		} break;
+	}
+}
+
+
 DataTableEditorPlugin::DataTableEditorPlugin()
 {
-	add_tool_menu_item(TTR("Reload DataTables"), callable_mp(this, &DataTableEditorPlugin::reload_tables));
+	reload_tables_tool_menu_text = TTR("Reload DataTables");
+	add_tool_menu_item(reload_tables_tool_menu_text, callable_mp(this, &DataTableEditorPlugin::reload_tables));
 
 	record_selector_plugin.instantiate();
 	add_inspector_plugin(record_selector_plugin);
@@ -582,6 +669,5 @@ DataTableEditorPlugin::DataTableEditorPlugin()
 DataTableEditorPlugin::~DataTableEditorPlugin()
 {
 	remove_inspector_plugin(record_selector_plugin);
-
-	remove_tool_menu_item(TTR("Reload DataTables"));
+	remove_tool_menu_item(reload_tables_tool_menu_text);
 }

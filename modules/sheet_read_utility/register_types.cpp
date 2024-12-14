@@ -15,4 +15,8 @@ void initialize_sheet_read_utility_module(ModuleInitializationLevel p_level)
 
 void uninitialize_sheet_read_utility_module(ModuleInitializationLevel p_level)
 {
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
+	{
+		memdelete(SheetReadUtility::get_singleton());
+	}
 }

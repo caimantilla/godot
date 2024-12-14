@@ -18,9 +18,11 @@ void DataTable::_bind_methods()
 
 #ifdef TOOLS_ENABLED
 	ClassDB::bind_method(D_METHOD("get_default_editor_category"), &DataTable::bind_get_default_editor_category);
+	ClassDB::bind_method(D_METHOD("is_record_editor_hidden", "record_id_number"), &DataTable::bind_is_record_editor_hidden);
 	ClassDB::bind_method(D_METHOD("get_record_editor_name", "record_id_number"), &DataTable::bind_get_record_editor_name);
 	ClassDB::bind_method(D_METHOD("get_record_editor_category", "record_id_number"), &DataTable::bind_get_record_editor_category);
 	ClassDB::bind_method(D_METHOD("get_record_editor_description", "record_id_number"), &DataTable::bind_get_record_editor_description);
+	ClassDB::bind_method(D_METHOD("get_record_editor_color", "record_id_number"), &DataTable::bind_get_record_editor_color);
 	ClassDB::bind_method(D_METHOD("get_record_editor_icon", "record_id_number"), &DataTable::bind_get_record_editor_icon);
 #endif // TOOLS_ENABLED
 
@@ -63,7 +65,8 @@ int64_t DataTable::get_context() const
 
 int64_t DataTable::get_invalid_record_id_number() const
 {
-	return -1; // I don't know if the default should be 0 or 1. -1 is generally used across Godot to denote invalid IDs, but GDScript int defaults to 0...
+	// I don't know if the default should be 0 or 1. -1 is generally used across Godot to denote invalid IDs, but GDScript int defaults to 0...
+	return -1;
 }
 
 
@@ -140,6 +143,12 @@ String DataTable::get_default_editor_category() const
 }
 
 
+bool DataTable::is_record_editor_hidden(const int64_t p_record_id_number) const
+{
+	return false;
+}
+
+
 String DataTable::get_record_editor_name(const int64_t p_record_id_number) const
 {
 	return String();
@@ -158,6 +167,12 @@ String DataTable::get_record_editor_description(const int64_t p_record_id_number
 }
 
 
+Color DataTable::get_record_editor_color(const int64_t p_record_id_number) const
+{
+	return Color(1, 1, 1, 0);
+}
+
+
 Ref<Texture2D> DataTable::get_record_editor_icon(const int64_t p_record_id_number) const
 {
 	return Ref<Texture2D>();
@@ -167,6 +182,13 @@ Ref<Texture2D> DataTable::get_record_editor_icon(const int64_t p_record_id_numbe
 String DataTable::bind_get_default_editor_category() const
 {
 	return get_default_editor_category();
+
+}
+
+
+bool DataTable::bind_is_record_editor_hidden(const int64_t p_record_id_number) const
+{
+	return is_record_editor_hidden(p_record_id_number);
 }
 
 
@@ -185,6 +207,12 @@ String DataTable::bind_get_record_editor_category(const int64_t p_record_id_numb
 String DataTable::bind_get_record_editor_description(const int64_t p_record_id_number) const
 {
 	return get_record_editor_description(p_record_id_number);
+}
+
+
+Color DataTable::bind_get_record_editor_color(const int64_t p_record_id_number) const
+{
+	return get_record_editor_color(p_record_id_number);
 }
 
 

@@ -85,20 +85,36 @@ bool SubObjectPropertyListHelper::parse_property(const StringName &p_property) c
 
 bool SubObjectPropertyListHelper::is_property_info_valid(const PropertyInfo &p_info) const
 {
-	if (p_info.type == Variant::NIL || p_info.name == "script")
+	// Basic conditions.
+	// Categories should be ignored, as they cannot be nested. Also, they're annoying.
+	// Changing the sub-object's script should NEVER be possible. Please do not ever have a reason to do this.
+	if (p_info.usage & PROPERTY_USAGE_CATEGORY || p_info.name == "script")
+	{
 		return false;
-	
+	}
+
+	// Cover non-category metadata... I can only think of groups and subgroups.
+	if (p_info.type == Variant::NIL)
+	{
+		return true;
+	}
+
+	// Finally, if it's really a variable property, validate the usage flags.
 	uint32_t usage = p_info.usage;
-	
+
 	for (int64_t flag : property_usage_flag_blacklist)
 	{
 		if (usage & flag)
+		{
 			return false;
+		}
 	}
 	for (int64_t flag : property_usage_flag_required_list)
 	{
 		if (!(usage & flag))
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -226,7 +242,16 @@ void SubObjectPropertyListHelper::instance_get_property_list(List<PropertyInfo> 
 		for (PropertyInfo &e_p_info : element_p_list)
 		{
 			if (!is_property_info_valid(e_p_info))
+			{
 				continue;
+			}
+
+			// Configure groups and subgroups
+			if (e_p_info.usage & PROPERTY_USAGE_GROUP || e_p_info.usage & PROPERTY_USAGE_SUBGROUP)
+			{
+				e_p_info.hint_string = prefix + itos(i) + '/' + e_p_info.hint_string;
+			}
+
 			// Configure nested property arrays, eg. "Emotions,emotion_" -> "Emotions,character_0/emotion_"
 			if (e_p_info.usage & PROPERTY_USAGE_ARRAY)
 			{
@@ -235,6 +260,7 @@ void SubObjectPropertyListHelper::instance_get_property_list(List<PropertyInfo> 
 				String right = og_cn.get_slicec(',', 1);
 				e_p_info.class_name = left + ',' + prefix + itos(i) + '/' + right;
 			}
+
 			e_p_info.name = (prefix + itos(i) + '/' + e_p_info.name);
 			p_list->push_back(e_p_info);
 		}

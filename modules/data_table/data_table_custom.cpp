@@ -9,15 +9,17 @@ void DataTableCustom::_bind_methods()
 	GDVIRTUAL_BIND(_get_invalid_record_id_string);
 	GDVIRTUAL_BIND(_get_record_id_number_list);
 	GDVIRTUAL_BIND(_get_record_id_string_list);
-	GDVIRTUAL_BIND(_convert_id_number_to_id_string, "record_id_number");
-	GDVIRTUAL_BIND(_convert_id_string_to_id_number, "record_id_string");
+	GDVIRTUAL_BIND(_convert_id_number_to_id_string, "id_no");
+	GDVIRTUAL_BIND(_convert_id_string_to_id_number, "id_str");
 
 #ifdef TOOLS_ENABLED
 	GDVIRTUAL_BIND(_get_default_editor_category);
-	GDVIRTUAL_BIND(_get_record_editor_name, "record_id_number");
-	GDVIRTUAL_BIND(_get_record_editor_category, "record_id_number");
-	GDVIRTUAL_BIND(_get_record_editor_description, "record_id_number");
-	GDVIRTUAL_BIND(_get_record_editor_icon, "record_id_number");
+	GDVIRTUAL_BIND(_is_record_editor_hidden, "id_no");
+	GDVIRTUAL_BIND(_get_record_editor_name, "id_no");
+	GDVIRTUAL_BIND(_get_record_editor_category, "id_no");
+	GDVIRTUAL_BIND(_get_record_editor_description, "id_no");
+	GDVIRTUAL_BIND(_get_record_editor_color, "id_no");
+	GDVIRTUAL_BIND(_get_record_editor_icon, "id_no");
 #endif // TOOLS_ENABLED
 }
 
@@ -132,6 +134,14 @@ String DataTableCustom::get_default_editor_category() const
 }
 
 
+bool DataTableCustom::is_record_editor_hidden(const int64_t p_record_id_number) const
+{
+	bool ret = false;
+	GDVIRTUAL_CALL(_is_record_editor_hidden, p_record_id_number, ret);
+	return ret;
+}
+
+
 String DataTableCustom::get_record_editor_name(const int64_t p_record_id_number) const
 {
 	String ret;
@@ -152,6 +162,14 @@ String DataTableCustom::get_record_editor_description(const int64_t p_record_id_
 {
 	String ret;
 	GDVIRTUAL_CALL(_get_record_editor_description, p_record_id_number, ret);
+	return ret;
+}
+
+
+Color DataTableCustom::get_record_editor_color(const int64_t p_record_id_number) const
+{
+	Color ret = Color(1, 1, 1, 0);
+	GDVIRTUAL_CALL(_get_record_editor_color, p_record_id_number, ret);
 	return ret;
 }
 
