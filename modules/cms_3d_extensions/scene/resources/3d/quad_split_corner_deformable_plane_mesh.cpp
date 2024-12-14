@@ -238,7 +238,7 @@ void QuadSplitCornerDeformablePlaneMesh::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_corner_separation_bottom_left", "distance"), &QuadSplitCornerDeformablePlaneMesh::set_corner_separation_bottom_left);
 	ClassDB::bind_method(D_METHOD("get_corner_separation_bottom_left"), &QuadSplitCornerDeformablePlaneMesh::get_corner_separation_bottom_left);
 
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR4, "corner_separations", PROPERTY_HINT_NONE, "suffix:m", PROPERTY_USAGE_NO_EDITOR), "set_corner_separations", "get_corner_separation");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR4, "corner_separations", PROPERTY_HINT_NONE, "suffix:m", PROPERTY_USAGE_NO_EDITOR), "set_corner_separations", "get_corner_separations");
 
 	ADD_GROUP("Corner Separations", "corner_separation_");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "corner_separation_top_left", PROPERTY_HINT_NONE, "suffix:m", PROPERTY_USAGE_EDITOR), "set_corner_separation_top_left", "get_corner_separation_top_left");
