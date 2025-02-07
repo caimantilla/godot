@@ -190,6 +190,7 @@ void GraphEditArranger::arrange_nodes() {
 	}
 	graph_edit->emit_signal(SNAME("end_node_move"));
 	arranging_graph = false;
+	graph_edit->emit_signal(SNAME("nodes_arranged"));
 }
 
 int GraphEditArranger::_set_operations(SET_OPERATIONS p_operation, HashSet<StringName> &r_u, const HashSet<StringName> &r_v) {

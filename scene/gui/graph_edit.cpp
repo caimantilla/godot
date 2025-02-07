@@ -2843,6 +2843,8 @@ void GraphEdit::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("graph_elements_linked_to_frame_request", PropertyInfo(Variant::ARRAY, "elements"), PropertyInfo(Variant::STRING_NAME, "frame")));
 	ADD_SIGNAL(MethodInfo("scroll_offset_changed", PropertyInfo(Variant::VECTOR2, "offset")));
 
+	ADD_SIGNAL(MethodInfo("nodes_arranged"));
+
 	BIND_ENUM_CONSTANT(SCROLL_ZOOMS);
 	BIND_ENUM_CONSTANT(SCROLL_PANS);
 
