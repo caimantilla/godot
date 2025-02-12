@@ -300,6 +300,7 @@ void Camera2D::_notification(int p_what) {
 			// Force the limits etc. to update.
 			_interpolation_data.xform_curr = get_camera_transform();
 			_interpolation_data.xform_prev = _interpolation_data.xform_curr;
+			_update_process_callback();
 		} break;
 
 		case NOTIFICATION_SUSPENDED:
@@ -315,7 +316,9 @@ void Camera2D::_notification(int p_what) {
 			}
 			if (is_physics_interpolated_and_enabled()) {
 				_ensure_update_interpolation_data();
-				_interpolation_data.xform_curr = get_camera_transform();
+				if (Engine::get_singleton()->is_in_physics_frame()) {
+					_interpolation_data.xform_curr = get_camera_transform();
+				}
 			}
 		} break;
 
