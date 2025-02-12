@@ -4,6 +4,7 @@
 #include "scene/gui/button.h"
 #include "scene/gui/texture_rect.h"
 #include "editor/editor_file_system.h"
+#include "editor/editor_interface.h"
 #include "editor/themes/editor_scale.h"
 
 
@@ -173,6 +174,99 @@ UniformArtDataPreview::UniformArtDataPreview()
 }
 
 
+void EditorResourcePickerUniformArtDataSourceImage::set_create_options(Object *p_menu_node)
+{
+	// Omit create options.
+}
+
+
+EditorResourcePickerUniformArtDataSourceImage::EditorResourcePickerUniformArtDataSourceImage()
+{
+	set_base_type("Image,Texture2D");
+}
+
+
+void EditorPropertyUniformArtDataSourceImage::_set_read_only(const bool p_read_only)
+{
+	picker->set_editable(!p_read_only);
+}
+
+
+void EditorPropertyUniformArtDataSourceImage::gui_pick_resource_at_path(const String &p_path)
+{
+	Ref<Resource> res = ResourceLoader::load(p_path);
+	if (Ref<Image>(res).is_valid() || Ref<Texture2D>(res).is_valid())
+	{
+		picker->set_edited_resource(res);
+	}
+	else
+	{
+		picker->set_edited_resource(Ref<Resource>());
+	}
+}
+
+
+void EditorPropertyUniformArtDataSourceImage::update_property()
+{
+	Ref<Resource> curr_res = picker->get_edited_resource();
+	const String curr_path = curr_res.is_valid() ? curr_res->get_path() : String();
+
+	const String new_path = get_edited_object()->get(get_edited_property());
+	if (curr_path != new_path)
+	{
+		gui_pick_resource_at_path(new_path);
+	}
+}
+
+
+void EditorPropertyUniformArtDataSourceImage::on_picker_resource_changed(const Ref<Resource> &p_res)
+{
+	if (p_res.is_null())
+	{
+		return;
+	}
+
+	const String res_path = p_res->get_path();
+
+	if (ResourceLoader::exists(res_path))
+	{
+		const String res_uid_str = ResourceUID::get_singleton()->path_to_uid(res_path);
+		const ResourceUID::ID res_uid = ResourceUID::get_singleton()->text_to_id(res_uid_str);
+
+		if (res_uid == ResourceUID::INVALID_ID)
+		{
+			WARN_PRINT(vformat(TTR("UID missing for %s, defaulting to res:// path."), res_path));
+			emit_changed(get_edited_property(), res_path);
+		}
+		else
+		{
+			emit_changed(get_edited_property(), res_uid_str);
+		}
+	}
+	else
+	{
+		gui_pick_resource_at_path(res_path);
+		WARN_PRINT(vformat(TTR("Property \"%s\" must be assigned a resource with a filename."), get_label()));
+	}
+}
+
+
+void EditorPropertyUniformArtDataSourceImage::on_picker_resource_selected(const Ref<Resource> &p_res, const bool p_inspect)
+{
+	callable_mp(EditorInterface::get_singleton(), &EditorInterface::edit_resource).call_deferred(p_res);
+}
+
+
+EditorPropertyUniformArtDataSourceImage::EditorPropertyUniformArtDataSourceImage()
+{
+	picker = memnew(EditorResourcePickerUniformArtDataSourceImage);
+	picker->set_base_type("Image,Texture2D");
+	picker->connect("resource_selected", callable_mp(this, &EditorPropertyUniformArtDataSourceImage::on_picker_resource_selected));
+	picker->connect("resource_changed", callable_mp(this, &EditorPropertyUniformArtDataSourceImage::on_picker_resource_changed));
+	add_child(picker);
+}
+
+
 bool EditorInspectorPluginUniformArtCollection::can_handle(Object *p_object)
 {
 	return Object::cast_to<UniformArtCollection>(p_object) != nullptr;
@@ -196,7 +290,7 @@ void EditorInspectorPluginUniformArtCollection::parse_begin(Object *p_object)
 
 void EditorInspectorPluginUniformArtCollection::on_rebuild_button_theme_changed(Button *p_button)
 {
-	p_button->set_icon(p_button->get_editor_theme_icon(SNAME("Reload")));
+	p_button->set_button_icon(p_button->get_editor_theme_icon(SNAME("Reload")));
 }
 
 
@@ -227,6 +321,22 @@ void EditorInspectorPluginUniformArtData::parse_begin(Object *p_object)
 		preview->set_art_data(art_data);
 		add_custom_control(preview);
 	}
+}
+
+
+bool EditorInspectorPluginUniformArtData::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide)
+{
+	Ref<UniformArtData> art_data = Object::cast_to<UniformArtData>(p_object);
+	if (art_data.is_valid())
+	{
+		if (p_path == "source_image_path")
+		{
+			EditorPropertyUniformArtDataSourceImage *editor_property = memnew(EditorPropertyUniformArtDataSourceImage);
+			add_property_editor(p_path, editor_property);
+			return true;
+		}
+	}
+	return false;
 }
 
 
