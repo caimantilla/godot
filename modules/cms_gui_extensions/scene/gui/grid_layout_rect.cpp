@@ -123,7 +123,6 @@ Color GridLayoutRect::get_cell_color(const Point2i &p_cell) const
 
 void GridLayoutRect::set_cell_edge(const Point2i &p_cell, const Side p_side, const EdgeType p_type)
 {
-	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	Cell &cell = get_or_create_cell(p_cell);
 	if (p_type == cell.edges[p_side].type)
 	{
@@ -136,7 +135,6 @@ void GridLayoutRect::set_cell_edge(const Point2i &p_cell, const Side p_side, con
 
 GridLayoutRect::EdgeType GridLayoutRect::get_cell_edge(const Point2i &p_cell, const Side p_side) const
 {
-	ERR_FAIL_INDEX_V_MSG(p_side, 4, EdgeType::EDGE_NONE, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), EdgeType::EDGE_NONE, vformat(RTR("Cell %v does not exist."), p_cell));
 	return cell_map[p_cell].edges[p_side].type;
 }
@@ -144,7 +142,6 @@ GridLayoutRect::EdgeType GridLayoutRect::get_cell_edge(const Point2i &p_cell, co
 
 void GridLayoutRect::set_cell_edge_custom_color(const Point2i &p_cell, const Side p_side, const Color &p_color)
 {
-	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	Edge &edge = get_or_create_cell(p_cell).edges[p_side];
 	edge.custom_color_enabled = true;
 	edge.custom_color = p_color;
@@ -154,7 +151,6 @@ void GridLayoutRect::set_cell_edge_custom_color(const Point2i &p_cell, const Sid
 
 Color GridLayoutRect::get_cell_edge_custom_color(const Point2i &p_cell, const Side p_side) const
 {
-	ERR_FAIL_INDEX_V_MSG(p_side, 4, Color(), vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), Color(), vformat(RTR("Cell %v does not exist."), p_cell));
 	return cell_map[p_cell].edges[p_side].custom_color;
 }
@@ -162,7 +158,6 @@ Color GridLayoutRect::get_cell_edge_custom_color(const Point2i &p_cell, const Si
 
 Color GridLayoutRect::get_cell_edge_color(const Point2i &p_cell, const Side p_side) const
 {
-	ERR_FAIL_INDEX_V_MSG(p_side, 4, Color(), vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), Color(), vformat(RTR("Cell %v does not exist."), p_cell));
 	const Edge &edge = cell_map[p_cell].edges[p_side];
 	if (edge.custom_color_enabled)
@@ -178,7 +173,6 @@ Color GridLayoutRect::get_cell_edge_color(const Point2i &p_cell, const Side p_si
 
 void GridLayoutRect::clear_cell_edge_custom_color(const Point2i &p_cell, const Side p_side)
 {
-	ERR_FAIL_INDEX_MSG(p_side, 4, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	Edge &edge = get_or_create_cell(p_cell).edges[p_side];
 	if (!edge.custom_color_enabled)
 	{
@@ -191,7 +185,6 @@ void GridLayoutRect::clear_cell_edge_custom_color(const Point2i &p_cell, const S
 
 bool GridLayoutRect::is_cell_edge_custom_color_enabled(const Point2i &p_cell, const Side p_side) const
 {
-	ERR_FAIL_INDEX_V_MSG(p_side, 4, false, vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
 	ERR_FAIL_COND_V_MSG(!cell_map.has(p_cell), false, vformat(RTR("Cell %v does not exist."), p_cell));
 	return cell_map[p_cell].edges[p_side].custom_color_enabled;
 }
@@ -291,8 +284,6 @@ Rect2 GridLayoutRect::get_cell_rect(const Point2i &p_cell) const
 
 Rect2 GridLayoutRect::get_edge_rect(const Point2i &p_cell, const Side p_side) const
 {
-	ERR_FAIL_INDEX_V_MSG(p_side, 4, Rect2(), vformat(RTR("Side %d is out of range. Please submit a value between 0-3."), p_side));
-
 	real_t thick = edge_thickness;
 	if (thick < 0.0)
 	{
