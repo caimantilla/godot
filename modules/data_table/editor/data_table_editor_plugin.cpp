@@ -35,7 +35,7 @@ void EditorPropertyDataTableRecordSelector::_notification(int p_what)
 		} break;
 		case NOTIFICATION_THEME_CHANGED: {
 			Ref<Texture2D> ico_clr = get_theme_icon(SNAME("Clear"), EditorStringName(EditorIcons));
-			btn_clr->set_icon(ico_clr);
+			btn_clr->set_button_icon(ico_clr);
 
 			Ref<Font> font = btn_sel->get_theme_font(SceneStringName(font));
 			if (font.is_valid())
@@ -408,7 +408,7 @@ void EditorPropertyDataTableRecordSelector::update_button_state()
 	{
 		btn_sel->set_text("--");
 		btn_sel->set_tooltip_text(TTR("Not yet ready to display."));
-		btn_sel->set_icon(Ref<Texture2D>());
+		btn_sel->set_button_icon(Ref<Texture2D>());
 		btn_clr->set_disabled(true);
 	}
 	else
@@ -429,7 +429,7 @@ void EditorPropertyDataTableRecordSelector::update_button_state()
 		{
 			btn_sel->set_text("--");
 			btn_sel->set_tooltip_text(TTR("No record selected."));
-			btn_sel->set_icon(Ref<Texture2D>());
+			btn_sel->set_button_icon(Ref<Texture2D>());
 			btn_clr->set_disabled(true);
 		}
 		else
@@ -441,7 +441,7 @@ void EditorPropertyDataTableRecordSelector::update_button_state()
 			}
 			btn_sel->set_text(display_name);
 			btn_sel->set_tooltip_text(curr_selected_id_str);
-			btn_sel->set_icon(table->get_record_editor_icon(curr_selected_id_no));
+			btn_sel->set_button_icon(table->get_record_editor_icon(curr_selected_id_no));
 
 			Color record_color = table->get_record_editor_color(curr_selected_id_no);
 			if (record_color.get_a8() > 0 && !Math::is_zero_approx(cfg_record_color_tint_text))

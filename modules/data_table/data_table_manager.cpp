@@ -1,5 +1,6 @@
 #include "data_table_manager.hpp"
 #include <limits>
+#include "core/io/resource_loader.h"
 
 
 DataTableManager *DataTableManager::singleton = nullptr;

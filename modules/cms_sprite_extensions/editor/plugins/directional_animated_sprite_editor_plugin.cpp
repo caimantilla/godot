@@ -393,7 +393,7 @@ Button *EditorInspectorPluginDirectionalAnimatedSpriteController3D::create_remov
 
 void EditorInspectorPluginDirectionalAnimatedSpriteController3D::on_add_animation_button_theme_changed(Button *p_button)
 {
-	p_button->set_icon(p_button->get_editor_theme_icon(SNAME("Add")));
+	p_button->set_button_icon(p_button->get_editor_theme_icon(SNAME("Add")));
 }
 
 
@@ -406,7 +406,7 @@ void EditorInspectorPluginDirectionalAnimatedSpriteController3D::on_add_animatio
 
 void EditorInspectorPluginDirectionalAnimatedSpriteController3D::on_rename_animation_button_theme_changed(Button *p_button)
 {
-	p_button->set_icon(p_button->get_editor_theme_icon(SNAME("Rename")));
+	p_button->set_button_icon(p_button->get_editor_theme_icon(SNAME("Rename")));
 }
 
 
@@ -419,7 +419,7 @@ void EditorInspectorPluginDirectionalAnimatedSpriteController3D::on_rename_anima
 
 void EditorInspectorPluginDirectionalAnimatedSpriteController3D::on_remove_animation_button_theme_changed(Button *p_button)
 {
-	p_button->set_icon(p_button->get_editor_theme_icon(SNAME("Remove")));
+	p_button->set_button_icon(p_button->get_editor_theme_icon(SNAME("Remove")));
 }
 
 
