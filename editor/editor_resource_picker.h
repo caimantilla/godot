@@ -49,6 +49,7 @@ class EditorResourcePicker : public HBoxContainer {
 
 	bool editable = true;
 	bool dropping = false;
+	bool resource_update_queued = false;
 
 	Vector<String> inheritors_array;
 	mutable HashSet<StringName> allowed_types_without_convert;

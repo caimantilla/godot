@@ -49,6 +49,8 @@
 #include "scene/resources/image_texture.h"
 
 void EditorResourcePicker::_update_resource() {
+	resource_update_queued = false;
+
 	String resource_path;
 	if (edited_resource.is_valid() && edited_resource->get_path().is_resource_file()) {
 		resource_path = edited_resource->get_path() + "\n";
@@ -134,7 +136,10 @@ void EditorResourcePicker::_resource_selected() {
 
 void EditorResourcePicker::_resource_changed() {
 	emit_signal(SNAME("resource_changed"), edited_resource);
-	_update_resource();
+
+	if (!resource_update_queued) {
+		callable_mp(this, &EditorResourcePicker::_update_resource).call_deferred();
+	}
 }
 
 void EditorResourcePicker::_file_selected(const String &p_path) {
@@ -171,8 +176,7 @@ void EditorResourcePicker::_file_selected(const String &p_path) {
 		}
 	}
 
-	edited_resource = loaded_resource;
-	_resource_changed();
+	set_edited_resource_no_check(loaded_resource);
 }
 
 void EditorResourcePicker::_resource_saved(Object *p_resource) {
@@ -358,8 +362,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 		} break;
 
 		case OBJ_MENU_CLEAR: {
-			edited_resource = Ref<Resource>();
-			_resource_changed();
+			set_edited_resource_no_check(Ref<Resource>());
 		} break;
 
 		case OBJ_MENU_MAKE_UNIQUE: {
@@ -370,8 +373,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			Ref<Resource> unique_resource = edited_resource->duplicate();
 			ERR_FAIL_COND(unique_resource.is_null()); // duplicate() may fail.
 
-			edited_resource = unique_resource;
-			_resource_changed();
+			set_edited_resource_no_check(unique_resource);
 		} break;
 
 		case OBJ_MENU_MAKE_UNIQUE_RECURSIVE: {
@@ -429,14 +431,13 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 		} break;
 
 		case OBJ_MENU_PASTE: {
-			edited_resource = EditorSettings::get_singleton()->get_resource_clipboard();
+			set_edited_resource_no_check(EditorSettings::get_singleton()->get_resource_clipboard());
 			if (edited_resource->is_built_in() && EditorNode::get_singleton()->get_edited_scene() &&
 					edited_resource->get_path().get_slice("::", 0) != EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path()) {
 				// Automatically make resource unique if it belongs to another scene.
 				_edit_menu_cbk(OBJ_MENU_MAKE_UNIQUE);
 				return;
 			}
-			_resource_changed();
 		} break;
 
 		case OBJ_MENU_SHOW_IN_FILE_SYSTEM: {
@@ -454,8 +455,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 				Vector<Ref<EditorResourceConversionPlugin>> conversions = EditorNode::get_singleton()->find_resource_conversion_plugin_for_resource(edited_resource);
 				ERR_FAIL_INDEX(to_type, conversions.size());
 
-				edited_resource = conversions[to_type]->convert(edited_resource);
-				_resource_changed();
+				set_edited_resource_no_check(conversions[to_type]->convert(edited_resource));
 				break;
 			}
 
@@ -481,8 +481,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 			// Prevent freeing of the object until the end of the update of the resource (GH-88286).
 			Ref<Resource> old_edited_resource = edited_resource;
-			edited_resource = Ref<Resource>(resp);
-			_resource_changed();
+			set_edited_resource_no_check(Ref<Resource>(resp));
 		} break;
 	}
 }
@@ -797,8 +796,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 			}
 		}
 
-		edited_resource = dropped_resource;
-		_resource_changed();
+		set_edited_resource_no_check(dropped_resource);
 	}
 }
 
@@ -922,8 +920,7 @@ Vector<String> EditorResourcePicker::get_allowed_types() const {
 
 void EditorResourcePicker::set_edited_resource(Ref<Resource> p_resource) {
 	if (p_resource.is_null()) {
-		edited_resource = Ref<Resource>();
-		_update_resource();
+		set_edited_resource_no_check(Ref<Resource>());
 		return;
 	}
 
@@ -947,8 +944,14 @@ void EditorResourcePicker::set_edited_resource(Ref<Resource> p_resource) {
 }
 
 void EditorResourcePicker::set_edited_resource_no_check(Ref<Resource> p_resource) {
+	if (edited_resource.is_valid()) {
+		edited_resource->disconnect_changed(callable_mp(this, &EditorResourcePicker::_resource_changed));
+	}
 	edited_resource = p_resource;
-	_update_resource();
+	if (edited_resource.is_valid()) {
+		edited_resource->connect_changed(callable_mp(this, &EditorResourcePicker::_resource_changed));
+	}
+	_resource_changed();
 }
 
 Ref<Resource> EditorResourcePicker::get_edited_resource() {
@@ -1072,8 +1075,7 @@ void EditorResourcePicker::_duplicate_selected_resources() {
 		meta[0] = unique_resource;
 
 		if (meta.size() == 1) { // Root.
-			edited_resource = unique_resource;
-			_resource_changed();
+			set_edited_resource_no_check(unique_resource);
 		} else {
 			Array parent_meta = item->get_parent()->get_metadata(0);
 			Ref<Resource> parent = parent_meta[0];
