@@ -223,7 +223,7 @@ void TextEdit::Text::invalidate_cache(int p_line, bool p_text_changed) {
 	if (p_text_changed) {
 		text_line.data_buf->add_string(text_with_ime, font, font_size, language);
 	}
-	if (bidi_override_with_ime.is_empty()) {
+	if (!bidi_override_with_ime.is_empty()) {
 		TS->shaped_text_set_bidi_override(text_line.data_buf->get_rid(), bidi_override_with_ime);
 	}
 
@@ -1633,9 +1633,15 @@ void TextEdit::_notification(int p_what) {
 
 		case MainLoop::NOTIFICATION_OS_IME_UPDATE: {
 			if (has_focus()) {
+				const String &new_ime_text = DisplayServer::get_singleton()->ime_get_text();
+				const Vector2i &new_ime_selection = DisplayServer::get_singleton()->ime_get_selection();
+				if (ime_text == new_ime_text && ime_selection == new_ime_selection) {
+					break;
+				}
+
 				bool had_ime_text = has_ime_text();
-				ime_text = DisplayServer::get_singleton()->ime_get_text();
-				ime_selection = DisplayServer::get_singleton()->ime_get_selection();
+				ime_text = new_ime_text;
+				ime_selection = new_ime_selection;
 
 				if (!had_ime_text && has_ime_text()) {
 					_cancel_drag_and_drop_text();
@@ -6075,7 +6081,7 @@ void TextEdit::adjust_viewport_to_caret(int p_caret) {
 		set_line_as_last_visible(cur_line, cur_wrap);
 	}
 
-	_adjust_viewport_to_caret_horizontally(p_caret);
+	_adjust_viewport_to_caret_horizontally(p_caret, false);
 }
 
 void TextEdit::center_viewport_to_caret(int p_caret) {
@@ -8180,7 +8186,7 @@ void TextEdit::_scroll_lines_down() {
 	merge_overlapping_carets();
 }
 
-void TextEdit::_adjust_viewport_to_caret_horizontally(int p_caret) {
+void TextEdit::_adjust_viewport_to_caret_horizontally(int p_caret, bool p_maximize_selection) {
 	if (get_line_wrapping_mode() != LineWrappingMode::LINE_WRAPPING_NONE) {
 		first_visible_col = 0;
 		h_scroll->set_value(first_visible_col);
@@ -8214,7 +8220,7 @@ void TextEdit::_adjust_viewport_to_caret_horizontally(int p_caret) {
 		int ime_end_column = get_caret_column(p_caret) + (ime_selection.y > 0 ? ime_selection.x + ime_selection.y : ime_text.length());
 		caret_end_pos = _get_column_x_offset_for_line(ime_end_column, get_caret_line(p_caret), ime_end_column);
 		prioritize_end = false;
-	} else if (has_selection(p_caret) && get_selection_from_line(p_caret) == get_selection_to_line(p_caret)) {
+	} else if (p_maximize_selection && has_selection(p_caret) && get_selection_from_line(p_caret) == get_selection_to_line(p_caret)) {
 		// Use selection if it is on one line.
 		caret_start_pos = _get_column_x_offset_for_line(get_selection_from_column(p_caret), get_caret_line(p_caret), get_selection_from_column(p_caret));
 		caret_end_pos = _get_column_x_offset_for_line(get_selection_to_column(p_caret), get_caret_line(p_caret), get_selection_to_column(p_caret));

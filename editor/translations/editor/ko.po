@@ -73,13 +73,17 @@
 # haha <pilsang0512@gmail.com>, 2024.
 # diswib <diswib@gmail.com>, 2024.
 # KyungHyungSo <valentine92exp@gmail.com>, 2025.
+# 백치현 <bagjob@gmail.com>, 2025.
+# Ji Yong Jeung <thomasjeung@gmail.com>, 2025.
+# ZiLA3 <kms-0509@naver.com>, 2025.
+# Wayne <eunchan0817@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Godot Engine editor interface\n"
 "Report-Msgid-Bugs-To: https://github.com/godotengine/godot\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-01-05 13:01+0000\n"
-"Last-Translator: KyungHyungSo <valentine92exp@gmail.com>\n"
+"PO-Revision-Date: 2025-03-24 03:29+0000\n"
+"Last-Translator: Wayne <eunchan0817@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/godot-engine/godot/"
 "ko/>\n"
 "Language: ko\n"
@@ -87,7 +91,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 msgid "Main Thread"
 msgstr "메인 스레드"
@@ -445,6 +449,9 @@ msgstr "숨긴 항목"
 msgid "Swap Input Direction"
 msgstr "입력 방향 변환"
 
+msgid "Start Unicode Character Input"
+msgstr "유니코드 입력 시작"
+
 msgid "Invalid input %d (not passed) in expression"
 msgstr "표현식의 입력 %d (전달되지 않음) 이(가) 올바르지 않습니다"
 
@@ -685,6 +692,34 @@ msgstr "애니메이션 길이 바꾸기"
 msgid "Change Animation Loop"
 msgstr "애니메이션 루프 바꾸기"
 
+msgid ""
+"Can't change loop mode on animation instanced from an imported scene.\n"
+"\n"
+"To change this animation's loop mode, navigate to the scene's Advanced Import "
+"settings and select the animation.\n"
+"You can then change the loop mode from the inspector menu."
+msgstr ""
+"가져온 장면에서 인스턴스화된 애니메이션의 루프 모드는 변경할 수 없습니다.\n"
+"\n"
+"이 애니메이션의 루프 모드를 수정하려면, 해당 장면의 고급 가져오기 메뉴에서 애"
+"니메이션을 선택하세요.\n"
+"그런 다음 인스펙터 메뉴에서 루프 모드를 원하는 대로 변경할 수 있습니다."
+
+msgid "Can't change loop mode on animation instanced from an imported resource."
+msgstr ""
+"가져온 리소스에서 인스턴스화된 애니메이션의 루프 모드를 변경할 수 없습니다."
+
+msgid ""
+"Can't change loop mode on animation embedded in another scene.\n"
+"\n"
+"You must open this scene and change the animation's loop mode from there."
+msgstr ""
+"다른 씬에 임베드된 애니메이션의 루프 모드를 변경할 수 없습니다.\n"
+"이 씬을 열어 애니메이션의 루프 모드를 거기서 변경해야 합니다."
+
+msgid "Can't change loop mode on animation embedded in another resource."
+msgstr "다른 리소스에 임베드된 애니메이션의 루프 모드를 변경할 수 없습니다."
+
 msgid "Property Track..."
 msgstr "속성 트랙..."
 
@@ -912,6 +947,9 @@ msgstr ""
 msgid "property '%s'"
 msgstr "속성 '%s'"
 
+msgid "Nearest FPS: %d"
+msgstr "가장 가까운 FPS: %d"
+
 msgid "Change Animation Step"
 msgstr "애니메이션 단계 바꾸기"
 
@@ -1077,6 +1115,15 @@ msgstr "트리에서 선택한 노드만 트랙에 표시됩니다."
 
 msgid "Group tracks by node or display them as plain list."
 msgstr "노드 별로 트랙을 묶어서 보거나, 묶지 않고 나열해서 볼 수 있습니다."
+
+msgid "Apply snapping to timeline cursor."
+msgstr "타임라인 커서에 스냅 적용."
+
+msgid "Apply snapping to selected key(s)."
+msgstr "선택된 키에 스냅 적용."
+
+msgid "Apply snapping to the nearest integer FPS."
+msgstr "가장 가까운 정수 FPS에 스냅 적용."
 
 msgid "Animation step value."
 msgstr "애니메이션 단계 값입니다."
@@ -1298,11 +1345,73 @@ msgstr "모두 선택/해제"
 msgid "Animation Change Keyframe Time"
 msgstr "애니메이션 키 프레임 시간 바꾸기"
 
+msgid "Marker name is read-only in the inspector."
+msgstr "인스펙터에서 마커 이름은 읽기 전용입니다."
+
+msgid ""
+"A marker's name can only be changed by right-clicking it in the animation "
+"editor and selecting \"Rename Marker\", in order to make sure that marker "
+"names are all unique."
+msgstr ""
+"모든 마커 이름들을 서로 다르게 하기 위해, 마커 이름은 애니메이션 편집기에서 오"
+"른쪽 클릭 후 \"마커 이름 변경\" 으로만 변경할 수 있다."
+
+msgid "Insert Marker..."
+msgstr "마커 삽입..."
+
+msgid "Rename Marker"
+msgstr "마커 이름 변경"
+
+msgid "Delete Marker(s)"
+msgstr "마커 삭제"
+
+msgid "Show All Marker Names"
+msgstr "모든 마커 이름 보이기"
+
+msgid "Marker:"
+msgstr "마커:"
+
+msgid "Animation Move Markers"
+msgstr "애니메이션 이동 마커"
+
+msgid "Animation Delete Markers"
+msgstr "애니메이션 삭제 마커"
+
+msgid "Marker '%s' already exists!"
+msgstr "'%s' 마커가 이미 있습니다!"
+
+msgid "Add Marker Key"
+msgstr "마커 키 추가"
+
+msgid "Empty marker names are not allowed."
+msgstr "빈 마커 이름은 허용되지 않습니다."
+
+msgid "Insert Marker"
+msgstr "마커 삽입"
+
+msgid "Marker Name"
+msgstr "마커 이름"
+
+msgid "Marker Color"
+msgstr "마커 색상"
+
 msgid "Close"
 msgstr "닫기"
 
 msgid "Error!"
 msgstr "오류!"
+
+msgid "Change Marker Name:"
+msgstr "마커 이름 변경:"
+
+msgid "Edit Marker Color"
+msgstr "마커 색상 변경"
+
+msgid "Multi Edit Marker Color"
+msgstr "여러 마커 색상 변경"
+
+msgid "Animation Change Marker Time"
+msgstr "애니메이션 변경 마커 시간"
 
 msgid "Add Audio Track Clip"
 msgstr "오디오 트랙 클립 추가"
@@ -1332,6 +1441,12 @@ msgstr[0] "%d개 일치"
 msgid "%d of %d match"
 msgid_plural "%d of %d matches"
 msgstr[0] "%d 중 %d 일치"
+
+msgid "Hide Replace"
+msgstr "바꾸기 숨기기"
+
+msgid "Show Replace"
+msgstr "변화를 표시"
 
 msgid "Find"
 msgstr "찾기"
@@ -1388,6 +1503,13 @@ msgstr "경고"
 
 msgid "Zoom factor"
 msgstr "줌 배율"
+
+msgid ""
+"%sMouse wheel, %s/%s: Finetune\n"
+"%s: Reset"
+msgstr ""
+"%s마우스 휠,%s/%s: 세부 조정\n"
+"%s: 초기화"
 
 msgid "Line and column numbers."
 msgstr "행 및 열 번호."
@@ -1464,6 +1586,9 @@ msgstr "시그널 인수 바인드 해제:"
 
 msgid "Receiver Method:"
 msgstr "받는 메서드:"
+
+msgid "Pick"
+msgstr "선택"
 
 msgid "Advanced"
 msgstr "고급"
@@ -1549,6 +1674,12 @@ msgstr "새 %s 만들기"
 msgid "No results for \"%s\"."
 msgstr "\"%s\"에 대한 결과가 없습니다."
 
+msgid "Script path: %s"
+msgstr "스크립트 경로: %s"
+
+msgid "The script will run in the editor."
+msgstr "이 스크립트는 에디터에서 실행됩니다."
+
 msgid "This class is marked as deprecated."
 msgstr "이 클래스는 더 이상 사용되지 않는 것으로 표시되어 있습니다."
 
@@ -1579,6 +1710,9 @@ msgstr "설명:"
 msgid "Remote %s:"
 msgstr "원격 %s:"
 
+msgid "Session %d"
+msgstr "세션 %d"
+
 msgid "Debugger"
 msgstr "디버거"
 
@@ -1608,6 +1742,15 @@ msgstr ""
 
 msgid "Toggle Visibility"
 msgstr "가시성 토글"
+
+msgid "Expression to evaluate"
+msgstr "평가할 수식"
+
+msgid "Clear on Run"
+msgstr "실행시 지우기"
+
+msgid "Evaluate"
+msgstr "평가"
 
 msgid "Clear"
 msgstr "지우기"
@@ -1653,6 +1796,9 @@ msgstr "정지"
 
 msgid "Start"
 msgstr "시작"
+
+msgid "Autostart"
+msgstr "자동 시작"
 
 msgid "Measure:"
 msgstr "측정:"
@@ -1810,6 +1956,9 @@ msgstr "모두 펼치기"
 msgid "Collapse All"
 msgstr "모두 접기"
 
+msgid "Evaluator"
+msgstr "식의 평가"
+
 msgid "Profiler"
 msgstr "프로파일러"
 
@@ -1934,6 +2083,12 @@ msgstr ""
 msgid "Cannot remove:"
 msgstr "제거할 수 없음:"
 
+msgid "Files to be deleted:"
+msgstr "삭제할 파일:"
+
+msgid "Dependencies of files to be deleted:"
+msgstr "삭제될 파일의 의존성:"
+
 msgid "Error loading:"
 msgstr "불러오기 오류:"
 
@@ -1970,14 +2125,26 @@ msgstr "명확한 소유 관계가 없는 리소스:"
 msgid "Name cannot be empty."
 msgstr "이름은 비워둘 수 없습니다."
 
+msgid "File name can't end with /."
+msgstr "파일 이름은 /로 끝날 수 없습니다."
+
+msgid "File name cannot be empty."
+msgstr "파일 이름은 비어있을 수 없습니다."
+
 msgid "Folder name cannot be empty."
 msgstr "폴더 이름은 비워둘 수 없습니다."
+
+msgid "File name contains invalid characters."
+msgstr "파일 이름에 잘못된 문자가 있습니다."
 
 msgid "Folder name contains invalid characters."
 msgstr "폴더 이름에 잘못된 문자가 있습니다."
 
 msgid "File name begins with a dot."
 msgstr "파일명이 마침표로 시작합니다."
+
+msgid "Folder name begins with a dot."
+msgstr "폴더 이름이 마침표로 시작합니다."
 
 msgid "File with that name already exists."
 msgstr "이 이름으로 된 파일이 이미 있습니다."
@@ -1988,6 +2155,12 @@ msgstr "이 이름으로 된 폴더가 이미 있습니다."
 msgid "Using slashes in folder names will create subfolders recursively."
 msgstr ""
 "폴더 이름에 슬래시를 사용하면 해당하는 하위 폴더들을 재귀적으로 만듭니다."
+
+msgid "File name is valid."
+msgstr "파일 이름이 잘못되었습니다."
+
+msgid "Base path: %s"
+msgstr "베이스 경로: %s"
 
 msgid "Folder name is valid."
 msgstr "폴더 이름이 올바릅니다."
@@ -2266,6 +2439,9 @@ msgstr "오디오 버스 레이아웃"
 msgid "Invalid name."
 msgstr "올바르지 않은 이름입니다."
 
+msgid "Must be a valid Unicode identifier."
+msgstr "올바른 유니코드 식별자여야 합니다."
+
 msgid "Must not collide with an existing engine class name."
 msgstr "기존 엔진 클래스 이름과 충돌해서는 안 됩니다."
 
@@ -2529,6 +2705,12 @@ msgstr "[비었음]"
 msgid "[unsaved]"
 msgstr "[저장되지 않음]"
 
+msgid "Open the %s dock."
+msgstr "%s 독을 엽니다."
+
+msgid "Focus on the %s dock."
+msgstr "%s 독을 포커스 합니다."
+
 msgid "%s - Godot Engine"
 msgstr "%s - Godot 엔진"
 
@@ -2605,6 +2787,9 @@ msgstr ""
 
 msgid "Provides an overview of the editor's and each scene's undo history."
 msgstr "편집기 및 각 씬의 실행 취소 기록에 대한 개요를 제공합니다."
+
+msgid "Provides tools for selecting and debugging nodes at runtime."
+msgstr "런타임 시 노드를 선택하고 디버깅하는 데 필요한 도구를 제공합니다."
 
 msgid "(current)"
 msgstr "(현재)"
@@ -2693,6 +2878,30 @@ msgstr "프로필 가져오기"
 msgid "Manage Editor Feature Profiles"
 msgstr "에디터 기능 프로필 관리"
 
+msgid "Project initialization"
+msgstr "프로젝트 초기화"
+
+msgid "Scanning file structure..."
+msgstr "파일 구조 탐색 중..."
+
+msgid "Loading global class names..."
+msgstr "전역 클래스 이름을 불러오는 중..."
+
+msgid "Verifying GDExtensions..."
+msgstr "GDExtensions 검증 중..."
+
+msgid "Creating autoload scripts..."
+msgstr "자동 로드 스크립트를 생성하는 중..."
+
+msgid "Initializing plugins..."
+msgstr "플러그인을 초기화중..."
+
+msgid "Starting file scan..."
+msgstr "파일 탐색 시작 중..."
+
+msgid "Scanning actions..."
+msgstr "액션 탐색 중..."
+
 msgid "Some extensions need the editor to restart to take effect."
 msgstr "변경사항을 반영하려면 에디터를 다시 시작해야 합니다."
 
@@ -2715,8 +2924,14 @@ msgstr ""
 msgid "(Re)Importing Assets"
 msgstr "애셋 (다시) 가져오는 중"
 
+msgid "Executing pre-reimport operations..."
+msgstr "다시 가져오기 전 작업을 실행 중..."
+
 msgid "Import resources of type: %s"
 msgstr "가져올 리소스의 타입: %s"
+
+msgid "Finalizing Asset Import..."
+msgstr "에셋 불러오기 마무리 중..."
 
 msgid "This method supports a variable number of arguments."
 msgstr "이 메서드는 다양한 인수를 지원합니다."
@@ -4623,6 +4838,9 @@ msgstr "파일에서 설치"
 
 msgid "Install templates from a local file."
 msgstr "로컬 파일로부터 템플릿을 설치합니다."
+
+msgid "Go Online"
+msgstr "온라인으로"
 
 msgid "Cancel the download of the templates."
 msgstr "템플릿의 다운로드를 취소합니다."
@@ -7032,9 +7250,6 @@ msgid ""
 msgstr ""
 "에셋 라이브러리는 인터넷으로 데이터 전송이 가능한 온라인 연결이 필요합니다."
 
-msgid "Go Online"
-msgstr "온라인으로"
-
 msgid "Failed to get repository configuration."
 msgstr "저장소 환경 설정을 가져오는 데 실패했습니다."
 
@@ -8944,7 +9159,7 @@ msgid "Pre"
 msgstr "전"
 
 msgid "Post"
-msgstr "후"
+msgstr "게시물"
 
 msgid "Preview Sun"
 msgstr "태양 미리보기"
@@ -12960,6 +13175,22 @@ msgid "Are you sure to run %d projects at once?"
 msgstr "%d개의 프로젝트를 동시에 실행할까요?"
 
 msgid ""
+"Can't run project: Project has no main scene defined.\n"
+"Please edit the project and set the main scene in the Project Settings under "
+"the \"Application\" category."
+msgstr ""
+"프로젝트를 실행할 수 없음: 메인 씬을 정의하지 않았습니다.\n"
+"프로젝트를 편집하여 프로젝트 설정의 \"애플리케이션\" 카테고리에서 메인 씬을 지"
+"정해주세요."
+
+msgid ""
+"Can't run project: Assets need to be imported first.\n"
+"Please edit the project to trigger the initial import."
+msgstr ""
+"프로젝트를 실행할 수 없음: 애셋을 먼저 가져와야 합니다.\n"
+"최초 가져오기가 수행되도록 프로젝트를 편집하세요."
+
+msgid ""
 "Can't open project at '%s'.\n"
 "Project file doesn't exist or is inaccessible."
 msgstr ""
@@ -13451,6 +13682,13 @@ msgstr "네트워크 모드"
 msgid "Directory Naming Convention"
 msgstr "디렉토리 명명 규정"
 
+msgid ""
+"Settings changed! The project manager must be restarted for changes to take "
+"effect."
+msgstr ""
+"설정이 변경되었습니다! 변경 사항들을 적용하려면 프로젝트 매니저를 재시작해야 "
+"합니다."
+
 msgid "Add Project Setting"
 msgstr "프로젝트 설정 추가"
 
@@ -13650,9 +13888,6 @@ msgstr "기능 태그"
 
 msgid "Pick Root Node Type"
 msgstr "루트 노드 타입 선택"
-
-msgid "Pick"
-msgstr "선택"
 
 msgid "Scene name is empty."
 msgstr "씬 이름이 비었습니다."
@@ -14251,6 +14486,9 @@ msgstr ""
 "이 프로젝트는 오래된 형식의 메시를 사용합니다. 출력 패널에서 로그를 확인하세"
 "요."
 
+msgid "Upgrading All Meshes in Project"
+msgstr "프로젝트의 모든 매쉬 업그레이드하기"
+
 msgid "Attempting to re-save "
 msgstr "다시 저장을 시도하고 있습니다. "
 
@@ -14807,6 +15045,13 @@ msgstr "플러그인을 사용하려면 \"Gradle 빌드 사용\"이 활성화되
 msgid "OpenXR requires \"Use Gradle Build\" to be enabled"
 msgstr "OpenXR을 사용하려면 \"Gradle 빌드 사용\"이 활성화되어야 합니다"
 
+msgid ""
+"\"Compress Native Libraries\" is only valid when \"Use Gradle Build\" is "
+"enabled."
+msgstr ""
+"\"네이티브 라이브러리 압축하기\"는 \"Gradle 빌드 사용\"이 활성화된 경우에만 유"
+"효합니다."
+
 msgid "\"Export AAB\" is only valid when \"Use Gradle Build\" is enabled."
 msgstr "\"AAB 내보내기\"는 \"Gradle 빌드 사용\"가 활성화된 경우에만 유효합니다."
 
@@ -14895,11 +15140,20 @@ msgstr ""
 msgid "Release keystore incorrectly configured in the export preset."
 msgstr "내보내기 프리셋에 출시 keystorke가 잘못 구성되어 있습니다."
 
+msgid "A valid Java SDK path is required in Editor Settings."
+msgstr "에디터 설정에서 올바른 Jara SDK 경로가 필요합니다."
+
+msgid "Invalid Java SDK path in Editor Settings."
+msgstr "에디터 설정에서 잘못된 Jav SDK 경로입니다."
+
 msgid "Missing 'bin' directory!"
 msgstr "'bin' 디렉토리가 누락되어 있습니다!"
 
 msgid "Unable to find 'java' command using the Java SDK path."
 msgstr "Java SDK 경로에서 'java' 명령어를 찾을 수 없습니다."
+
+msgid "Please check the Java SDK directory specified in Editor Settings."
+msgstr "에디터 설정에서 지정된 Java SDK 디렉토리를 확인해주세요."
 
 msgid "A valid Android SDK path is required in Editor Settings."
 msgstr "에디터 설정에서 올바른 Android SDK 경로가 필요합니다."
@@ -14939,6 +15193,14 @@ msgstr ""
 msgid "\"Min SDK\" should be greater or equal to %d for the \"%s\" renderer."
 msgstr "\"%s\" 렌더러에서 \"최소 SDK\"는 %d보다 크거나 같아야 합니다."
 
+msgid ""
+"The project name does not meet the requirement for the package name format "
+"and will be updated to \"%s\". Please explicitly specify the package name if "
+"needed."
+msgstr ""
+"프로젝트 이름이 패키지 이름 형식의 요구사항에 맞지 않아 \"%s\"로 업데이트됩니"
+"다. 필요하다면 패키지 이름을 명시적으로 지정해 주세요."
+
 msgid "Could not find keystore, unable to export."
 msgstr "keystore를 찾을 수 없어, 내보낼 수 없었습니다."
 
@@ -14954,6 +15216,9 @@ msgid ""
 msgstr ""
 "출력:\n"
 "%s"
+
+msgid "Target folder does not exist or is inaccessible: \"%s\""
+msgstr "대상 폴더가 존재하지 않거나 접근할 수 없습니다: \"%s\""
 
 msgid "Exporting for Android"
 msgstr "Android로 내보내기"
@@ -15057,6 +15322,12 @@ msgstr "최소한 하나의 시스템 부팅 시간 액세스 이유를 선택�
 msgid "Export Icons"
 msgstr "아이콘 내보내기"
 
+msgid "Could not open a directory at path \"%s\"."
+msgstr "디렉토리를 열 수 없음: \"%s\"."
+
+msgid "Could not write to a file at path \"%s\"."
+msgstr "파일에 쓸 수 없음: \"%s\"."
+
 msgid "Exporting for iOS"
 msgstr "IOS로 내보내기"
 
@@ -15083,6 +15354,9 @@ msgstr ""
 msgid "Failed to create the directory: \"%s\""
 msgstr "디렉토리를 만들 수 없음: \"%s\""
 
+msgid "Could not create and open the directory: \"%s\""
+msgstr "디렉토리를 열거나 만들 수 없음: \"%s\""
+
 msgid "Failed to export iOS plugins with code %d. Please check the output log."
 msgstr ""
 "iOS 플러그인을 내보내는 데 실패했습니다. 코드 %d가 반환되었습니다. 출력 로그"
@@ -15095,11 +15369,14 @@ msgstr ""
 "요청한 템플릿 라이브러리 '%s'를 찾을 수 없습니다. 템플릿 아카이브에서 누락되었"
 "을 수 있습니다."
 
-msgid "ARM64 simulator library, generating from device library."
-msgstr "ARM64 시뮬레이터 라이브러리, 디바이스 라이브러리에서 생성 중입니다."
+msgid "Could not copy a file at path \"%s\" to \"%s\"."
+msgstr "\"%s\"에서 \"%s\"로 파일을 복사할 수 없습니다."
 
-msgid "Unable to generate ARM64 simulator library."
-msgstr "ARM64 시뮬레이터 라이브러리를 생성할 수 없습니다."
+msgid "Could not access the filesystem."
+msgstr "파일 시스템에 접근할 수 없습니다."
+
+msgid "Failed to create a file at path \"%s\" with code %d."
+msgstr "파일을 생성할 수 없습니다(코드 %d, 경로:\"%s\")."
 
 msgid "Code signing failed, see editor log for details."
 msgstr "코드 서명에 실패했습니다. 자세한 사항은 에디터 로그를 참조하세요."
@@ -16733,9 +17010,6 @@ msgstr "'%s' 유형의 개체를 인덱싱할 수 없습니다."
 
 msgid "Invalid base type for increment/decrement operator."
 msgstr "증분/감소 연산자에 대한 기본 유형이 잘못되었습니다."
-
-msgid "Invalid use of increment/decrement operator in a constant expression."
-msgstr "상수 표현식에 증분/감소 연산자를 사용할 수 없습니다."
 
 msgid "Invalid token for the operator: '%s'."
 msgstr "연산자에 잘못된 토큰이 있습니다: '%s'."

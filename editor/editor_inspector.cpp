@@ -414,6 +414,9 @@ void EditorProperty::_notification(int p_what) {
 
 			int ofs = get_theme_constant(SNAME("font_offset"));
 			int text_limit = text_size - ofs;
+			int base_spacing = EDITOR_GET("interface/theme/base_spacing");
+			int padding = base_spacing * EDSCALE;
+			int half_padding = padding / 2;
 
 			if (checkable) {
 				Ref<Texture2D> checkbox;
@@ -444,19 +447,31 @@ void EditorProperty::_notification(int p_what) {
 
 			if (can_revert && !is_read_only()) {
 				Ref<Texture2D> reload_icon = get_editor_theme_icon(SNAME("ReloadSmall"));
-				text_limit -= reload_icon->get_width() + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
-				revert_rect = Rect2(ofs + text_limit, (size.height - reload_icon->get_height()) / 2, reload_icon->get_width(), reload_icon->get_height());
+				text_limit -= reload_icon->get_width() + half_padding + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
+				revert_rect = Rect2(ofs + text_limit, 0, reload_icon->get_width() + padding + (1 * EDSCALE), size.height);
+
+				Point2 rtl_pos = Point2();
+				if (rtl) {
+					rtl_pos = Point2(size.width - revert_rect.position.x - (reload_icon->get_width() + padding + (1 * EDSCALE)), revert_rect.position.y);
+				}
 
 				Color color2(1, 1, 1);
 				if (revert_hover) {
 					color2.r *= 1.2;
 					color2.g *= 1.2;
 					color2.b *= 1.2;
+
+					Ref<StyleBox> sb_hover = get_theme_stylebox(SceneStringName(hover), "Button");
+					if (rtl) {
+						draw_style_box(sb_hover, Rect2(rtl_pos, revert_rect.size));
+					} else {
+						draw_style_box(sb_hover, revert_rect);
+					}
 				}
 				if (rtl) {
-					draw_texture(reload_icon, Vector2(size.width - revert_rect.position.x - reload_icon->get_width(), revert_rect.position.y), color2);
+					draw_texture(reload_icon, rtl_pos + Point2(padding, size.height - reload_icon->get_height()) / 2, color2);
 				} else {
-					draw_texture(reload_icon, revert_rect.position, color2);
+					draw_texture(reload_icon, revert_rect.position + Point2(padding, size.height - reload_icon->get_height()) / 2, color2);
 				}
 			} else {
 				revert_rect = Rect2();
@@ -494,19 +509,32 @@ void EditorProperty::_notification(int p_what) {
 					key = get_editor_theme_icon(SNAME("Key"));
 				}
 
-				ofs -= key->get_width() + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
+				ofs -= key->get_width() + half_padding + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
+				keying_rect = Rect2(ofs, 0, key->get_width() + padding, size.height);
+
+				Point2 rtl_pos = Point2();
+				if (rtl) {
+					rtl_pos = Point2(size.width - keying_rect.position.x - (key->get_width() + padding), keying_rect.position.y);
+				}
 
 				Color color2(1, 1, 1);
 				if (keying_hover) {
 					color2.r *= 1.2;
 					color2.g *= 1.2;
 					color2.b *= 1.2;
+
+					Ref<StyleBox> sb_hover = get_theme_stylebox(SceneStringName(hover), "Button");
+					if (rtl) {
+						draw_style_box(sb_hover, Rect2(rtl_pos, keying_rect.size));
+					} else {
+						draw_style_box(sb_hover, keying_rect);
+					}
 				}
-				keying_rect = Rect2(ofs, ((size.height - key->get_height()) / 2), key->get_width(), key->get_height());
+
 				if (rtl) {
-					draw_texture(key, Vector2(size.width - keying_rect.position.x - key->get_width(), keying_rect.position.y), color2);
+					draw_texture(key, rtl_pos + Point2(padding, size.height - key->get_height()) / 2, color2);
 				} else {
-					draw_texture(key, keying_rect.position, color2);
+					draw_texture(key, keying_rect.position + Point2(padding, size.height - key->get_height()) / 2, color2);
 				}
 
 			} else {
@@ -518,19 +546,32 @@ void EditorProperty::_notification(int p_what) {
 
 				close = get_editor_theme_icon(SNAME("Close"));
 
-				ofs -= close->get_width() + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
+				ofs -= close->get_width() + half_padding + get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
+				delete_rect = Rect2(ofs, 0, close->get_width() + padding, size.height);
+
+				Point2 rtl_pos = Point2();
+				if (rtl) {
+					rtl_pos = Point2(size.width - delete_rect.position.x - (close->get_width() + padding), delete_rect.position.y);
+				}
 
 				Color color2(1, 1, 1);
 				if (delete_hover) {
 					color2.r *= 1.2;
 					color2.g *= 1.2;
 					color2.b *= 1.2;
+
+					Ref<StyleBox> sb_hover = get_theme_stylebox(SceneStringName(hover), "Button");
+					if (rtl) {
+						draw_style_box(sb_hover, Rect2(rtl_pos, delete_rect.size));
+					} else {
+						draw_style_box(sb_hover, delete_rect);
+					}
 				}
-				delete_rect = Rect2(ofs, ((size.height - close->get_height()) / 2), close->get_width(), close->get_height());
+
 				if (rtl) {
-					draw_texture(close, Vector2(size.width - delete_rect.position.x - close->get_width(), delete_rect.position.y), color2);
+					draw_texture(close, rtl_pos + Point2(padding, size.height - close->get_height()) / 2, color2);
 				} else {
-					draw_texture(close, delete_rect.position, color2);
+					draw_texture(close, delete_rect.position + Point2(padding, size.height - close->get_height()) / 2, color2);
 				}
 			} else {
 				delete_rect = Rect2();
@@ -545,6 +586,15 @@ void EditorProperty::_notification(int p_what) {
 		case NOTIFICATION_EXIT_TREE: {
 			if (has_borders) {
 				get_parent()->disconnect(SceneStringName(theme_changed), callable_mp(this, &EditorProperty::_update_property_bg));
+			}
+		} break;
+		case NOTIFICATION_MOUSE_EXIT: {
+			if (keying_hover || revert_hover || check_hover || delete_hover) {
+				keying_hover = false;
+				revert_hover = false;
+				check_hover = false;
+				delete_hover = false;
+				queue_redraw();
 			}
 		} break;
 	}
@@ -868,6 +918,9 @@ void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
 
 	if (me.is_valid()) {
 		Vector2 mpos = me->get_position();
+		if (bottom_child_rect.has_point(mpos)) {
+			return; // Makes child EditorProperties behave like sibling nodes when handling mouse events.
+		}
 		if (is_layout_rtl()) {
 			mpos.x = get_size().x - mpos.x;
 		}
@@ -2665,8 +2718,6 @@ VBoxContainer *EditorInspectorArray::get_vbox(int p_index) {
 EditorInspectorArray::EditorInspectorArray(bool p_read_only) {
 	read_only = p_read_only;
 
-	set_mouse_filter(Control::MOUSE_FILTER_STOP);
-
 	odd_style.instantiate();
 	even_style.instantiate();
 
@@ -2996,7 +3047,6 @@ void EditorInspector::update_tree() {
 	int current_focusable = -1;
 
 	// Temporarily disable focus following on the root inspector to avoid jumping while the inspector is updating.
-	bool was_following = get_root_inspector()->is_following_focus();
 	get_root_inspector()->set_follow_focus(false);
 
 	if (property_focusable != -1) {
@@ -3025,7 +3075,7 @@ void EditorInspector::update_tree() {
 	_clear(!object);
 
 	if (!object) {
-		get_root_inspector()->set_follow_focus(was_following);
+		get_root_inspector()->set_follow_focus(true);
 		return;
 	}
 
@@ -3082,13 +3132,14 @@ void EditorInspector::update_tree() {
 	Color sscolor = get_theme_color(SNAME("prop_subsection"), EditorStringName(Editor));
 	bool sub_inspectors_enabled = EDITOR_GET("interface/inspector/open_resources_in_current_inspector");
 
-	// Get the lists of editors to add the beginning.
-	for (Ref<EditorInspectorPlugin> &ped : valid_plugins) {
-		ped->parse_begin(object);
-		_parse_added_editors(begin_vbox, nullptr, ped);
-	}
-	if (begin_vbox->get_child_count()) {
+	if (!valid_plugins.is_empty()) {
 		begin_vbox->show();
+
+		// Get the lists of editors to add the beginning.
+		for (Ref<EditorInspectorPlugin> &ped : valid_plugins) {
+			ped->parse_begin(object);
+			_parse_added_editors(begin_vbox, nullptr, ped);
+		}
 	}
 
 	StringName doc_name;
@@ -3390,6 +3441,8 @@ void EditorInspector::update_tree() {
 		// Recreate the category vbox if it was reset.
 		if (category_vbox == nullptr) {
 			category_vbox = memnew(VBoxContainer);
+			int separation = get_theme_constant(SNAME("v_separation"), SNAME("EditorInspector"));
+			category_vbox->add_theme_constant_override(SNAME("separation"), separation);
 			category_vbox->hide();
 			main_vbox->add_child(category_vbox);
 		}
@@ -3782,13 +3835,16 @@ void EditorInspector::update_tree() {
 				ep->set_doc_path(doc_path);
 				ep->set_internal(p.usage & PROPERTY_USAGE_INTERNAL);
 
-				ep->update_property();
-				ep->_update_flags();
-				ep->update_editor_property_status();
-				ep->update_cache();
+				// If this property is favorited, it won't be in the tree yet. So don't do this setup right now.
+				if (ep->is_inside_tree()) {
+					ep->update_property();
+					ep->_update_flags();
+					ep->update_editor_property_status();
+					ep->update_cache();
 
-				if (current_selected && ep->property == current_selected) {
-					ep->select(current_focusable);
+					if (current_selected && ep->property == current_selected) {
+						ep->select(current_focusable);
+					}
 				}
 			}
 		}
@@ -3841,6 +3897,16 @@ void EditorInspector::update_tree() {
 
 				for (EditorProperty *ep : KV2.value) {
 					vbox->add_child(ep);
+
+					// Now that it's inside the tree, do the setup.
+					ep->update_property();
+					ep->_update_flags();
+					ep->update_editor_property_status();
+					ep->update_cache();
+
+					if (current_selected && ep->property == current_selected) {
+						ep->select(current_focusable);
+					}
 				}
 			}
 		}
@@ -3855,8 +3921,9 @@ void EditorInspector::update_tree() {
 		}
 
 		// Clean up empty sections.
-		for (List<EditorInspectorSection *>::Element *I = sections.back(); I; I = I->prev()) {
+		for (List<EditorInspectorSection *>::Element *I = sections.back(); I;) {
 			EditorInspectorSection *section = I->get();
+			I = I->prev(); // Note: Advance before erasing element.
 			if (section->get_vbox()->get_child_count() == 0) {
 				sections.erase(section);
 				vbox_per_path[main_vbox].erase(section->get_section());
@@ -3891,7 +3958,7 @@ void EditorInspector::update_tree() {
 		EditorNode::get_singleton()->hide_unused_editors();
 	}
 
-	get_root_inspector()->set_follow_focus(was_following);
+	get_root_inspector()->set_follow_focus(true);
 }
 
 void EditorInspector::update_property(const String &p_prop) {
@@ -4744,15 +4811,6 @@ void EditorInspector::_notification(int p_what) {
 				update_tree();
 			}
 		} break;
-
-		case NOTIFICATION_FOCUS_ENTER: {
-			set_follow_focus(true);
-		} break;
-
-		case NOTIFICATION_FOCUS_EXIT: {
-			// Don't follow focus when the inspector is not focused. Prevents potential jumping when gaining focus.
-			set_follow_focus(false);
-		} break;
 	}
 }
 
@@ -4909,6 +4967,7 @@ EditorInspector::EditorInspector() {
 	base_vbox->add_child(main_vbox);
 
 	set_horizontal_scroll_mode(SCROLL_MODE_DISABLED);
+	set_follow_focus(true);
 
 	changing = 0;
 	search_box = nullptr;

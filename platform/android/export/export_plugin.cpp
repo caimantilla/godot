@@ -856,9 +856,9 @@ bool EditorExportPlatformAndroid::_has_manage_external_storage_permission(const 
 }
 
 bool EditorExportPlatformAndroid::_uses_vulkan() {
-	String current_renderer = GLOBAL_GET("rendering/renderer/rendering_method.mobile");
-	bool uses_vulkan = (current_renderer == "forward_plus" || current_renderer == "mobile") && GLOBAL_GET("rendering/rendering_device/driver.android") == "vulkan";
-	return uses_vulkan;
+	String rendering_method = GLOBAL_GET("rendering/renderer/rendering_method.mobile");
+	String rendering_driver = GLOBAL_GET("rendering/rendering_device/driver.android");
+	return (rendering_method == "forward_plus" || rendering_method == "mobile") && rendering_driver == "vulkan";
 }
 
 void EditorExportPlatformAndroid::_notification(int p_what) {
@@ -2041,7 +2041,6 @@ bool EditorExportPlatformAndroid::get_export_option_visibility(const EditorExpor
 	if (p_option == "graphics/opengl_debug" ||
 			p_option == "command_line/extra_args" ||
 			p_option == "permissions/custom_permissions" ||
-			p_option == "gradle_build/compress_native_libraries" ||
 			p_option == "package/retain_data_on_uninstall" ||
 			p_option == "package/exclude_from_recents" ||
 			p_option == "package/show_in_app_library" ||

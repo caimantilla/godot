@@ -1837,7 +1837,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 		actions.base_varying_index = 5;
 
 		actions.global_buffer_array_variable = "global_shader_uniforms.data";
-		actions.instance_uniform_index_variable = "draw_data.instance_uniforms_ofs";
+		actions.instance_uniform_index_variable = "instances.data[instance_index].instance_uniforms_ofs";
 
 		shader.compiler.initialize(actions);
 	}
@@ -2913,12 +2913,13 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 			r_current_batch->tex_info = tex_info;
 		}
 
+		_update_transform_2d_to_mat2x3(base_transform, world);
 		InstanceData *instance_data = new_instance_data(world, lights, base_flags, r_index, uniforms_ofs, tex_info);
 
 		Rect2 src_rect;
 		Rect2 dst_rect;
 
-		dst_rect = Rect2(Vector2(), p_item->rect.size);
+		dst_rect = p_item->rect;
 		if (dst_rect.size.width < 0) {
 			dst_rect.position.x += dst_rect.size.width;
 			dst_rect.size.width *= -1;

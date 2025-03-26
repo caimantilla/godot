@@ -532,24 +532,6 @@ void ProjectSettings::_convert_to_last_version(int p_from_version) {
 			}
 		}
 	}
-	if (p_from_version == 5) {
-		// Converts the device in events from -3 to -1.
-		// -3 was introduced in GH-97707 as a way to prevent a clash in device IDs, but as reported in GH-99243, this leads to problems.
-		// -3 was used during dev-releases, so this conversion helps to revert such affected projects.
-		// This conversion doesn't affect any other projects, since -3 is not used otherwise.
-		for (KeyValue<StringName, ProjectSettings::VariantContainer> &E : props) {
-			if (String(E.key).begins_with("input/")) {
-				Dictionary action = E.value.variant;
-				Array events = action["events"];
-				for (int i = 0; i < events.size(); i++) {
-					Ref<InputEvent> ev = events[i];
-					if (ev.is_valid() && ev->get_device() == -3) {
-						ev->set_device(-1);
-					}
-				}
-			}
-		}
-	}
 #endif // DISABLE_DEPRECATED
 }
 
@@ -1457,7 +1439,7 @@ void ProjectSettings::_add_builtin_input_map() {
 			}
 
 			Dictionary action;
-			action["deadzone"] = Variant(InputMap::DEFAULT_DEADZONE);
+			action["deadzone"] = Variant(InputMap::DEFAULT_TOGGLE_DEADZONE);
 			action["events"] = events;
 
 			String action_name = "input/" + E.key;
@@ -1515,9 +1497,10 @@ ProjectSettings::ProjectSettings() {
 
 	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "display/window/size/mode", PROPERTY_HINT_ENUM, "Windowed,Minimized,Maximized,Fullscreen,Exclusive Fullscreen"), 0);
 
-	// Keep the enum values in sync with the `DisplayServer::SCREEN_` enum.
-	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "display/window/size/initial_position_type", PROPERTY_HINT_ENUM, "Absolute,Center of Primary Screen,Center of Other Screen,Center of Screen With Mouse Pointer,Center of Screen With Keyboard Focus"), 1);
+	// Keep the enum values in sync with the `Window::WINDOW_INITIAL_POSITION_` enum.
+	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "display/window/size/initial_position_type", PROPERTY_HINT_ENUM, "Absolute:0,Center of Primary Screen:1,Center of Other Screen:3,Center of Screen With Mouse Pointer:4,Center of Screen With Keyboard Focus:5"), 1);
 	GLOBAL_DEF_BASIC(PropertyInfo(Variant::VECTOR2I, "display/window/size/initial_position"), Vector2i());
+	// Keep the enum values in sync with the `DisplayServer::SCREEN_` enum.
 	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "display/window/size/initial_screen", PROPERTY_HINT_RANGE, "0,64,1,or_greater"), 0);
 
 	GLOBAL_DEF_BASIC("display/window/size/resizable", true);

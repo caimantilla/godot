@@ -321,6 +321,9 @@ void EditorPropertyTextEnum::update_property() {
 		}
 	} else {
 		option_button->select(default_option);
+		if (default_option < 0) {
+			option_button->set_text(current_value);
+		}
 	}
 }
 
@@ -699,6 +702,7 @@ void EditorPropertyEnum::update_property() {
 	Variant current = get_edited_property_value();
 	if (current.get_type() == Variant::NIL) {
 		options->select(-1);
+		options->set_text("<null>");
 		return;
 	}
 
@@ -709,6 +713,8 @@ void EditorPropertyEnum::update_property() {
 			return;
 		}
 	}
+	options->select(-1);
+	options->set_text(itos(which));
 }
 
 void EditorPropertyEnum::setup(const Vector<String> &p_options) {
@@ -3297,11 +3303,11 @@ void EditorPropertyResource::update_property() {
 				sub_inspector->set_use_folding(is_using_folding());
 
 				sub_inspector->set_draw_focus_border(false);
+				sub_inspector->set_focus_mode(FocusMode::FOCUS_NONE);
 
 				sub_inspector->set_use_filter(use_filter);
 				sub_inspector->register_text_enter(parent_inspector->search_box);
 
-				sub_inspector->set_mouse_filter(MOUSE_FILTER_STOP);
 				add_child(sub_inspector);
 				set_bottom_editor(sub_inspector);
 

@@ -476,7 +476,7 @@ Patches:
 ## libbacktrace
 
 - Upstream: https://github.com/ianlancetaylor/libbacktrace
-- Version: git (1db85642e3fca189cf4e076f840a45d6934b2456, 2024)
+- Version: git (4d2dd0b172f2c9192f83ba93425f868f2a13c553, 2022)
 - License: BSD-3-Clause
 
 Files extracted from upstream source:
@@ -606,7 +606,7 @@ File extracted from upstream source:
 ## mbedtls
 
 - Upstream: https://github.com/Mbed-TLS/mbedtls
-- Version: 3.6.2 (107ea89daaefb9867ea9121002fbbdf926780e98, 2024)
+- Version: 3.6.3 (22098d41c6620ce07cf8a0134d37302355e1e5ef, 2025)
 - License: Apache 2.0
 
 File extracted from upstream release tarball:
@@ -617,7 +617,7 @@ File extracted from upstream release tarball:
 - From `library/` to `thirdparty/mbedtls/library/`:
   - All `.c` and `.h` files
   - Except `bignum_mod.c`, `block_cipher.c`, `ecp_curves_new.c`, `lmots.c`,
-  `lms.c`
+  `lms.c`, `bignum_core_invasive.h`
 - The `LICENSE` file (edited to keep only the Apache 2.0 variant)
 - Added 2 files `godot_core_mbedtls_platform.c` and `godot_core_mbedtls_config.h`
   providing configuration for light bundling with core
@@ -944,7 +944,7 @@ Patches:
 ## thorvg
 
 - Upstream: https://github.com/thorvg/thorvg
-- Version: 0.15.8 (bd8c2fca7663a22fba7a339937cb60f2f6247a2e, 2025)
+- Version: 0.15.10 (bca94d244c67f573c6eddc27d783d9a6b1ef2f1b, 2025)
 - License: MIT
 
 Files extracted from upstream source:
@@ -955,7 +955,6 @@ Files extracted from upstream source:
 Patches:
 
 - `0001-revert-tvglines-bezier-precision.patch` (GH-96658)
-- `0002-gcc15-include-fix.patch` (GH-102022)
 
 
 ## tinyexr
