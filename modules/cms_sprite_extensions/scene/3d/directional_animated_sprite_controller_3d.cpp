@@ -208,7 +208,7 @@ bool DirectionalAnimatedSpriteController3D::is_using_custom_angle() const
 
 void DirectionalAnimatedSpriteController3D::set_custom_angle(const Vector3 &p_angle)
 {
-	custom_angle = p_angle;
+	custom_angle = p_angle.normalized();
 	update_direction();
 }
 
@@ -274,25 +274,6 @@ Point2i DirectionalAnimatedSpriteController3D::get_animation_pixel_offset(const 
 }
 
 
-void DirectionalAnimatedSpriteController3D::set_animation_notes(const StringName &p_anim, const String &p_notes)
-{
-	ERR_FAIL_COND(!has_anim_data(p_anim));
-	AnimData &anim = get_anim_data(p_anim);
-	if (anim.notes == p_notes)
-	{
-		return;
-	}
-	anim.notes = p_notes;
-}
-
-
-String DirectionalAnimatedSpriteController3D::get_animation_notes(const StringName &p_anim) const
-{
-	ERR_FAIL_COND_V(!has_anim_data(p_anim), String());
-	return get_anim_data(p_anim).notes;
-}
-
-
 void DirectionalAnimatedSpriteController3D::set_animation_direction_count(const StringName &p_anim, const int p_count)
 {
 	ERR_FAIL_COND(!has_anim_data(p_anim));
@@ -333,7 +314,7 @@ StringName DirectionalAnimatedSpriteController3D::get_animation_direction_animat
 void DirectionalAnimatedSpriteController3D::set_animation_direction_angle(const StringName &p_anim, const int p_direction, const Vector3 &p_angle)
 {
 	ERR_FAIL_COND(!has_anim_dir(p_anim, p_direction));
-	get_anim_dir(p_anim, p_direction).angle = p_angle;
+	get_anim_dir(p_anim, p_direction).angle = p_angle.normalized();
 	update_direction();
 }
 
@@ -402,26 +383,6 @@ bool DirectionalAnimatedSpriteController3D::is_animation_direction_flipped_v(con
 {
 	ERR_FAIL_COND_V(!has_anim_dir(p_anim, p_direction), false);
 	return get_anim_dir(p_anim, p_direction).flip_v;
-}
-
-
-void DirectionalAnimatedSpriteController3D::set_animation_direction_notes(const StringName &p_anim, const int p_direction, const String &p_notes)
-{
-	ERR_FAIL_COND(!has_anim_dir(p_anim, p_direction));
-	AnimDirection &dir = get_anim_dir(p_anim, p_direction);
-	if (dir.notes == p_notes)
-	{
-		return;
-	}
-	dir.notes = p_notes;
-	update_direction();
-}
-
-
-String DirectionalAnimatedSpriteController3D::get_animation_direction_notes(const StringName &p_anim, const int p_direction) const
-{
-	ERR_FAIL_COND_V(!has_anim_dir(p_anim, p_direction), String());
-	return get_anim_dir(p_anim, p_direction).notes;
 }
 
 
@@ -574,8 +535,6 @@ void DirectionalAnimatedSpriteController3D::update_direction(const bool p_reset_
 
 	if (anim_data_map.has(current_animation_name))
 	{
-		const EulerOrder rot_order = get_rotation_order();
-
 		const AnimData &anim = anim_data_map[current_animation_name];
 		const Vector3 used_angle = cache_angle;
 
@@ -584,8 +543,7 @@ void DirectionalAnimatedSpriteController3D::update_direction(const bool p_reset_
 
 		for (int dir_idx = 0; dir_idx < anim.direction_list.size(); dir_idx++)
 		{
-			const Vector3 dir_angle = Basis::from_euler(anim.direction_list[dir_idx].angle, rot_order).orthonormalized().get_euler(rot_order);
-			const real_t dir_dist = used_angle.distance_squared_to(dir_angle);
+			const real_t dir_dist = used_angle.distance_squared_to(anim.direction_list[dir_idx].angle);
 			if (dir_dist < closest_dist)
 			{
 				closest_dist = dir_dist;
@@ -686,7 +644,6 @@ void DirectionalAnimatedSpriteController3D::update_angle()
 {
 	const Camera3D *camera = get_camera_node();
 	AnimatedSprite3D *sprite = get_sprite_node();
-	const EulerOrder rot_order = get_rotation_order();
 
 	if (camera == nullptr || sprite == nullptr || !camera->is_inside_tree() || !sprite->is_inside_tree())
 	{
@@ -695,23 +652,28 @@ void DirectionalAnimatedSpriteController3D::update_angle()
 
 	if (use_custom_angle)
 	{
-		Basis intermediate_basis = Basis::from_euler(custom_angle, rot_order);
-		intermediate_basis = intermediate_basis.orthonormalized();
-		cache_angle = intermediate_basis.get_euler(rot_order);
+		cache_angle = custom_angle;
 	}
 	else
 	{
-		const Transform3D camera_trans = camera->get_global_transform();
-		const Transform3D own_trans = get_global_transform();
-		const Transform3D trans_looking = own_trans.looking_at(camera_trans.origin);
-		// const Transform3D trans_looking = camera_trans.looking_at(own_trans.origin);
+		Transform3D camera_trans = camera->get_global_transform();
+		Transform3D this_trans = get_global_transform();
 
-		Transform3D adjusted_trans = own_trans;
-		// invert to get the desired result... i guess
-		adjusted_trans.basis = Basis(own_trans.basis.get_rotation_quaternion() * trans_looking.basis.get_rotation_quaternion());
-		adjusted_trans.basis = adjusted_trans.basis.orthonormalized();
+		Vector3 direction_to_this = camera_trans.origin.direction_to(this_trans.origin);
 
-		cache_angle = adjusted_trans.basis.get_euler(rot_order);
+		Basis a = Basis::looking_at(direction_to_this);
+		Basis b = this_trans.basis.inverse() * a;
+
+		cache_angle = b.get_column(Vector3::AXIS_Z);
+
+		// Transform3D adjust_trans = this_trans;
+		// adjust_trans.basis = Basis(trans_this_looking_at_camera.basis.get_rotation_quaternion() * this_trans.basis.get_rotation_quaternion());
+		// adjust_trans.basis.orthonormalize();
+
+		// Basis adjust_basis = this_trans.basis * trans_this_looking_at_camera.basis;
+		// adjust_basis.orthonormalize();
+
+		// cache_angle = adjust_basis.get_column(Vector3::AXIS_Z);
 	}
 
 	switch (billboard_mode)
@@ -897,11 +859,6 @@ bool DirectionalAnimatedSpriteController3D::_set(const StringName &p_name, const
 			set_animation_pixel_offset(anim_name, p_value);
 			return true;
 		}
-		else if (anim_property == "notes")
-		{
-			set_animation_notes(anim_name, p_value);
-			return true;
-		}
 		else if (anim_property == "direction_count")
 		{
 			set_animation_direction_count(anim_name, p_value);
@@ -938,11 +895,6 @@ bool DirectionalAnimatedSpriteController3D::_set(const StringName &p_name, const
 				set_animation_direction_flip_v(anim_name, dir_idx, p_value);
 				return true;
 			}
-			else if (dir_property == "notes")
-			{
-				set_animation_direction_notes(anim_name, dir_idx, p_value);
-				return true;
-			}
 		}
 	}
 	return false;
@@ -972,11 +924,6 @@ bool DirectionalAnimatedSpriteController3D::_get(const StringName &p_name, Varia
 		else if (anim_property == "pixel_offset")
 		{
 			r_ret = get_animation_pixel_offset(anim_name);
-			return true;
-		}
-		else if (anim_property == "notes")
-		{
-			r_ret = get_animation_notes(anim_name);
 			return true;
 		}
 		else if (anim_property == "direction_count")
@@ -1015,11 +962,6 @@ bool DirectionalAnimatedSpriteController3D::_get(const StringName &p_name, Varia
 				r_ret = is_animation_direction_flipped_v(anim_name, dir_idx);
 				return true;
 			}
-			else if (dir_property == "notes")
-			{
-				r_ret = get_animation_direction_notes(anim_name, dir_idx);
-				return true;
-			}
 		}
 	}
 	return false;
@@ -1042,11 +984,6 @@ bool DirectionalAnimatedSpriteController3D::_property_get_revert(const StringNam
 			r_ret = Point2i();
 			return true;
 		}
-		else if (name.ends_with("/notes"))
-		{
-			r_ret = String();
-			return true;
-		}
 		else if (name.ends_with("/direction_count"))
 		{
 			r_ret = 0;
@@ -1059,7 +996,7 @@ bool DirectionalAnimatedSpriteController3D::_property_get_revert(const StringNam
 		}
 		else if (name.ends_with("/angle"))
 		{
-			r_ret = Vector3();
+			r_ret = Vector3(0, 0, 1);
 			return true;
 		}
 		else if (name.ends_with("/flip_h"))
@@ -1099,7 +1036,6 @@ void DirectionalAnimatedSpriteController3D::_get_property_list(List<PropertyInfo
 
 		const PropertyInfo pi_subgroup_anim = PropertyInfo(Variant::NIL, "animations/" + E.key, PROPERTY_HINT_NONE, prefix_anim, PROPERTY_USAGE_SUBGROUP);
 		PropertyInfo pi_anim_pixel_offset = PropertyInfo(Variant::VECTOR2I, prefix_anim + "pixel_offset");
-		const PropertyInfo pi_anim_notes = PropertyInfo(Variant::STRING, prefix_anim + "notes", PROPERTY_HINT_MULTILINE_TEXT);
 		const PropertyInfo pi_anim_direction_count = PropertyInfo(Variant::INT, prefix_anim + "direction_count", PROPERTY_HINT_NONE, String(), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_ARRAY, "Directions," + prefix_anim + "directions/");
 
 		if (pixel_anchor_mode == PIXEL_ANCHOR_DISABLE)
@@ -1116,7 +1052,6 @@ void DirectionalAnimatedSpriteController3D::_get_property_list(List<PropertyInfo
 
 		// p_list->push_back(pi_subgroup_anim);
 		p_list->push_back(pi_anim_pixel_offset);
-		p_list->push_back(pi_anim_notes);
 		p_list->push_back(pi_anim_direction_count);
 
 		for (int dir_idx = 0; dir_idx < anim_data.direction_list.size(); dir_idx++)
@@ -1124,11 +1059,10 @@ void DirectionalAnimatedSpriteController3D::_get_property_list(List<PropertyInfo
 			const String prefix_dir = prefix_anim + "directions/" + itos(dir_idx) + "/";
 
 			PropertyInfo pi_dir_animation_name = PropertyInfo(Variant::STRING_NAME, prefix_dir + "sprite_animation_name");
-			const PropertyInfo pi_dir_angle = PropertyInfo(Variant::VECTOR3, prefix_dir + "angle", PROPERTY_HINT_RANGE, "-360,360,0.1,radians_as_degrees");
+			const PropertyInfo pi_dir_angle = PropertyInfo(Variant::VECTOR3, prefix_dir + "angle");
 			PropertyInfo pi_dir_pixel_offset = PropertyInfo(Variant::VECTOR2I, prefix_dir + "pixel_offset");
 			const PropertyInfo pi_dir_flip_h = PropertyInfo(Variant::BOOL, prefix_dir + "flip_h");
 			const PropertyInfo pi_dir_flip_v = PropertyInfo(Variant::BOOL, prefix_dir + "flip_v");
-			const PropertyInfo pi_dir_notes = PropertyInfo(Variant::STRING, prefix_dir + "notes", PROPERTY_HINT_MULTILINE_TEXT);
 
 			if (!sprite_animation_name_hint_string.is_empty())
 			{
@@ -1145,7 +1079,6 @@ void DirectionalAnimatedSpriteController3D::_get_property_list(List<PropertyInfo
 			p_list->push_back(pi_dir_pixel_offset);
 			p_list->push_back(pi_dir_flip_h);
 			p_list->push_back(pi_dir_flip_v);
-			p_list->push_back(pi_dir_notes);
 		}
 	}
 
@@ -1241,8 +1174,6 @@ void DirectionalAnimatedSpriteController3D::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("set_animation_pixel_offset", "anim_name", "ofs"), &DirectionalAnimatedSpriteController3D::set_animation_pixel_offset);
 	ClassDB::bind_method(D_METHOD("get_animation_pixel_offset", "anim_name"), &DirectionalAnimatedSpriteController3D::get_animation_pixel_offset);
-	ClassDB::bind_method(D_METHOD("set_animation_notes", "anim_name", "notes"), &DirectionalAnimatedSpriteController3D::set_animation_notes);
-	ClassDB::bind_method(D_METHOD("get_animation_notes", "anim_name"), &DirectionalAnimatedSpriteController3D::get_animation_notes);
 	ClassDB::bind_method(D_METHOD("set_animation_direction_count", "anim_name", "dir_count"), &DirectionalAnimatedSpriteController3D::set_animation_direction_count);
 	ClassDB::bind_method(D_METHOD("get_animation_direction_count", "anim_name"), &DirectionalAnimatedSpriteController3D::get_animation_direction_count);
 
@@ -1256,8 +1187,6 @@ void DirectionalAnimatedSpriteController3D::_bind_methods()
 	ClassDB::bind_method(D_METHOD("is_animation_direction_flipped_h", "anim_name", "dir_idx"), &DirectionalAnimatedSpriteController3D::is_animation_direction_flipped_h);
 	ClassDB::bind_method(D_METHOD("set_animation_direction_flip_v", "anim_name", "dir_idx", "flip"), &DirectionalAnimatedSpriteController3D::set_animation_direction_flip_v);
 	ClassDB::bind_method(D_METHOD("is_animation_direction_flipped_v", "anim_name", "dir_idx"), &DirectionalAnimatedSpriteController3D::is_animation_direction_flipped_v);
-	ClassDB::bind_method(D_METHOD("set_animation_direction_notes", "anim_name", "dir_idx", "notes"), &DirectionalAnimatedSpriteController3D::set_animation_direction_notes);
-	ClassDB::bind_method(D_METHOD("get_animation_direction_notes", "anim_name", "dir_idx"), &DirectionalAnimatedSpriteController3D::get_animation_direction_notes);
 
 	ClassDB::bind_method(D_METHOD("rename_animation", "from", "to"), &DirectionalAnimatedSpriteController3D::rename_animation);
 	ClassDB::bind_method(D_METHOD("has_animation", "anim_name"), &DirectionalAnimatedSpriteController3D::has_animation);
@@ -1275,7 +1204,7 @@ void DirectionalAnimatedSpriteController3D::_bind_methods()
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "billboard_mode", PROPERTY_HINT_ENUM, "Ignore,Mirror Camera Angle,Look at Camera"), "set_billboard_mode", "get_billboard_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "custom_camera", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "Camera3D", PROPERTY_USAGE_NONE), "set_custom_camera", "get_custom_camera");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_custom_angle"), "set_use_custom_angle", "is_using_custom_angle");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "custom_angle", PROPERTY_HINT_RANGE, "-360,360,0.1,radians_as_degrees"), "set_custom_angle", "get_custom_angle");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "custom_angle"), "set_custom_angle", "get_custom_angle");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "animation"), "set_animation", "get_animation");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "pixel_anchor_mode", PROPERTY_HINT_ENUM, "Disabled,Centered,Bottom-Middle"), "set_pixel_anchor_mode", "get_pixel_anchor_mode");
 
@@ -1288,5 +1217,17 @@ void DirectionalAnimatedSpriteController3D::_bind_methods()
 
 DirectionalAnimatedSpriteController3D::DirectionalAnimatedSpriteController3D()
 {
+	// math_helper_gimbal = memnew(Node3D);
+	// math_helper_gimbal->set_as_top_level(true);
+	// math_helper_gimbal->hide();
+	// add_child(math_helper_gimbal, false, INTERNAL_MODE_FRONT);
+	// math_helper_faux_camera = memnew(Node3D);
+	// math_helper_gimbal->add_child(math_helper_faux_camera);
+
 	update_process();
+}
+
+
+DirectionalAnimatedSpriteController3D::~DirectionalAnimatedSpriteController3D()
+{
 }

@@ -33,18 +33,14 @@ private:
 	struct AnimDirection
 	{
 		StringName animation_name;
-		Vector3 angle;
+		Vector3 angle = Vector3(0, 0, 1); // Vector3.BACK by default
 		Point2i pixel_offset;
 		bool flip_h = false;
 		bool flip_v = false;
-		String notes;
-
-		Vector3 cache_angle_point;
 	};
 	struct AnimData
 	{
 		Point2i pixel_offset;
-		String notes;
 		LocalVector<AnimDirection> direction_list;
 	};
 
@@ -53,7 +49,7 @@ private:
 	BillboardMode billboard_mode = BILLBOARD_DISABLE;
 	NodePath path_custom_camera; // a custom camera can be used by setting this. the angle will automatically be synced to the camera each frame
 	bool use_custom_angle = false; // camera angles is ignored if this is enabled, with custom_angle being used instead
-	Vector3 custom_angle;
+	Vector3 custom_angle = Vector3(0, 0, 1);
 	StringName current_animation_name;
 	PixelAnchorMode pixel_anchor_mode = PIXEL_ANCHOR_DISABLE;
 	HashMap<StringName, AnimData> anim_data_map;
@@ -64,6 +60,9 @@ private:
 	ObjectID cache_sprite_id;
 	ObjectID cache_custom_camera_id;
 	int last_animation_direction_index = -1;
+
+	// Node3D *math_helper_gimbal;
+	// Node3D *math_helper_faux_camera;
 
 	const Camera3D *get_camera_node() const;
 	AnimatedSprite3D *get_sprite_node() const;
@@ -121,8 +120,6 @@ public:
 
 	void set_animation_pixel_offset(const StringName &p_animation, const Point2i &p_ofs);
 	Point2i get_animation_pixel_offset(const StringName &p_animation) const;
-	void set_animation_notes(const StringName &p_animation, const String &p_notes);
-	String get_animation_notes(const StringName &p_animation) const;
 	void set_animation_direction_count(const StringName &p_animation, const int p_count);
 	int get_animation_direction_count(const StringName &p_animation) const;
 
@@ -136,8 +133,6 @@ public:
 	bool is_animation_direction_flipped_h(const StringName &p_animation, const int p_direction) const;
 	void set_animation_direction_flip_v(const StringName &p_animation, const int p_direction, const bool p_enabled);
 	bool is_animation_direction_flipped_v(const StringName &p_animation, const int p_direction) const;
-	void set_animation_direction_notes(const StringName &p_animation, const int p_direction, const String &p_notes);
-	String get_animation_direction_notes(const StringName &p_animation, const int p_direction) const;
 
 	bool rename_animation(const StringName &p_current_name, const StringName &p_new_name);
 	bool has_animation(const StringName &p_name) const;
@@ -154,6 +149,7 @@ public:
 	PackedStringArray get_configuration_warnings() const override;
 
 	DirectionalAnimatedSpriteController3D();
+	~DirectionalAnimatedSpriteController3D();
 };
 
 
