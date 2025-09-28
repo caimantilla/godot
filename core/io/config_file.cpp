@@ -34,32 +34,6 @@
 #include "core/string/string_builder.h"
 #include "core/variant/variant_parser.h"
 
-PackedStringArray ConfigFile::_get_sections() const {
-	List<String> s;
-	get_sections(&s);
-	PackedStringArray arr;
-	arr.resize(s.size());
-	int idx = 0;
-	for (const String &E : s) {
-		arr.set(idx++, E);
-	}
-
-	return arr;
-}
-
-PackedStringArray ConfigFile::_get_section_keys(const String &p_section) const {
-	List<String> s;
-	get_section_keys(p_section, &s);
-	PackedStringArray arr;
-	arr.resize(s.size());
-	int idx = 0;
-	for (const String &E : s) {
-		arr.set(idx++, E);
-	}
-
-	return arr;
-}
-
 void ConfigFile::_create_entry_if_needed(const String &p_section, const String &p_key) {
 	if (!entries.has(p_section)) {
 		entries.insert(p_section, HashMap<String, Entry>(), p_section.is_empty());
@@ -74,7 +48,7 @@ String ConfigFile::_get_entry_as_string(const String &p_key, const Entry &p_entr
 
 	if (!p_entry.comment.is_empty()) {
 		PackedStringArray lines = p_entry.comment.split("\n", true); // allow empty for multi-line separation in detailed comments
-		
+
 		// marker for removing the empty front lines
 		int first_populated_line = -1;
 
@@ -170,18 +144,33 @@ bool ConfigFile::has_section_key_comment(const String &p_section, const String &
 	return !entries[p_section][p_key].comment.is_empty();
 }
 
-void ConfigFile::get_sections(List<String> *r_sections) const {
+Vector<String> ConfigFile::get_sections() const {
+	Vector<String> sections;
+	sections.resize(entries.size());
+
+	int i = 0;
+	String *sections_write = sections.ptrw();
 	for (const KeyValue<String, HashMap<String, Entry>> &E : entries) {
-		r_sections->push_back(E.key);
+		sections_write[i++] = E.key;
 	}
+
+	return sections;
 }
 
-void ConfigFile::get_section_keys(const String &p_section, List<String> *r_keys) const {
-	ERR_FAIL_COND_MSG(!entries.has(p_section), vformat("Cannot get keys from nonexistent section \"%s\".", p_section));
+Vector<String> ConfigFile::get_section_keys(const String &p_section) const {
+	Vector<String> keys;
+	ERR_FAIL_COND_V_MSG(!entries.has(p_section), keys, vformat("Cannot get keys from nonexistent section \"%s\".", p_section));
 
-	for (const KeyValue<String, Entry> &E : entries[p_section]) {
-		r_keys->push_back(E.key);
+	const HashMap<String, Entry> &keys_map = entries[p_section];
+	keys.resize(keys_map.size());
+
+	int i = 0;
+	String *keys_write = keys.ptrw();
+	for (const KeyValue<String, Entry> &E : keys_map) {
+		keys_write[i++] = E.key;
 	}
+
+	return keys;
 }
 
 void ConfigFile::erase_section(const String &p_section) {
@@ -401,8 +390,8 @@ void ConfigFile::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("has_section_key", "section", "key"), &ConfigFile::has_section_key);
 	ClassDB::bind_method(D_METHOD("has_section_key_comment", "section", "key"), &ConfigFile::has_section_key_comment);
 
-	ClassDB::bind_method(D_METHOD("get_sections"), &ConfigFile::_get_sections);
-	ClassDB::bind_method(D_METHOD("get_section_keys", "section"), &ConfigFile::_get_section_keys);
+	ClassDB::bind_method(D_METHOD("get_sections"), &ConfigFile::get_sections);
+	ClassDB::bind_method(D_METHOD("get_section_keys", "section"), &ConfigFile::get_section_keys);
 
 	ClassDB::bind_method(D_METHOD("erase_section", "section"), &ConfigFile::erase_section);
 	ClassDB::bind_method(D_METHOD("erase_section_key", "section", "key"), &ConfigFile::erase_section_key);

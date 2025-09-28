@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GRAPH_NODE_H
-#define GRAPH_NODE_H
+#pragma once
 
 #include "scene/gui/graph_element.h"
 
@@ -42,13 +41,11 @@ class GraphNode : public GraphElement {
 
 	struct Slot {
 		bool enable_left = false;
-		mutable int port_index_left = -1;
 		int type_left = 0;
 		Color color_left = Color(1, 1, 1, 1);
 		Ref<Texture2D> custom_port_icon_left;
 
 		bool enable_right = false;
-		mutable int port_index_right = -1;
 		int type_right = 0;
 		Color color_right = Color(1, 1, 1, 1);
 		Ref<Texture2D> custom_port_icon_right;
@@ -69,23 +66,37 @@ class GraphNode : public GraphElement {
 		int final_size = 0;
 	};
 
+	enum CustomAccessibilityAction {
+		ACTION_CONNECT_INPUT,
+		ACTION_CONNECT_OUTPUT,
+		ACTION_FOLLOW_INPUT,
+		ACTION_FOLLOW_OUTPUT,
+	};
+	void _accessibility_action_slot(const Variant &p_data);
+
 	HBoxContainer *titlebar_hbox = nullptr;
 	Label *title_label = nullptr;
 
 	String title;
 
-	mutable Vector<PortCache> left_port_cache;
-	mutable Vector<PortCache> right_port_cache;
+	Vector<PortCache> left_port_cache;
+	Vector<PortCache> right_port_cache;
 
 	HashMap<int, Slot> slot_table;
 	Vector<int> slot_y_cache;
 
+	Control::FocusMode slots_focus_mode = Control::FOCUS_ACCESSIBILITY;
+	int slot_count = 0;
+	int selected_slot = -1;
+
 	struct ThemeCache {
 		Ref<StyleBox> panel;
 		Ref<StyleBox> panel_selected;
+		Ref<StyleBox> panel_focus;
 		Ref<StyleBox> titlebar;
 		Ref<StyleBox> titlebar_selected;
 		Ref<StyleBox> slot;
+		Ref<StyleBox> slot_selected;
 
 		int separation = 0;
 		int port_h_offset = 0;
@@ -95,11 +106,11 @@ class GraphNode : public GraphElement {
 		Color resizer_color;
 	} theme_cache;
 
-	mutable bool port_pos_dirty = true;
+	bool port_pos_dirty = true;
 
 	bool ignore_invalid_connection_type = false;
 
-	void _port_pos_update() const;
+	void _port_pos_update();
 
 protected:
 	void _notification(int p_what);
@@ -115,6 +126,9 @@ protected:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
 public:
+	virtual String get_accessibility_container_name(const Node *p_node) const override;
+	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+
 	void set_title(const String &p_title);
 	String get_title() const;
 
@@ -127,8 +141,6 @@ public:
 	bool is_slot_enabled_left(int p_slot_index) const;
 	void set_slot_enabled_left(int p_slot_index, bool p_enable);
 
-	int get_slot_port_index_left(int p_slot_index) const;
-
 	void set_slot_type_left(int p_slot_index, int p_type);
 	int get_slot_type_left(int p_slot_index) const;
 
@@ -140,8 +152,6 @@ public:
 
 	bool is_slot_enabled_right(int p_slot_index) const;
 	void set_slot_enabled_right(int p_slot_index, bool p_enable);
-
-	int get_slot_port_index_right(int p_slot_index) const;
 
 	void set_slot_type_right(int p_slot_index, int p_type);
 	int get_slot_type_right(int p_slot_index) const;
@@ -158,17 +168,20 @@ public:
 	void set_ignore_invalid_connection_type(bool p_ignore);
 	bool is_ignoring_valid_connection_type() const;
 
-	int get_input_port_count() const;
-	Vector2 get_input_port_position(int p_port_idx) const;
-	int get_input_port_type(int p_port_idx) const;
-	Color get_input_port_color(int p_port_idx) const;
-	int get_input_port_slot(int p_port_idx) const;
+	int get_input_port_count();
+	Vector2 get_input_port_position(int p_port_idx);
+	int get_input_port_type(int p_port_idx);
+	Color get_input_port_color(int p_port_idx);
+	int get_input_port_slot(int p_port_idx);
 
-	int get_output_port_count() const;
-	Vector2 get_output_port_position(int p_port_idx) const;
-	int get_output_port_type(int p_port_idx) const;
-	Color get_output_port_color(int p_port_idx) const;
-	int get_output_port_slot(int p_port_idx) const;
+	int get_output_port_count();
+	Vector2 get_output_port_position(int p_port_idx);
+	int get_output_port_type(int p_port_idx);
+	Color get_output_port_color(int p_port_idx);
+	int get_output_port_slot(int p_port_idx);
+
+	void set_slots_focus_mode(Control::FocusMode p_focus_mode);
+	Control::FocusMode get_slots_focus_mode() const;
 
 	virtual Size2 get_minimum_size() const override;
 
@@ -179,5 +192,3 @@ public:
 
 	GraphNode();
 };
-
-#endif // GRAPH_NODE_H
