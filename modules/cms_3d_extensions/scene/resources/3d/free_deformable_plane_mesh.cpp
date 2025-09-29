@@ -51,9 +51,9 @@ void FreeDeformablePlaneMesh::_create_mesh_array(Array &p_arr) const
 		for (const Deformation &deformation : deformation_list)
 		{
 			const real_t lerp_weight = (
-				MAX(0.0, deformation.size.width - ABS(deformation.position.x - sample_point.x))
+				MAX(0.0, deformation.size.width - Math::abs(deformation.position.x - sample_point.x))
 				* (1.0 / deformation.size.width)
-				* MAX(0.0, deformation.size.height - ABS(deformation.position.y - sample_point.y))
+				* MAX(0.0, deformation.size.height - Math::abs(deformation.position.y - sample_point.y))
 				* (1.0 / deformation.size.height)
 			);
 			accum_deform += Math::lerp(real_t(0), deformation.level, lerp_weight);

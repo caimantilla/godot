@@ -10,7 +10,7 @@
 #include "scene/gui/tab_container.h"
 #include "scene/gui/item_list.h"
 #include "editor/plugins/editor_plugin.h"
-#include "editor/editor_inspector.h"
+#include "editor/inspector/editor_inspector.h"
 
 
 class EditorPropertyDataTableRecordSelector final : public EditorProperty
@@ -77,7 +77,7 @@ public:
 };
 
 
-class EditorInspectorPluginDataTableRecordSelector final : public EditorInspectorPlugin 
+class EditorInspectorPluginDataTableRecordSelector final : public EditorInspectorPlugin
 {
 	GDCLASS(EditorInspectorPluginDataTableRecordSelector, EditorInspectorPlugin);
 

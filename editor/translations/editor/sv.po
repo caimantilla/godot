@@ -5543,9 +5543,6 @@ msgstr "Installera från fil"
 msgid "Install templates from a local file."
 msgstr "Installera mallar från lokal fil."
 
-msgid "Go Online"
-msgstr "Gå online"
-
 msgid "Cancel the download of the templates."
 msgstr "Avbryt nedladdningen av mallar."
 

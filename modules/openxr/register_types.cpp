@@ -263,8 +263,6 @@ void initialize_openxr_module(ModuleInitializationLevel p_level) {
 		GDREGISTER_CLASS(OpenXRInteractionProfileEditor);
 		GDREGISTER_CLASS(OpenXRBindingModifierEditor);
 
-		ClassDB::set_current_api(prev_api);
-
 		EditorNode::add_init_callback(_editor_init);
 	}
 #endif

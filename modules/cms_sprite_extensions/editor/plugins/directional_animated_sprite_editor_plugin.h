@@ -3,7 +3,7 @@
 
 
 #include "scene/gui/dialogs.h"
-#include "editor/editor_inspector.h"
+#include "editor/inspector/editor_inspector.h"
 #include "editor/plugins/editor_plugin.h"
 
 

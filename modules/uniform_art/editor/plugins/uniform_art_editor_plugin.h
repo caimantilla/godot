@@ -6,8 +6,8 @@
 #include "../uniform_art_data.h"
 #include "scene/gui/margin_container.h"
 #include "scene/resources/atlas_texture.h"
-#include "editor/editor_inspector.h"
-#include "editor/editor_resource_picker.h"
+#include "editor/inspector/editor_inspector.h"
+#include "editor/inspector/editor_resource_picker.h"
 #include "editor/plugins/editor_plugin.h"
 
 

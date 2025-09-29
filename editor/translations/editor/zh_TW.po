@@ -5896,9 +5896,6 @@ msgstr "自本機檔案安裝樣板。"
 msgid "Online mode is needed to download the templates."
 msgstr "下載樣板需要線上模式。"
 
-msgid "Go Online"
-msgstr "線上說明文件"
-
 msgid "Cancel the download of the templates."
 msgstr "取消下載樣板。"
 

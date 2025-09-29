@@ -564,9 +564,6 @@ msgstr "Stampa messaggi di errore"
 msgid "Print to stdout"
 msgstr "Stampa su stdout"
 
-msgid "Print to stdout"
-msgstr "Stampa su stdout"
-
 msgid "Physics Ticks per Second"
 msgstr "Tick di fisica al secondo"
 
@@ -1521,9 +1518,6 @@ msgstr "Posizionamento subpixel"
 msgid "Keep Rounding Remainders"
 msgstr "Mantieni arrotondato il resto"
 
-msgid "Keep Rounding Remainders"
-msgstr "Mantieni arrotondato il resto"
-
 msgid "Oversampling"
 msgstr "Sovracampionamento"
 
@@ -1803,9 +1797,6 @@ msgstr "Nome dell'estensione"
 
 msgid "Autoload on Startup"
 msgstr "Carica automaticamente all'avvio"
-
-msgid "Particles Emission Shape"
-msgstr "Forma d'emissione delle particelle"
 
 msgid "ID"
 msgstr "ID"
@@ -7175,9 +7166,6 @@ msgstr "Usa in alto a sinistra"
 
 msgid "Symbol Lookup on Click"
 msgstr "Ricerca simboli al clic"
-
-msgid "Symbol Tooltip on Hover"
-msgstr "Suggerisci simboli al passaggio del mouse"
 
 msgid "Symbol Tooltip on Hover"
 msgstr "Suggerisci simboli al passaggio del mouse"

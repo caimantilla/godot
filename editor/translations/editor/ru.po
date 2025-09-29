@@ -4834,27 +4834,6 @@ msgstr ""
 "APK-файлов необходимо включить опцию «Использовать сборку Gradle» в "
 "предустановке экспорта Android."
 
-msgid ""
-"The Android build template is already installed in this project and it won't "
-"be overwritten.\n"
-"Remove the \"%s\" directory manually before attempting this operation again."
-msgstr ""
-"Шаблон сборки Android уже установлен в этом проекте и не будет перезаписан.\n"
-"Перед повторной попыткой выполнить эту операцию вручную удалите каталог "
-"\"%s\"."
-
-msgid ""
-"This will set up your project for gradle Android builds by installing the "
-"source template to \"%s\".\n"
-"Note that in order to make gradle builds instead of using pre-built APKs, the "
-"\"Use Gradle Build\" option should be enabled in the Android export preset."
-msgstr ""
-"Это настроит ваш проект для сборок Android Gradle путем установки исходного "
-"шаблона в \"%s\".\n"
-"Обратите внимание: для создания сборок Gradle вместо использования готовых "
-"APK-файлов необходимо включить опцию «Использовать сборку Gradle» в "
-"предустановке экспорта Android."
-
 msgid "Unnamed Project"
 msgstr "Безымянный проект"
 
@@ -16444,9 +16423,6 @@ msgstr "Вариант с таким названием уже существу�
 msgid "Boolean type cannot be used with `%s` varying mode."
 msgstr "Логический тип не может быть использован с режимом вариации `%s`."
 
-msgid "Boolean type cannot be used with `%s` varying mode."
-msgstr "Логический тип не может быть использован с режимом вариации `%s`."
-
 msgid "Add Node(s) to Visual Shader"
 msgstr "Добавить узлы в визуальный шейдер"
 
@@ -17866,17 +17842,6 @@ msgstr ""
 "Целая сетка формирует целый объект без промежутков, дыр или свободных рёбер.\n"
 "Каждое ребро должно присутствовать только у двух граней."
 
-msgid ""
-"The CSGShape3D has an empty shape.\n"
-"CSGShape3D empty shapes typically occur because the mesh is not manifold.\n"
-"A manifold mesh forms a solid object without gaps, holes, or loose edges.\n"
-"Each edge must be a member of exactly two faces."
-msgstr ""
-"CSGShape3D содержит пустую форму.\n"
-"Пустые формы CSGShape3D обычно возникают из-за того, что сетка имеет «дыры».\n"
-"Целая сетка формирует целый объект без промежутков, дыр или свободных рёбер.\n"
-"Каждое ребро должно присутствовать только у двух граней."
-
 msgid "CSG operation returned an empty array."
 msgstr "Операция CSG вернула пустой массив."
 
@@ -19109,25 +19074,6 @@ msgstr ""
 "«apksigner» не найден. Проверьте, доступна ли команда в каталоге Android SDK "
 "build-tools. Полученный APK не подписан."
 
-msgid "Unable to sign apk."
-msgstr "Невозможно подписать apk."
-
-msgid ""
-"All 'apksigner' tools located in Android SDK 'build-tools' directory failed "
-"to execute. Please check that you have the correct version installed for your "
-"target sdk version. The resulting APK is unsigned."
-msgstr ""
-"Все инструменты 'apksigner', расположенные в каталоге Android SDK 'build-"
-"tools', не удалось выполнить. Проверьте, установлена ли у вас правильная "
-"версия для целевой версии sdk. Полученный APK не подписан."
-
-msgid ""
-"'apksigner' could not be found. Please check that the command is available in "
-"the Android SDK build-tools directory. The resulting APK is unsigned."
-msgstr ""
-"'apksigner' не найден. Проверьте, доступна ли команда в каталоге Android SDK "
-"build-tools. Полученный APK не подписан."
-
 msgid "Could not start apksigner executable."
 msgstr "Не удалось запустить исполняемый файл apksigner."
 
@@ -19752,13 +19698,6 @@ msgstr "Изменение ресурсов"
 msgid "Icon size \"%d\" is missing."
 msgstr "Размер значков «%d» отсутствует."
 
-msgid ""
-"Mismatching custom export template executable architecture: found \"%s\", "
-"expected \"%s\"."
-msgstr ""
-"Несоответствующая архитектура исполняемого файла пользовательского шаблона "
-"экспорта: обнаружено «%s», ожидалось «%s»."
-
 msgid "Failed to rename temporary file \"%s\"."
 msgstr "Невозможно переименовать временный файл «%s»."
 
@@ -19997,13 +19936,6 @@ msgid ""
 msgstr ""
 "Для работы CollisionShape2D необходимо предоставить форму. Создайте ресурс "
 "формы!"
-
-msgid ""
-"The CollisionShape2D node has limited editing options for polygon-based "
-"shapes. Consider using a CollisionPolygon2D node instead."
-msgstr ""
-"Узел CollisionShape2D имеет ограниченные настройки редактирования для форм, "
-"основанных на полигонах. Рассмотрите использование узла CollisionPolygon2D."
 
 msgid ""
 "The CollisionShape2D node has limited editing options for polygon-based "
@@ -20629,9 +20561,6 @@ msgstr ""
 msgid "Parent node should be a SpringBoneSimulator3D node."
 msgstr "Родительский узел должен быть узлом SpringBoneSimulator3D."
 
-msgid "Parent node should be a SpringBoneSimulator3D node."
-msgstr "Родительский узел должен быть узлом SpringBoneSimulator3D."
-
 msgid ""
 "A SpriteFrames resource must be created or set in the \"Sprite Frames\" "
 "property in order for AnimatedSprite3D to display frames."
@@ -20805,15 +20734,6 @@ msgstr "Выполнить выражение как цвет."
 
 msgid "Load existing color palette."
 msgstr "Загрузить существующую цветовую палитру."
-
-msgid "Load Color Palette"
-msgstr "Загрузить палитру"
-
-msgid "Save Color Palette"
-msgstr "Сохранить палитру"
-
-msgid "Quick Load"
-msgstr "Быстрая загрузка"
 
 msgid "Switch between hexadecimal and code values."
 msgstr "Переключение между шестнадцатеричными и кодовыми значениями."
@@ -21567,15 +21487,6 @@ msgstr "Ожидалась строковая константа."
 msgid "Expected ',' or ')' after string constant."
 msgstr "Ожидалось «,» или «)» после строковой константы."
 
-msgid "Enum hint is for '%s' only."
-msgstr "Подсказка диапазона доступна только для '%s'."
-
-msgid "Expected a string constant."
-msgstr "Ожидалась строковая константа."
-
-msgid "Expected ',' or ')' after string constant."
-msgstr "Ожидалось ',' или ')' после строковой константы."
-
 msgid "Can only specify '%s' once."
 msgstr "Можно указать «%s» только один раз."
 
@@ -21764,13 +21675,13 @@ msgid "Expected a '%s'."
 msgstr "Ожидалось »%s»."
 
 msgid "Expected a '%s' or '%s'."
-msgstr "Ожидалось '%s' или '%s'."
+msgstr "Ожидалось «%s» или «%s»."
 
 msgid "Expected a '%s' after '%s'."
-msgstr "Ожидалось '%s' после '%s'."
+msgstr "Ожидалось «%s» после «%s»."
 
 msgid "Redefinition of '%s'."
-msgstr "Переопределение '%s'."
+msgstr "Переопределение «%s»."
 
 msgid "Unknown directive."
 msgstr "Неизвестная директива."
@@ -21858,22 +21769,22 @@ msgstr ""
 "0.0001' для выполнения приблизительного, но предсказуемого сравнения."
 
 msgid "The const '%s' is declared but never used."
-msgstr "Константа '%s' объявлена, но не используется."
+msgstr "Константа «%s» объявлена, но не используется."
 
 msgid "The function '%s' is declared but never used."
-msgstr "Функция '%s' объявлена, но не используется."
+msgstr "Функция «%s» объявлена, но не используется."
 
 msgid "The struct '%s' is declared but never used."
-msgstr "Структура '%s' объявлена, но не используется."
+msgstr "Структура «%s» объявлена, но не используется."
 
 msgid "The uniform '%s' is declared but never used."
-msgstr "Униформа '%s' объявлена, но не используется."
+msgstr "Униформа «%s» объявлена, но не используется."
 
 msgid "The varying '%s' is declared but never used."
-msgstr "Вариация '%s' объявлена, но не используется."
+msgstr "Вариация «%s» объявлена, но не используется."
 
 msgid "The local variable '%s' is declared but never used."
-msgstr "Локальная переменная '%s' объявлена, но не используется."
+msgstr "Локальная переменная «%s» объявлена, но не используется."
 
 msgid ""
 "The total size of the %s for this shader on this device has been exceeded (%d/"

@@ -1986,9 +1986,6 @@ msgstr "Имя модуля"
 msgid "Autoload on Startup"
 msgstr "Автозагрузка системы управления версиями при запуске"
 
-msgid "Particles Emission Shape"
-msgstr "Форма излучения частиц"
-
 msgid "ID"
 msgstr "Идентификатор"
 
@@ -11123,9 +11120,6 @@ msgstr "Выбранные элементы при наведении курсо
 
 msgid "Hovered Selected Focus"
 msgstr "Выбранные элементы в фокусе при наведении курсора"
-
-msgid "Hovered Dimmed"
-msgstr "Наведение затемненное"
 
 msgid "Selected Focus"
 msgstr "Выбранные элементы, когда список элементов в фокусе"

@@ -4641,26 +4641,6 @@ msgstr ""
 "ساخته‌شده، گزینه «استفاده از ساخت گریدل» باید در پیش‌تنظیم برون‌برد اندروید فعال "
 "شود."
 
-msgid ""
-"The Android build template is already installed in this project and it won't "
-"be overwritten.\n"
-"Remove the \"%s\" directory manually before attempting this operation again."
-msgstr ""
-"قالب ساخت اندروید از قبل در این پروژه نصب شده است و بازنویسی نخواهد شد.\n"
-"پوشه «%s» را به‌صورت دستی حذف کنید و سپس دوباره این عملیات را انجام دهید."
-
-msgid ""
-"This will set up your project for gradle Android builds by installing the "
-"source template to \"%s\".\n"
-"Note that in order to make gradle builds instead of using pre-built APKs, the "
-"\"Use Gradle Build\" option should be enabled in the Android export preset."
-msgstr ""
-"این عملیات، پروژه شما را برای ساخت‌های اندروید با گریدل آماده می‌کند و قالب "
-"منبع را در «%s» نصب خواهد کرد.\n"
-"توجه داشته باشید که برای ساخت با گریدل به‌جای استفاده از ای‌پی‌کی‌های از پیش "
-"ساخته‌شده، گزینه «استفاده از ساخت گریدل» باید در پیش‌تنظیم برون‌برد اندروید فعال "
-"شود."
-
 msgid "Unnamed Project"
 msgstr "پروژه بی‌نام"
 
@@ -6349,9 +6329,6 @@ msgstr "کلید رمزبندی (۲۵۶ بیت به‌عنوان شانزدهی)
 
 msgid "Invalid Encryption Key (must be 64 hexadecimal characters long)"
 msgstr "کلید رمزبندی نامعتبر است (باید به بلندی ۶۴ نویسهٔ شانزدهی باشد)"
-
-msgid "Initialization vector seed"
-msgstr "بذر بُردار راه‌اندازی آغازین"
 
 msgid "Initialization vector seed"
 msgstr "بذر بُردار راه‌اندازی آغازین"
@@ -9457,10 +9434,6 @@ msgstr "نشاندن نهشت هدف"
 
 msgid "Set Handle"
 msgstr "نشاندن هَندِل"
-
-msgid ""
-"The skeleton property of the Polygon2D does not point to a Skeleton2D node"
-msgstr "ویژگی اسکلت Polygon2D به یک گره Skeleton2D اشاره نمی‌کند"
 
 msgid ""
 "The skeleton property of the Polygon2D does not point to a Skeleton2D node"
@@ -15182,18 +15155,6 @@ msgstr ""
 msgid "Returns the boolean result of the comparison between two parameters."
 msgstr "نتیجه‌ی بولین حاصل از مقایسه‌ی بین دو پارامتر را برمی‌گرداند."
 
-msgid "Extract TileMap layers as individual TileMapLayer nodes"
-msgstr "لایه‌های TileMap را به عنوان گره‌های جداگانه TileMapLayer استخراج کنید"
-
-msgid "Can't edit multiple layers at once."
-msgstr "نمی‌توان چندین لایه را هم‌زمان ویرایش کرد."
-
-msgid "The selected TileMap has no layer to edit."
-msgstr "TileMap انتخاب‌شده لایه‌ای برای ویرایش ندارد."
-
-msgid "The edited layer is disabled or invisible"
-msgstr "لایه ویرایش‌شده غیرفعال یا نامرئی است"
-
 msgid ""
 "Returns the boolean result of the comparison between INF (or NaN) and a "
 "scalar parameter."
@@ -17752,9 +17713,6 @@ msgstr ""
 msgid "This body will be ignored until you set a mesh."
 msgstr "این بدن تا زمانی که یک مش بنشانید نادیده خواهد گرفته شد."
 
-msgid "Parent node should be a SpringBoneSimulator3D node."
-msgstr "گره والد باید یک گره SpringBoneSimulator3D باشد."
-
 msgid ""
 "VehicleWheel3D serves to provide a wheel system to a VehicleBody3D. Please "
 "use it as a child of a VehicleBody3D."
@@ -17971,15 +17929,6 @@ msgstr ""
 "موارد به‌درستی نمایش داده نخواهند شد اگر **display/window/"
 "per_pixel_transparency/allowed** در تنظیمات پروژه فعال نباشد یا این قابلیت "
 "پشتیبانی نشود."
-
-msgid ""
-"ScrollContainer is intended to work with a single child control.\n"
-"Use a container as child (VBox, HBox, etc.), or a Control and set the custom "
-"minimum size manually."
-msgstr ""
-"گره ScrollContainer برای کار با یک کنترل فرزند طراحی شده است.\n"
-"از یک کانتینر به‌عنوان فرزند (مثل VBox، HBox و غیره) یا یک گره Control استفاده "
-"کنید و اندازه حداقل سفارشی را به‌صورت دستی تنظیم کنید."
 
 msgid ""
 "ScrollContainer is intended to work with a single child control.\n"

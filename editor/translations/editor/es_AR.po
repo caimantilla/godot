@@ -1503,9 +1503,6 @@ msgstr "Marcador:"
 msgid "Multi Edit Marker Color"
 msgstr "Edición Múltiple de Colores de Marcadores"
 
-msgid "Multi Edit Marker Color"
-msgstr "Edición Múltiple de Colores de Marcadores"
-
 msgid "Add Audio Track Clip"
 msgstr "Agregar Clip de Pista de Audio"
 
@@ -1926,15 +1923,6 @@ msgstr ""
 msgid "Visible Navigation"
 msgstr "Navegación Visible"
 
-msgid "Registering global classes..."
-msgstr "Registrando clases globales..."
-
-msgid "Updating scripts documentation"
-msgstr "Actualizando documentación de scripts"
-
-msgid "Updating Scene Groups"
-msgstr "Actualizando Grupos de Escenas"
-
 msgid ""
 "When this option is enabled, redraw requests of 2D objects will become "
 "visible (as a short flash) in the running project.\n"
@@ -2182,76 +2170,6 @@ msgstr "Setear Desde Arbol"
 
 msgid "Export measures as CSV"
 msgstr "Exportar medidas como CSV"
-
-msgid "This method supports a variable number of arguments."
-msgstr "Este método soporta un número variable de argumentos."
-
-msgid ""
-"This method is called by the engine.\n"
-"It can be overridden to customize built-in behavior."
-msgstr ""
-"Este método es llamado por el motor.\n"
-"Se puede sobrecargar para personalizar su comportamiento por defecto."
-
-msgid ""
-"This method has no side effects.\n"
-"It does not modify the object in any way."
-msgstr ""
-"Este método no tiene efectos secundarios.\n"
-"No modifica el objeto de ninguna forma."
-
-msgid ""
-"This method does not need an instance to be called.\n"
-"It can be called directly using the class name."
-msgstr ""
-"Este método no necesita una instancia para ser llamado.\n"
-"Se lo puede llamar directamente usando el nombre de la clase."
-
-msgid "Code snippet copied to clipboard."
-msgstr "Recorte de código copiado al portapapeles."
-
-msgid "No return value."
-msgstr "Sin valor de retorno."
-
-msgid "This value is an integer composed as a bitmask of the following flags."
-msgstr ""
-"Este valor es un int compuesto como una bitmask para las siguientes banderas."
-
-msgid "Deprecated"
-msgstr "Obsoleto/a"
-
-msgid "Experimental"
-msgstr "Experimental"
-
-msgid "Deprecated:"
-msgstr "Obsoleto/a:"
-
-msgid "Experimental:"
-msgstr "Experimental:"
-
-msgid "Constructors"
-msgstr "Constructores"
-
-msgid "Operators"
-msgstr "Operadores"
-
-msgid "Preparing files to reimport..."
-msgstr "Preparando archivos para reimportar..."
-
-msgid "Executing pre-reimport operations..."
-msgstr "Ejecutando operaciones de pre-importación..."
-
-msgid "Import resources of type: %s"
-msgstr "Importar recursos de tipo: %s"
-
-msgid "Finalizing Asset Import..."
-msgstr "Finalizando importación de Assets..."
-
-msgid "Executing post-reimport operations..."
-msgstr "Ejecutando operaciones post-reimportación..."
-
-msgid "Copying files..."
-msgstr "Copiando archivos..."
 
 msgid "This method supports a variable number of arguments."
 msgstr "Este método soporta un número variable de argumentos."
@@ -3089,26 +3007,6 @@ msgstr "No se puede pegar el nodo raiz en la misma escena."
 msgid "None"
 msgstr "Ninguno"
 
-msgid "Add element to property array with prefix %s."
-msgstr "Añadir elemento al array de propiedades con el prefijo %s."
-
-msgid "Remove element %d from property array with prefix %s."
-msgstr "Eliminar elemento %d del array de propiedades con el prefijo %s."
-
-msgid "Move element %d to position %d in property array with prefix %s."
-msgstr ""
-"Mover el elemento %d a la posición %d en el array de propiedades con el "
-"prefijo %s."
-
-msgid "Clear Property Array with Prefix %s"
-msgstr "Limpiar el array de propiedades con el prefijo %s"
-
-msgid "Resize Property Array with Prefix %s"
-msgstr "Cambiar el tamaño del array de propiedades con el prefijo %s"
-
-msgid "Element %d: %s%d*"
-msgstr "Elemento %d: %s%d"
-
 msgid "Move Up"
 msgstr "Subir"
 
@@ -3181,9 +3079,6 @@ msgstr "Crear Nuevo %s"
 msgid "Filter Messages"
 msgstr "Filtrar Mensajes"
 
-msgid "Filter Messages"
-msgstr "Filtrar Mensajes"
-
 msgid "Clear Output"
 msgstr "Limpiar Salida"
 
@@ -3198,18 +3093,6 @@ msgstr "Enfocar la Barra de Búsqueda/Filtro"
 
 msgid "Warnings"
 msgstr "Advertencias"
-
-msgid ""
-"Collapse duplicate messages into one log entry. Shows number of occurrences."
-msgstr ""
-"Agrupar todos los mensajes duplicados en una sola entrada en el registro. "
-"Muestra número de reincidencias."
-
-msgid "Focus Search/Filter Bar"
-msgstr "Enfocar la Barra de Búsqueda/Filtro"
-
-msgid "Native Shader Source Inspector"
-msgstr "Inspector de Código Fuente de Shader Nativo"
 
 msgid "Unnamed Project"
 msgstr "Proyecto Sin Nombre"
@@ -3265,14 +3148,6 @@ msgstr "Guardar Escena"
 
 msgid "Analyzing"
 msgstr "Analizando"
-
-msgid ""
-"This scene can't be saved because there is a cyclic instance inclusion.\n"
-"Please resolve it and then attempt to save again."
-msgstr ""
-"Esta escena no se puede guardar porque hay una inclusión de instancias "
-"cíclica.\n"
-"Por favor, arreglalo y luego intentá guardar otra vez."
 
 msgid ""
 "This scene can't be saved because there is a cyclic instance inclusion.\n"
@@ -3385,9 +3260,6 @@ msgstr ""
 msgid "Save Scene As..."
 msgstr "Guardar Escena Como..."
 
-msgid "Pack Project as ZIP..."
-msgstr "Empacar Proyecto como ZIP..."
-
 msgid "Can't undo while mouse buttons are pressed."
 msgstr "No se puede deshacer mientras los botones del mouse están presionados."
 
@@ -3414,12 +3286,6 @@ msgstr "Rehacer Escena: %s"
 
 msgid "Can't reload a scene that was never saved."
 msgstr "No se puede recargar una escena que nunca se guardó."
-
-msgid "Save & Reload"
-msgstr "Guardar y Recargar"
-
-msgid "Save modified resources before reloading?"
-msgstr "¿Guardar recursos modificados antes de recargar?"
 
 msgid "Save & Reload"
 msgstr "Guardar y Recargar"
@@ -3541,28 +3407,6 @@ msgstr "Guardar Layout"
 
 msgid "Delete Layout"
 msgstr "Eliminar Layout"
-
-msgid "%d second ago"
-msgid_plural "%d seconds ago"
-msgstr[0] "hace %d segundo"
-msgstr[1] "hace %d segundos"
-
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "hace %d minuto"
-msgstr[1] "hace %d minutos"
-
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "hace %d hora"
-msgstr[1] "hace %d horas"
-
-msgid ""
-"Scene \"%s\" has unsaved changes.\n"
-"Last saved: %s."
-msgstr ""
-"La escena \"%s\" tiene cambios sin guardar.\n"
-"Último guardado: %s."
 
 msgid "Save & Close"
 msgstr "Guardar y Cerrar"
@@ -3779,14 +3623,6 @@ msgstr "Documentación En Línea"
 
 msgid "Forum"
 msgstr "Foro"
-
-msgid "Copy System Info"
-msgstr "Copiar información del sistema"
-
-msgid "Copies the system info as a single-line text into the clipboard."
-msgstr ""
-"Copia la información del sistema como una sola línea de texto en el "
-"portapapeles."
 
 msgid "Copy System Info"
 msgstr "Copiar información del sistema"

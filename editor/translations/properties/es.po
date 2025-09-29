@@ -9006,9 +9006,6 @@ msgstr "Excluir de la Captura"
 msgid "Popup Wm Hint"
 msgstr "Pista de Ventana Emergente"
 
-msgid "Exclude From Capture"
-msgstr "Excluir de la Captura"
-
 msgid "Force Native"
 msgstr "Forzar Nativo"
 
@@ -11228,9 +11225,6 @@ msgstr "Círculo de Enfoque del Selector"
 
 msgid "Focused not Editing Cursor Color"
 msgstr "Color del Cursor Enfocado no en Edición"
-
-msgid "Menu Option"
-msgstr "Opción de Menú"
 
 msgid "Menu Option"
 msgstr "Opción de Menú"

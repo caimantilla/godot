@@ -245,8 +245,8 @@ Side GridLayoutRect::get_edge_at_position(const Point2 &p_position) const
 	adjusted_pos -= (adjusted_pos.floor() + Point2(0.5, 0.5));
 	// adjusted_pos = adjusted_pos - (adjusted_pos.floor() + Point2(0.5, 0.5));
 
-	real_t abs_x = ABS(adjusted_pos.x);
-	real_t abs_y = ABS(adjusted_pos.y);
+	real_t abs_x = Math::abs(adjusted_pos.x);
+	real_t abs_y = Math::abs(adjusted_pos.y);
 
 	if (abs_x > abs_y)
 	{

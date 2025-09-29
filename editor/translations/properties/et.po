@@ -1412,9 +1412,6 @@ msgstr "Värviskeem"
 msgid "Highlighting"
 msgstr "Esiletõstmine"
 
-msgid "Color Theme"
-msgstr "Värviskeem"
-
 msgid "Appearance"
 msgstr "Välimus"
 

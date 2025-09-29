@@ -4495,26 +4495,6 @@ msgstr ""
 "ビルド済みAPKではなくGradleビルドファイルを生成するには、Android向けエクスポー"
 "トの設定で”Use Gradle Gradle\"オプションをオンにする必要があります。"
 
-msgid ""
-"The Android build template is already installed in this project and it won't "
-"be overwritten.\n"
-"Remove the \"%s\" directory manually before attempting this operation again."
-msgstr ""
-"アンドロイド用ビルドテンプレートは既にこのプロジェクトにインストール済みで、上"
-"書きはされません。\n"
-"\"%s\" ディレクトリを手動で削除して再度操作を試してください。"
-
-msgid ""
-"This will set up your project for gradle Android builds by installing the "
-"source template to \"%s\".\n"
-"Note that in order to make gradle builds instead of using pre-built APKs, the "
-"\"Use Gradle Build\" option should be enabled in the Android export preset."
-msgstr ""
-"このプロジェクトの\"%s\"にAndroid Gradleビルド用テンプレートをセットアップしま"
-"す。\n"
-"ビルド済みAPKではなくGradleビルドファイルを生成するには、Android向けエクスポー"
-"トの設定で”Use Gradle Gradle\"オプションをオンにする必要があります。"
-
 msgid "Unnamed Project"
 msgstr "名無しのプロジェクト"
 
@@ -5889,9 +5869,6 @@ msgstr "ファイルからインストール"
 msgid "Install templates from a local file."
 msgstr "ローカルファイルからテンプレートをインストールする。"
 
-msgid "Go Online"
-msgstr "オンライン"
-
 msgid "Cancel the download of the templates."
 msgstr "テンプレートのダウンロードをキャンセルする。"
 
@@ -6098,9 +6075,6 @@ msgstr "暗号化キー (16 進数で 256 ビット):"
 
 msgid "Invalid Encryption Key (must be 64 hexadecimal characters long)"
 msgstr "無効な暗号化キー (16進数で64文字である必要があります)"
-
-msgid "Initialization vector seed"
-msgstr "初期化ベクトルのシード値"
 
 msgid "Initialization vector seed"
 msgstr "初期化ベクトルのシード値"
@@ -6591,27 +6565,6 @@ msgstr ""
 
 msgid "Scroll Right"
 msgstr "右スクロール"
-
-msgid "Pin Bottom Panel Switching"
-msgstr "下パネルのピン留めを切り替え"
-
-msgid ""
-"Scroll Left\n"
-"Hold Ctrl to scroll to the begin.\n"
-"Hold Shift to scroll one page."
-msgstr ""
-"左へスクロール\n"
-"Ctrlを押しながらで行頭へスクロールします。\n"
-"Shiftを押しながらで1ページスクロールします。"
-
-msgid ""
-"Scroll Right\n"
-"Hold Ctrl to scroll to the end.\n"
-"Hold Shift to scroll one page."
-msgstr ""
-"右へスクロール\n"
-"Ctrlを押しながらで行末へスクロールします。\n"
-"Shiftを押しながらで1ページスクロールします。"
 
 msgid "Pin Bottom Panel Switching"
 msgstr "下パネルのピン留めを切り替え"
@@ -10818,18 +10771,6 @@ msgstr "ドップラー効果を有効化"
 
 msgid "Cinematic Preview"
 msgstr "シネマティックプレビュー"
-
-msgid "Viewport Pan Modifier 1"
-msgstr "ビューポート パンの修飾キー1"
-
-msgid "Viewport Pan Modifier 2"
-msgstr "ビューポート パンの修飾キー2"
-
-msgid "Viewport Zoom Modifier 1"
-msgstr "ビューポート ズームの修飾キー1"
-
-msgid "Viewport Zoom Modifier 2"
-msgstr "ビューポート ズームの修飾キー2"
 
 msgid "Viewport Pan Modifier 1"
 msgstr "ビューポート パンの修飾キー1"
@@ -16862,9 +16803,6 @@ msgstr "アクションを追加します。"
 
 msgid "Remove action set."
 msgstr "アクションセットを除去します。"
-
-msgid "Remove binding modifier."
-msgstr "バインドを削除。"
 
 msgid "OpenXR Action Map"
 msgstr "OpenXRアクションマップ"

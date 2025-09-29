@@ -1764,9 +1764,6 @@ msgstr "propriété « %s »"
 msgid "Nearest FPS: %d"
 msgstr "FPS le plus proche : %d"
 
-msgid "Nearest FPS: %d"
-msgstr "FPS le plus proche : %d"
-
 msgid "Change Animation Step"
 msgstr "Modifier l’étape d’animation"
 
@@ -3588,9 +3585,6 @@ msgstr ""
 "Cette variable peut être modifiée ou supprimée dans les versions futures."
 
 msgid "Text File"
-msgstr "Fichier texte"
-
-msgid "TextFile"
 msgstr "Fichier texte"
 
 msgid "File"
@@ -18076,19 +18070,6 @@ msgstr "Changer le rayon du cylindre CSG"
 
 msgid "Change CSG Cylinder Height"
 msgstr "Changer la hauteur du cylindre CSG"
-
-msgid ""
-"The CSGShape3D has an empty shape.\n"
-"CSGShape3D empty shapes typically occur because the mesh is not manifold.\n"
-"A manifold mesh forms a solid object without gaps, holes, or loose edges.\n"
-"Each edge must be a member of exactly two faces."
-msgstr ""
-"Le CSGShape3D a une forme vide.\n"
-"Les formes vides de CSGShape3D se produisent généralement parce que le "
-"maillage n'est pas manifold.\n"
-"Un maillage manifold forme un objet solide sans écarts, trous ou arrêtes "
-"isolées.\n"
-"Chaque arrête doit être un membre d'exactement deux faces."
 
 msgid "Change Torus Inner Radius"
 msgstr "Changer le rayon intérieur de la tour"

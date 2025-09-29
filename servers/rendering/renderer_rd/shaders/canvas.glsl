@@ -48,8 +48,6 @@ layout(set = 1, binding = 0, std140) uniform MaterialUniforms {
 /* clang-format on */
 #endif
 
-uint instance_index;
-
 #GLOBALS
 
 #ifdef USE_ATTRIBUTES

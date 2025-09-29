@@ -2308,9 +2308,6 @@ msgstr "Uyarı Listesi"
 msgid "Notice List"
 msgstr "Bildirme Listesi"
 
-msgid "Color Theme"
-msgstr "Renk Teması"
-
 msgid "Appearance"
 msgstr "Dış görünüş"
 

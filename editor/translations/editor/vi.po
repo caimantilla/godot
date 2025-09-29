@@ -1404,9 +1404,6 @@ msgstr "Điểm đánh dấu:"
 msgid "Multi Edit Marker Color"
 msgstr "Màu đánh dấu chỉnh sửa đa"
 
-msgid "Multi Edit Marker Color"
-msgstr "Màu đánh dấu chỉnh sửa đa"
-
 msgid "Add Audio Track Clip"
 msgstr "Thêm Track Âm thanh"
 
@@ -1763,9 +1760,6 @@ msgstr "Tiếp tục"
 msgid "Debug with External Editor"
 msgstr "Gỡ lỗi bằng Trình chỉnh sửa bên ngoài"
 
-msgid "Session %d"
-msgstr "Phiên %d"
-
 msgid "Debugger"
 msgstr "Trình gỡ lỗi"
 
@@ -2037,27 +2031,12 @@ msgstr ""
 "Hàm này không có tác dụng phụ.\n"
 "Nó không chỉnh sửa đối tượng được dùng."
 
-msgid "Owners of: %s (Total: %d)"
-msgstr "Chủ sở hữu của: %s (Tổng cộng: %d )"
-
-msgid "Localization remap for path '%s' and locale '%s'."
-msgstr "Bản đồ bản địa hóa cho đường dẫn ' %s ' và ngôn ngữ ' %s '."
-
 msgid ""
 "This method does not need an instance to be called.\n"
 "It can be called directly using the class name."
 msgstr ""
 "Hàm này không cần đối tượng để có thể gọi.\n"
 "Nó có thể gọi trực tiếp bằng tên của lớp."
-
-msgid "Finalizing Asset Import..."
-msgstr "Hoàn tất nhập tài sản ..."
-
-msgid "Executing post-reimport operations..."
-msgstr "Thực hiện các hoạt động sau khi nhập lại..."
-
-msgid "This method supports a variable number of arguments."
-msgstr "Phương pháp này hỗ trợ số lượng đối số khác nhau."
 
 msgid "This value is an integer composed as a bitmask of the following flags."
 msgstr ""

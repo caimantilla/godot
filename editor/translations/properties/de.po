@@ -2359,9 +2359,6 @@ msgstr "Warnung-Liste"
 msgid "Notice List"
 msgstr "Hinweis-Liste"
 
-msgid "Color Theme"
-msgstr "Farbschema"
-
 msgid "Appearance"
 msgstr "Aussehen"
 

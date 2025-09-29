@@ -4785,15 +4785,6 @@ msgstr ""
 "Exportprofil aktiviert sein muss, um Gradle-Builds anstelle vorgefertigter "
 "APKs zu nutzen."
 
-msgid ""
-"The Android build template is already installed in this project and it won't "
-"be overwritten.\n"
-"Remove the \"%s\" directory manually before attempting this operation again."
-msgstr ""
-"Die Android-Build-Vorlage ist bereits in diesem Projekt installiert und wird "
-"nicht überschrieben.  \n"
-"Lösche das Verzeichnis „%s“ manuell, bevor du diesen Vorgang erneut ausführst."
-
 msgid "Unnamed Project"
 msgstr "Unbenanntes Projekt"
 
@@ -17953,39 +17944,6 @@ msgstr "CSG-Zylinderradius ändern"
 msgid "Change CSG Cylinder Height"
 msgstr "CSG-Zylinderhöhe ändern"
 
-msgid ""
-"The CSGShape3D has an empty shape.\n"
-"CSGShape3D empty shapes typically occur because the mesh is not manifold.\n"
-"A manifold mesh forms a solid object without gaps, holes, or loose edges.\n"
-"Each edge must be a member of exactly two faces."
-msgstr ""
-"CSGShape3D hat eine leere Form.\n"
-"Leere CSGShape3D-Formen treten normalerweise auf, weil das Mesh nicht "
-"mannigfaltig ist.\n"
-"Ein mannigfaltiges Mesh bildet ein festes Objekt ohne Lücken, Löcher oder "
-"lose Kanten.\n"
-"Jede Kante muss ein Element von genau zwei Flächen sein."
-
-msgid "CSG operation returned an empty array."
-msgstr "Der CSG-Vorgang hat ein leeres Array zurückgegeben."
-
-msgid ""
-"Can not add a baked mesh as sibling for the scene root.\n"
-"Move the CSG root node below a parent node."
-msgstr ""
-"Ein gebackenes Mesh kann nicht als Nachbar des Szenen-Roots hinzugefügt "
-"werden.\n"
-"Verschiebe den Root-CSG-Node unter einen übergeordneten Node."
-
-msgid "CSG operation returned an empty mesh."
-msgstr "CSG-Vorgang hat ein leeres Mesh zurückgegeben."
-
-msgid "CSG operation returned an empty shape."
-msgstr "CSG-Vorgang hat eine leere Form zurückgegeben."
-
-msgid "CSG"
-msgstr "CSG"
-
 msgid "Change Torus Inner Radius"
 msgstr "Inneren Torusradius ändern"
 
@@ -20893,9 +20851,6 @@ msgstr "Einen Ausdruck als eine Farbe ausführen."
 msgid "Load existing color palette."
 msgstr "Existierende Farbpalette laden."
 
-msgid "Quick Load"
-msgstr "Schnelles Laden"
-
 msgid "Switch between hexadecimal and code values."
 msgstr "Wechselt zwischen Hexadezimal- und Codewerten."
 
@@ -21662,9 +21617,6 @@ msgstr "String-Konstante erwartet."
 
 msgid "Expected ',' or ')' after string constant."
 msgstr "„,“ oder „)“ nach String-Konstante erwartet."
-
-msgid "Expected a string constant."
-msgstr "String-Konstante erwartet."
 
 msgid "Can only specify '%s' once."
 msgstr "‚%s‘ kann nur einmal aufgeführt werden."

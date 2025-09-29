@@ -1,8 +1,8 @@
 #include "data_table_editor_plugin.hpp"
 #include "../data_table_manager.hpp"
 #include "scene/scene_string_names.h"
-#include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
+#include "editor/settings/editor_settings.h"
 
 
 void EditorPropertyDataTableRecordSelector::_bind_methods()
@@ -74,7 +74,7 @@ Variant EditorPropertyDataTableRecordSelector::cast_value_to_property_type(const
 		case Variant::FLOAT:
 			return (int64_t)p_value;
 		case Variant::STRING:
-		case Variant::STRING_NAME: 
+		case Variant::STRING_NAME:
 			return (String)p_value;
 		default: {
 			CRASH_NOW();

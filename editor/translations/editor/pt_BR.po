@@ -488,7 +488,7 @@ msgid "Backspace all to Left"
 msgstr "Apagar tudo à Esquerda"
 
 msgid "Delete"
-msgstr "Apagar à Direita"
+msgstr "Excluir"
 
 msgid "Delete Word"
 msgstr "Apagar Palavra à Direita"
@@ -2277,18 +2277,6 @@ msgstr "Alterar Cor de Vários Marcadores"
 msgid "Animation Change Marker Time"
 msgstr "Alterar Tempo do Marcador da Animação"
 
-msgid "Change Marker Name:"
-msgstr "Alterar Nome do Marcador:"
-
-msgid "Edit Marker Color"
-msgstr "Alterar Cor do Marcador"
-
-msgid "Multi Edit Marker Color"
-msgstr "Alterar Cor de Vários Marcadores"
-
-msgid "Animation Change Marker Time"
-msgstr "Alterar Tempo do Marcador da Animação"
-
 msgid "Add Audio Track Clip"
 msgstr "Adicionar Clipe de Faixa de Áudio"
 
@@ -2934,15 +2922,6 @@ msgstr "%d de Sessão"
 msgid "Debug"
 msgstr "Depuração"
 
-msgid "Registering global classes..."
-msgstr "Registrando classes globais..."
-
-msgid "Updating scripts documentation"
-msgstr "Atualizando documentação dos scripts"
-
-msgid "Updating Scene Groups"
-msgstr "Atualizando Grupos de Cenas"
-
 msgid ""
 "Some remote nodes were not selected, as the configured maximum selection is "
 "%d. This can be changed at \"debugger/max_node_selection\" in the Editor "
@@ -3234,15 +3213,6 @@ msgstr "Definir a Partir da Árvore"
 
 msgid "Export measures as CSV"
 msgstr "Exportar medidas como CSV"
-
-msgid "Finalizing Asset Import..."
-msgstr "Finalizando Importação de Recursos..."
-
-msgid "Executing post-reimport operations..."
-msgstr "Executando operações pós-reimportação..."
-
-msgid "Copying files..."
-msgstr "Copiando arquivos..."
 
 msgid "This method supports a variable number of arguments."
 msgstr "Este método suporta um número variável de argumentos."
@@ -5067,9 +5037,6 @@ msgstr ""
 msgid "Save Scene As..."
 msgstr "Salvar Cena Como..."
 
-msgid "Pack Project as ZIP..."
-msgstr "Compactar Projeto como ZIP..."
-
 msgid "Can't undo while mouse buttons are pressed."
 msgstr "Não pode desfazer enquanto os botões do mouse estiverem pressionados."
 
@@ -6581,9 +6548,6 @@ msgstr "Chave de Criptografia Inválida (deve ter 64 caracteres hexadecimais)"
 msgid "Initialization vector seed"
 msgstr "Seed do vetor de inicialização"
 
-msgid "Initialization vector seed"
-msgstr "Seed do vetor de inicialização"
-
 msgid ""
 "Note: Encryption key needs to be stored in the binary,\n"
 "you need to build the export templates from source."
@@ -6873,9 +6837,6 @@ msgstr "Tabulações"
 msgid "Zoom factor"
 msgstr "Quantidade de zoom"
 
-msgid "Could not create base directory: %s"
-msgstr "Não foi possível criar o diretório base: %s"
-
 msgid ""
 "%sMouse wheel, %s/%s: Finetune\n"
 "%s: Reset"
@@ -7084,27 +7045,6 @@ msgstr ""
 
 msgid "Scroll Right"
 msgstr "Rolar para Direita"
-
-msgid "Pin Bottom Panel Switching"
-msgstr "Prevenir Troca Automática de Aba no Painel Inferior"
-
-msgid ""
-"Scroll Left\n"
-"Hold Ctrl to scroll to the begin.\n"
-"Hold Shift to scroll one page."
-msgstr ""
-"Role para a esquerda\n"
-"Segure Ctrl para rolar para o início.\n"
-"Segure Shift para rolar uma página."
-
-msgid ""
-"Scroll Right\n"
-"Hold Ctrl to scroll to the end.\n"
-"Hold Shift to scroll one page."
-msgstr ""
-"Rolar para a direita\n"
-"Segure Ctrl para rolar para o final.\n"
-"Segure Shift para rolar uma página."
 
 msgid "Pin Bottom Panel Switching"
 msgstr "Prevenir Troca Automática de Aba no Painel Inferior"
@@ -16395,9 +16335,6 @@ msgstr "Nome Inválido para varying."
 msgid "Boolean type cannot be used with `%s` varying mode."
 msgstr "O tipo booleano não pode ser usado com o modo varying `%s`."
 
-msgid "Boolean type cannot be used with `%s` varying mode."
-msgstr "O tipo booleano não pode ser usado com o modo varying `%s`."
-
 msgid "Add Node(s) to Visual Shader"
 msgstr "Adicionar Nó(s) ao Visual Shader"
 
@@ -18037,9 +17974,6 @@ msgstr "Escolha uma Distância:"
 msgid "Selection"
 msgstr "Seleção"
 
-msgid "Erase"
-msgstr "Apagar"
-
 msgid "Cursor Rotate X"
 msgstr "Rotacionar Cursor em X"
 
@@ -19041,25 +18975,6 @@ msgstr ""
 "'apksigner' não foi encontrado. Verifique se o comando está disponível no "
 "diretório 'build-tools' do Android SDK. O APK resultante não foi assinado."
 
-msgid "Unable to sign apk."
-msgstr "Erro ao assinar APK."
-
-msgid ""
-"All 'apksigner' tools located in Android SDK 'build-tools' directory failed "
-"to execute. Please check that you have the correct version installed for your "
-"target sdk version. The resulting APK is unsigned."
-msgstr ""
-"Todas as ferramentas 'apksigner' localizadas no diretório 'build-tools' do "
-"Android SDK deram erro ao executar. Verifique se você tem a versão correta "
-"instalada para a versão do SDK de destino. O APK resultante não foi assinado."
-
-msgid ""
-"'apksigner' could not be found. Please check that the command is available in "
-"the Android SDK build-tools directory. The resulting APK is unsigned."
-msgstr ""
-"'apksigner' não foi encontrado. Verifique se o comando está disponível no "
-"diretório 'build-tools' do Android SDK. O APK resultante não foi assinado."
-
 msgid "Could not start apksigner executable."
 msgstr "Não foi possível iniciar o executável apksigner."
 
@@ -19184,21 +19099,6 @@ msgstr "Não foi possível descompactar o APK temporário não alinhado."
 
 msgid "Metal renderer require iOS 14+."
 msgstr "Renderizador Metal requer iOS 14+."
-
-msgid "At least one file timestamp access reason should be selected."
-msgstr ""
-"Pelo menos um motivo para o acesso às datas de modificação dos arquivos deve "
-"ser selecionado."
-
-msgid "At least one disk space access reason should be selected."
-msgstr ""
-"Pelo menos um motivo para acesso ao espaço de armazenamento deve ser "
-"selecionado."
-
-msgid "At least one system boot time access reason should be selected."
-msgstr ""
-"Pelo menos um motivo para acesso ao tempo de boot do sistema deve ser "
-"selecionado."
 
 msgid "Export Icons"
 msgstr "Exportar Ícones"
@@ -19709,13 +19609,6 @@ msgstr "Modificação de Recursos"
 
 msgid "Icon size \"%d\" is missing."
 msgstr "O tamanho do ícone \"%d\" está ausente."
-
-msgid ""
-"Mismatching custom export template executable architecture: found \"%s\", "
-"expected \"%s\"."
-msgstr ""
-"Arquitetura de executável diferente do modelo de exportação customizado: "
-"encontrou \"%s\", esperava \"%s\"."
 
 msgid "Failed to rename temporary file \"%s\"."
 msgstr "Falha ao renomear arquivo temporário \"%s\"."
@@ -20582,16 +20475,6 @@ msgstr ""
 "Um recurso SpriteFrames deve ser criado ou definido na propriedade \"Sprite "
 "Frames\" para que o nó AnimatedSprite3D mostre quadros."
 
-msgid "Parent node should be a SpringBoneSimulator3D node."
-msgstr "Nó pai deve ser um nó SpringBoneSimulator3D."
-
-msgid ""
-"A SpriteFrames resource must be created or set in the \"Sprite Frames\" "
-"property in order for AnimatedSprite3D to display frames."
-msgstr ""
-"Um recurso SpriteFrames deve ser criado ou definido na propriedade \"Sprite "
-"Frames\" para que o nó AnimatedSprite3D mostre quadros."
-
 msgid ""
 "The GeometryInstance3D visibility range's End distance is set to a non-zero "
 "value, but is lower than the Begin distance.\n"
@@ -20760,15 +20643,6 @@ msgstr "Executar uma expressão como uma cor."
 msgid "Load existing color palette."
 msgstr "Carregar paleta de cores existente."
 
-msgid "Load Color Palette"
-msgstr "Carregar Paleta de Cores"
-
-msgid "Save Color Palette"
-msgstr "Salvar Paleta de Cores"
-
-msgid "Quick Load"
-msgstr "Carregamento Rápido"
-
 msgid "Switch between hexadecimal and code values."
 msgstr "Alternar entre valores hexadecimais e de código."
 
@@ -20895,13 +20769,6 @@ msgid ""
 msgstr ""
 "Ancestral \"%s\" é um CanvasGroup, portanto este nó não poderá cortar seus "
 "filhos."
-
-msgid ""
-"This node was an instance of scene '%s', which was no longer available when "
-"this scene was loaded."
-msgstr ""
-"Este nó foi uma instância da cena '%s', que não estava mais disponível quando "
-"esta cena foi carregada."
 
 msgid ""
 "This node was an instance of scene '%s', which was no longer available when "
@@ -21524,12 +21391,6 @@ msgid "Allowed instance uniform indices must be within [0..%d] range."
 msgstr ""
 "Índices uniformes de instância permitidos devem estar dentro do intervalo "
 "[0..%d]."
-
-msgid ""
-"'hint_normal_roughness_texture' is only available when using the Forward+ "
-"renderer."
-msgstr ""
-"'hint_normal_roughness_texture' só está disponível no renderizador Avançado+."
 
 msgid ""
 "'hint_normal_roughness_texture' is only available when using the Forward+ "

@@ -173,8 +173,6 @@ private:
 
 	static HashMap<StringName, WorkerThreadPool *> named_pools;
 
-	static HashMap<StringName, WorkerThreadPool *> named_pools;
-
 	static void _thread_function(void *p_user);
 
 	void _process_task(Task *task);

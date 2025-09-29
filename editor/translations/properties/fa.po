@@ -1461,9 +1461,6 @@ msgstr "رنگ زمینه"
 msgid "Warning List"
 msgstr "فهرست هشدارها"
 
-msgid "Color Theme"
-msgstr "رنگ زمینه"
-
 msgid "Appearance"
 msgstr "ظاهر"
 

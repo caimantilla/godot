@@ -2115,9 +2115,6 @@ msgstr "警告マーカーのタグ"
 msgid "Notice List"
 msgstr "情報マーカーのタグ"
 
-msgid "Color Theme"
-msgstr "カラーテーマ"
-
 msgid "Appearance"
 msgstr "外観"
 

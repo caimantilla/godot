@@ -2849,9 +2849,6 @@ msgstr "Setel dari Pohon"
 msgid "Export measures as CSV"
 msgstr "Ekspor pengukuran sebagai CSV"
 
-msgid "Finalizing Asset Import..."
-msgstr "Menyelesaikan impor asset..."
-
 msgid "This method supports a variable number of arguments."
 msgstr "Metode ini mendukung jumlah argumen yang bervariasi."
 
@@ -4015,9 +4012,6 @@ msgstr ""
 
 msgid "Save Scene As..."
 msgstr "Simpan Adegan Sebagai..."
-
-msgid "Pack Project as ZIP..."
-msgstr "Bungkus proyek sebagai ZIP..."
 
 msgid "Can't undo while mouse buttons are pressed."
 msgstr "Tidak bisa membatalkan ketika tombol mouse ditekan."

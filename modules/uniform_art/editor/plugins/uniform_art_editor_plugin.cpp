@@ -3,8 +3,8 @@
 #include "scene/resources/image_texture.h"
 #include "scene/gui/button.h"
 #include "scene/gui/texture_rect.h"
-#include "editor/editor_file_system.h"
 #include "editor/editor_interface.h"
+#include "editor/file_system/editor_file_system.h"
 #include "editor/themes/editor_scale.h"
 
 

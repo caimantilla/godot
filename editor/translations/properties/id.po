@@ -1851,9 +1851,6 @@ msgstr "Tema Warna"
 msgid "Highlighting"
 msgstr "Menyoroti"
 
-msgid "Color Theme"
-msgstr "Tema Warna"
-
 msgid "Appearance"
 msgstr "Penampilan"
 

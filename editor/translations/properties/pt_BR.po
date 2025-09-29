@@ -422,9 +422,6 @@ msgstr "Máx. de Funções"
 msgid "Max Timestamp Query Elements"
 msgstr "Máx. de Pedidos de Data e Hora"
 
-msgid "Max Timestamp Query Elements"
-msgstr "Máximo de Pedidos de Data e Hora"
-
 msgid "Compression"
 msgstr "Compressão"
 
@@ -559,15 +556,6 @@ msgstr "Máx. de Descritores de Sampler por Quadro"
 
 msgid "Max Misc Descriptors per Frame"
 msgstr "Máx. Descritores Diversos por Quadro"
-
-msgid "Agility SDK Version"
-msgstr "Versão do Agility SDK"
-
-msgid "Max Sampler Descriptors per Frame"
-msgstr "Máximo de Descritores de Sampler por Quadro"
-
-msgid "Max Misc Descriptors per Frame"
-msgstr "Máximo de Descritores Diversos por Quadro"
 
 msgid "Agility SDK Version"
 msgstr "Versão do Agility SDK"
@@ -1045,15 +1033,6 @@ msgstr "Tempo Limite de Solicitação"
 
 msgid "Sync Breakpoints"
 msgstr "Sincronizar Pontos de Interrupção"
-
-msgid "Selectable"
-msgstr "Selecionável"
-
-msgid "Use Folding"
-msgstr "Dobragem de Código (Folding)"
-
-msgid "Name Split Ratio"
-msgstr "Proporção de Separação de Nomes"
 
 msgid "Distraction Free Mode"
 msgstr "Modo Sem Distrações"
@@ -3204,12 +3183,6 @@ msgstr "Cor de Partícula"
 msgid "Flush stdout on Print"
 msgstr "Enviar Prints para stdout"
 
-msgid "Autoload on Startup"
-msgstr "Carregar ao Abrir Editor"
-
-msgid "Flush stdout on Print"
-msgstr "Enviar Prints para stdout"
-
 msgid "Low Processor Mode"
 msgstr "Modo de Baixo Processamento"
 
@@ -3236,9 +3209,6 @@ msgstr "Máx. Caracteres por Segundo"
 
 msgid "Max Queued Messages"
 msgstr "Máx. Pacotes de Saída"
-
-msgid "Max Queued Messages"
-msgstr "Máximo de Pacotes de Saída"
 
 msgid "Max Errors per Second"
 msgstr "Máx. Erros por Segundo"
@@ -3308,9 +3278,6 @@ msgstr "Ativada"
 
 msgid "Threads"
 msgstr "Threads"
-
-msgid "Display Server"
-msgstr "Servidor de Exibição"
 
 msgid "Display Server"
 msgstr "Servidor de Exibição"
@@ -6208,9 +6175,6 @@ msgstr "Efeito Doppler"
 msgid "Tracking"
 msgstr "Rastreio"
 
-msgid "Tracking"
-msgstr "Rastreio"
-
 msgid "Bone Name"
 msgstr "Nome do Osso"
 
@@ -6731,9 +6695,6 @@ msgstr "Fator de Atenuação"
 msgid "Source Path"
 msgstr "Caminho Fonte"
 
-msgid "Tilt Enabled"
-msgstr "Habilitar Inclinação"
-
 msgid "Reverb Bus"
 msgstr "Canal de Reverberação"
 
@@ -7174,18 +7135,6 @@ msgstr "Rastreador de Rosto"
 
 msgid "Hand Tracker"
 msgstr "Rastreador de Mãos"
-
-msgid "Body Tracker"
-msgstr "Detector de Corpo"
-
-msgid "Face Tracker"
-msgstr "Detector de Rosto"
-
-msgid "Hand Tracker"
-msgstr "Detector de Mãos"
-
-msgid "Tracker"
-msgstr "Detector"
 
 msgid "Pose"
 msgstr "Pose"
@@ -8285,9 +8234,6 @@ msgstr "Rolagem Vertical Habilitada"
 
 msgid "Auto Tooltip"
 msgstr "Tooltip Automática"
-
-msgid "Audio Track"
-msgstr "Faixa de Áudio"
 
 msgid "Audio Track"
 msgstr "Faixa de Áudio"
@@ -11768,12 +11714,6 @@ msgstr "Blend Shapes"
 
 msgid "Hand Tracking Source"
 msgstr "Fonte de Rastreio de Mãos"
-
-msgid "Has Tracking Data"
-msgstr "Contém Dados de Rastreio"
-
-msgid "Hand Tracking Source"
-msgstr "Fonte de Detecção de Mãos"
 
 msgid "Is Primary"
 msgstr "É Principal"

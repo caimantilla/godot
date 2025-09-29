@@ -2147,9 +2147,6 @@ msgstr "Seznam varování"
 msgid "Notice List"
 msgstr "Seznam upozornění"
 
-msgid "Color Theme"
-msgstr "Barevný motiv"
-
 msgid "Appearance"
 msgstr "Vzhled"
 
